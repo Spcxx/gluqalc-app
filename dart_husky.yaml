@@ -1,0 +1,26 @@
+dart_husky:
+  verbose: true
+  staged_only: false
+
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      run: fvm dart format --set-exit-if-changed .
+      glob: '**/*.dart'
+
+    analyze:
+      run: fvm dart analyze
+      glob: '**/*.dart'
+
+commit-msg:
+  commands:
+    conventional:
+      preset: conventional
+      only_small_case: true
+
+pre-push:
+  commands:
+    test:
+      run: fvm flutter test
+      staged_only: false
