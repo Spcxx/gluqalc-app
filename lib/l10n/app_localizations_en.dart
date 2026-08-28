@@ -13,6 +13,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'GluQalc';
 
   @override
+  String get snackbarOffline => 'Internet connection lost.';
+
+  @override
+  String get snackbarOnline => 'Internet connection restored.';
+
+  @override
+  String get noInternetConnection => 'No internet connection.';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
   String get homeTabLabel => 'Home';
 
   @override

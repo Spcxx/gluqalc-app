@@ -1,5 +1,9 @@
 {
   "appTitle": "GluQalc",
+  "snackbarOffline": "Internet connection lost.",
+  "snackbarOnline": "Internet connection restored.",
+  "noInternetConnection": "No internet connection.",
+  "tryAgain": "Try again",
   "homeTabLabel": "Home",
   "settingsTabLabel": "Settings"
 }

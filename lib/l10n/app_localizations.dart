@@ -100,6 +100,30 @@ abstract class AppLocalizations {
   /// **'GluQalc'**
   String get appTitle;
 
+  /// No description provided for @snackbarOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet connection lost.'**
+  String get snackbarOffline;
+
+  /// No description provided for @snackbarOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet connection restored.'**
+  String get snackbarOnline;
+
+  /// No description provided for @noInternetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection.'**
+  String get noInternetConnection;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
   /// No description provided for @homeTabLabel.
   ///
   /// In en, this message translates to:

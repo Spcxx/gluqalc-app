@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gluqalc_app/core/networking/connectivity_service.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-class ScaffoldWithNavBar extends StatelessWidget {
+class ScaffoldWithNavBar extends ConsumerWidget {
   const ScaffoldWithNavBar({
     required this.navigationShell,
     super.key,
@@ -18,8 +20,30 @@ class ScaffoldWithNavBar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+
+    ref.listen<AppConnectionState>(connectivityServiceProvider, (prev, next) {
+      if (next == AppConnectionState.offlineStartup) {
+        context.go('/offline');
+      } else if (next == AppConnectionState.offlineRuntime) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.snackbarOffline),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      } else if (next == AppConnectionState.online &&
+          prev == AppConnectionState.offlineRuntime) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.snackbarOnline),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(

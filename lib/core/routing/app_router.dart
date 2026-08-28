@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gluqalc_app/core/presentation/screens/offline_screen.dart';
 import 'package:gluqalc_app/core/routing/scaffold_with_nav_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,6 +11,10 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: '/home',
     routes: [
+      GoRoute(
+        path: '/offline',
+        builder: (context, state) => const OfflineScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNavBar(navigationShell: navigationShell);
