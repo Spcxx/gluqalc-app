@@ -74,10 +74,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             ),
           );
         },
-        data: (_) {
+        data: (_) async {
           if (prev is AsyncLoading) {
             if (_isLogin) {
-              context.go('/home');
+              context.go('/consents');
             } else {
               context.go('/verify');
             }

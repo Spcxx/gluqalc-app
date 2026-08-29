@@ -59,5 +59,12 @@
   "errorInvalidEmail": "Invalid email format.",
   "errorPasswordRequired": "Password is required.",
   "errorPasswordNotMet": "Password does not meet all security rules.",
-  "errorFieldRequired": "This field is required."
+  "errorFieldRequired": "This field is required.",
+  "errorRequiredConsent": "You must accept required consents to use the app.",
+  "consentTitle": "Consent",
+  "consentVersionLabel": "Version",
+  "consentRequiredLabel": "This consent is required",
+  "acceptButton": "Accept",
+  "declineButton": "Decline",
+  "errorLoadingConsents": "Error loading consents"
 }

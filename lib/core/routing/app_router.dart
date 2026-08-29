@@ -5,6 +5,7 @@ import 'package:gluqalc_app/core/presentation/screens/offline_screen.dart';
 import 'package:gluqalc_app/core/routing/scaffold_with_nav_bar.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/auth_screen.dart';
+import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -39,11 +40,18 @@ GoRouter appRouter(Ref ref) {
       const publicPaths = ['/auth', '/verify', '/offline'];
       final isPublicPath = publicPaths.contains(path);
 
-      const validPaths = ['/offline', '/auth', '/verify', '/home', '/settings'];
+      const validPaths = [
+        '/offline',
+        '/auth',
+        '/verify',
+        '/home',
+        '/settings',
+        '/consents',
+      ];
       final isValidPath = validPaths.contains(path);
 
       if (!isValidPath) {
-        return isLoggedIn ? '/home' : '/auth';
+        return isLoggedIn ? '/consents' : '/auth';
       }
 
       if (!isLoggedIn && !isPublicPath) {
@@ -51,7 +59,7 @@ GoRouter appRouter(Ref ref) {
       }
 
       if (isLoggedIn && (path == '/auth' || path == '/verify')) {
-        return '/home';
+        return '/consents';
       }
 
       return null;
@@ -68,6 +76,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/verify',
         builder: (context, state) => const VerifyScreen(),
+      ),
+      GoRoute(
+        path: '/consents',
+        builder: (context, state) => const ConsentScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

@@ -215,4 +215,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorFieldRequired => 'This field is required.';
+
+  @override
+  String get errorRequiredConsent =>
+      'You must accept required consents to use the app.';
+
+  @override
+  String get consentTitle => 'Consent';
+
+  @override
+  String get consentVersionLabel => 'Version';
+
+  @override
+  String get consentRequiredLabel => 'This consent is required';
+
+  @override
+  String get acceptButton => 'Accept';
+
+  @override
+  String get declineButton => 'Decline';
+
+  @override
+  String get errorLoadingConsents => 'Error loading consents';
 }

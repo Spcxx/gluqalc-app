@@ -459,6 +459,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This field is required.'**
   String get errorFieldRequired;
+
+  /// No description provided for @errorRequiredConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'You must accept required consents to use the app.'**
+  String get errorRequiredConsent;
+
+  /// No description provided for @consentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent'**
+  String get consentTitle;
+
+  /// No description provided for @consentVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get consentVersionLabel;
+
+  /// No description provided for @consentRequiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'This consent is required'**
+  String get consentRequiredLabel;
+
+  /// No description provided for @acceptButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptButton;
+
+  /// No description provided for @declineButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineButton;
+
+  /// No description provided for @errorLoadingConsents.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading consents'**
+  String get errorLoadingConsents;
 }
 
 class _AppLocalizationsDelegate
