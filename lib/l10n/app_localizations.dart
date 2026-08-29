@@ -135,6 +135,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsTabLabel;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in successfully!'**
+  String get loginSuccess;
+
+  /// No description provided for @signupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created!'**
+  String get signupSuccess;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get loginButton;
+
+  /// No description provided for @signupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signupButton;
+
+  /// No description provided for @noAccountPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Sign up'**
+  String get noAccountPrompt;
+
+  /// No description provided for @alreadyHaveAccountPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Log in'**
+  String get alreadyHaveAccountPrompt;
+
+  /// No description provided for @passwordRuleMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 8 characters'**
+  String get passwordRuleMinLength;
+
+  /// No description provided for @passwordRuleUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 1 uppercase letter'**
+  String get passwordRuleUpper;
+
+  /// No description provided for @passwordRuleLower.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 1 lowercase letter'**
+  String get passwordRuleLower;
+
+  /// No description provided for @passwordRuleDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 1 digit'**
+  String get passwordRuleDigit;
+
+  /// No description provided for @passwordRuleSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 1 special character'**
+  String get passwordRuleSpecial;
+
+  /// No description provided for @passwordRuleNoRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'No 3 repeating characters'**
+  String get passwordRuleNoRepeating;
+
+  /// No description provided for @verifyAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account verified successfully! You can now log in.'**
+  String get verifyAccountSuccess;
+
+  /// No description provided for @verifyScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter verification code'**
+  String get verifyScreenTitle;
+
+  /// No description provided for @verifyScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We have sent a confirmation code to your email address.'**
+  String get verifyScreenSubtitle;
+
+  /// No description provided for @verifyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get verifyButton;
+
+  /// No description provided for @errorInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password.'**
+  String get errorInvalidCredentials;
+
+  /// No description provided for @errorExternalProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'This account was registered via a different provider. Please use that method.'**
+  String get errorExternalProvider;
+
+  /// No description provided for @errorAccountNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not verified yet.'**
+  String get errorAccountNotVerified;
+
+  /// No description provided for @errorAccountLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been locked for security reasons.'**
+  String get errorAccountLocked;
+
+  /// No description provided for @errorUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found.'**
+  String get errorUserNotFound;
+
+  /// No description provided for @errorPasswordTooCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'This password is too common. Please choose a stronger one.'**
+  String get errorPasswordTooCommon;
+
+  /// No description provided for @errorPasswordRepeatingChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Password contains too many repeating characters.'**
+  String get errorPasswordRepeatingChars;
+
+  /// No description provided for @errorPasswordPwned.
+  ///
+  /// In en, this message translates to:
+  /// **'This password has appeared in a data breach. For your safety, please use a different one.'**
+  String get errorPasswordPwned;
+
+  /// No description provided for @errorPasswordAlreadySet.
+  ///
+  /// In en, this message translates to:
+  /// **'A password has already been set for this account.'**
+  String get errorPasswordAlreadySet;
+
+  /// No description provided for @errorGoogleAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google authentication failed. Please try again.'**
+  String get errorGoogleAuthFailed;
+
+  /// No description provided for @errorGoogleEmailMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The Google email address does not match your profile email.'**
+  String get errorGoogleEmailMismatch;
+
+  /// No description provided for @errorGoogleAlreadyLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'This Google account is already linked.'**
+  String get errorGoogleAlreadyLinked;
+
+  /// No description provided for @errorValidationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation error. Please check the entered information.'**
+  String get errorValidationError;
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired or invalid credentials provided.'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to perform this action.'**
+  String get errorForbidden;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource not found.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email address already exists.'**
+  String get errorConflict;
+
+  /// No description provided for @errorTooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait and try again.'**
+  String get errorTooManyRequests;
+
+  /// No description provided for @errorServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server problem. Try again later.'**
+  String get errorServerError;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred (Code: {code}).'**
+  String errorUnknown(Object code);
+
+  /// No description provided for @errorInvalidVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired verification code.'**
+  String get errorInvalidVerificationCode;
 }
 
 class _AppLocalizationsDelegate

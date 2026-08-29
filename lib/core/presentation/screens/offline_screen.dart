@@ -13,7 +13,7 @@ class OfflineScreen extends ConsumerWidget {
 
     ref.listen<AppConnectionState>(connectivityServiceProvider, (prev, next) {
       if (next == AppConnectionState.online) {
-        context.go('/home');
+        context.go('/auth');
       }
     });
 
