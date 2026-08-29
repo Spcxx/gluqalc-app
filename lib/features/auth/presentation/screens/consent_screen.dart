@@ -17,6 +17,8 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
   int _currentIndex = 0;
   final List<String> _collectedAcceptedIds = [];
 
+  bool _isSubmitting = false;
+
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -39,13 +41,20 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
         _currentIndex++;
       });
     } else {
-      await ref
-          .read(consentControllerProvider.notifier)
-          .acceptConsents(_collectedAcceptedIds);
+      setState(() => _isSubmitting = true);
+      try {
+        await ref
+            .read(consentControllerProvider.notifier)
+            .acceptConsents(_collectedAcceptedIds);
 
-      final state = ref.read(consentControllerProvider);
-      if (!state.hasError && mounted) {
-        context.go('/home');
+        if (mounted) {
+          context.go('/home');
+        }
+      } on Object catch (e) {
+        if (mounted) {
+          _showError(e.toString());
+          setState(() => _isSubmitting = false);
+        }
       }
     }
   }
@@ -58,18 +67,33 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
 
     if (currentConsent.required) {
       _showError(l10n.errorRequiredConsent);
+
+      setState(() => _isSubmitting = true);
       await ref.read(authStateControllerProvider.notifier).logout();
-      if (mounted) context.go('/auth');
+      if (mounted) {
+        context.go('/auth');
+      }
     } else {
       if (_currentIndex < consents.length - 1) {
         setState(() {
           _currentIndex++;
         });
       } else {
-        await ref
-            .read(consentControllerProvider.notifier)
-            .acceptConsents(_collectedAcceptedIds);
-        if (mounted) context.go('/home');
+        setState(() => _isSubmitting = true);
+        try {
+          await ref
+              .read(consentControllerProvider.notifier)
+              .acceptConsents(_collectedAcceptedIds);
+
+          if (mounted) {
+            context.go('/home');
+          }
+        } on Object catch (e) {
+          if (mounted) {
+            _showError(e.toString());
+            setState(() => _isSubmitting = false);
+          }
+        }
       }
     }
   }
@@ -95,7 +119,6 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
         }
 
         final consent = consents[_currentIndex];
-        final isSubmitting = consentsAsync.isLoading;
 
         return Scaffold(
           appBar: AppBar(
@@ -147,13 +170,13 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
                     ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: isSubmitting
+                    onPressed: _isSubmitting
                         ? null
                         : () => _handleAccept(consents, l10n),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: isSubmitting
+                    child: _isSubmitting
                         ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -169,7 +192,7 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton(
-                    onPressed: isSubmitting
+                    onPressed: _isSubmitting
                         ? null
                         : () => _handleDecline(consents, l10n),
                     style: OutlinedButton.styleFrom(
@@ -190,8 +213,47 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.errorTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: l10n.logoutTooltip,
+              onPressed: () async {
+                await ref.read(authStateControllerProvider.notifier).logout();
+              },
+            ),
+          ],
+        ),
         body: Center(
-          child: Text('${l10n.errorLoadingConsents}: $error'),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.errorLoadingConsents,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  error.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () {
+                    ref.invalidate(consentControllerProvider);
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.tryAgainButton),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

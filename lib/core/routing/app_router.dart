@@ -7,6 +7,8 @@ import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_co
 import 'package:gluqalc_app/features/auth/presentation/screens/auth_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
+import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,6 +49,7 @@ GoRouter appRouter(Ref ref) {
         '/home',
         '/settings',
         '/consents',
+        '/profile-setup',
       ];
       final isValidPath = validPaths.contains(path);
 
@@ -81,9 +84,17 @@ GoRouter appRouter(Ref ref) {
         path: '/consents',
         builder: (context, state) => const ConsentScreen(),
       ),
+      GoRoute(
+        path: '/profile-setup',
+        builder: (context, state) => const ProfileSetupScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return ScaffoldWithNavBar(navigationShell: navigationShell);
+          return ProfileGuard(
+            child: ScaffoldWithNavBar(
+              navigationShell: navigationShell,
+            ),
+          );
         },
         branches: [
           StatefulShellBranch(
@@ -116,6 +127,78 @@ class RouterNotifier extends ChangeNotifier {
     _ref.listen(connectivityServiceProvider, (_, _) => notifyListeners());
   }
   final Ref _ref;
+}
+
+class ProfileGuard extends ConsumerWidget {
+  const ProfileGuard({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = ref.watch(profileControllerProvider);
+
+    return profileState.when(
+      data: (profile) {
+        if (profile == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) context.go('/profile-setup');
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return child;
+      },
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, stackTrace) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Error'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+              onPressed: () async {
+                await ref.read(authStateControllerProvider.notifier).logout();
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Failed to load profile.',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  err.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () {
+                    ref.invalidate(profileControllerProvider);
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Try Again'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class PlaceholderScreen extends ConsumerWidget {
