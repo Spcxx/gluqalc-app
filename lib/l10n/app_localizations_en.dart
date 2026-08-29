@@ -158,6 +158,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorServerError => 'Server problem. Try again later.';
 
   @override
+  String get errorPasswordLength =>
+      'Password must be between 8 and 255 characters.';
+
+  @override
   String errorUnknown(Object code) {
     return 'An unknown error occurred (Code: $code).';
   }
@@ -165,4 +169,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorInvalidVerificationCode =>
       'Invalid or expired verification code.';
+
+  @override
+  String get errorEmailAlreadyTaken => 'This email address is already taken.';
+
+  @override
+  String get errorEmailSameAsCurrent =>
+      'The new email must be different from the current one.';
+
+  @override
+  String get changeEmailButton => 'Wrong email?';
+
+  @override
+  String get changeEmailDialogTitle => 'Change Email Address';
+
+  @override
+  String get changeEmailDialogSubtitle =>
+      'Enter your current email, password, and the correct email address.';
+
+  @override
+  String get newEmailLabel => 'New email address';
+
+  @override
+  String get currentPasswordLabel => 'Current password';
+
+  @override
+  String get currentEmailLabel => 'Current email address';
+
+  @override
+  String get changeEmailSuccess =>
+      'Email address updated. A new verification code has been sent.';
+
+  @override
+  String get errorEmailRequired => 'Email is required.';
+
+  @override
+  String get errorInvalidEmail => 'Invalid email format.';
+
+  @override
+  String get errorPasswordRequired => 'Password is required.';
+
+  @override
+  String get errorPasswordNotMet =>
+      'Password does not meet all security rules.';
+
+  @override
+  String get errorFieldRequired => 'This field is required.';
 }

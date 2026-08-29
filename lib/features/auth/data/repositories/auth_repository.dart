@@ -66,4 +66,16 @@ class AuthRepository {
   Future<String> getDeviceId() async {
     return _localStorage.getDeviceId();
   }
+
+  Future<void> changeUnverifiedEmail({
+    required String oldEmail,
+    required String password,
+    required String newEmail,
+  }) async {
+    await _remoteApi.changeUnverifiedEmail(
+      oldEmail: oldEmail,
+      password: password,
+      newEmail: newEmail,
+    );
+  }
 }

@@ -62,4 +62,19 @@ class AuthRemoteApi {
       },
     );
   }
+
+  Future<void> changeUnverifiedEmail({
+    required String oldEmail,
+    required String password,
+    required String newEmail,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/v1/auth/change-email',
+      data: {
+        'oldEmail': oldEmail,
+        'password': password,
+        'newEmail': newEmail,
+      },
+    );
+  }
 }

@@ -358,6 +358,12 @@ abstract class AppLocalizations {
   /// **'Server problem. Try again later.'**
   String get errorServerError;
 
+  /// No description provided for @errorPasswordLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be between 8 and 255 characters.'**
+  String get errorPasswordLength;
+
   /// No description provided for @errorUnknown.
   ///
   /// In en, this message translates to:
@@ -369,6 +375,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid or expired verification code.'**
   String get errorInvalidVerificationCode;
+
+  /// No description provided for @errorEmailAlreadyTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This email address is already taken.'**
+  String get errorEmailAlreadyTaken;
+
+  /// No description provided for @errorEmailSameAsCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'The new email must be different from the current one.'**
+  String get errorEmailSameAsCurrent;
+
+  /// No description provided for @changeEmailButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong email?'**
+  String get changeEmailButton;
+
+  /// No description provided for @changeEmailDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email Address'**
+  String get changeEmailDialogTitle;
+
+  /// No description provided for @changeEmailDialogSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current email, password, and the correct email address.'**
+  String get changeEmailDialogSubtitle;
+
+  /// No description provided for @newEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New email address'**
+  String get newEmailLabel;
+
+  /// No description provided for @currentPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPasswordLabel;
+
+  /// No description provided for @currentEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current email address'**
+  String get currentEmailLabel;
+
+  /// No description provided for @changeEmailSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address updated. A new verification code has been sent.'**
+  String get changeEmailSuccess;
+
+  /// No description provided for @errorEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required.'**
+  String get errorEmailRequired;
+
+  /// No description provided for @errorInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email format.'**
+  String get errorInvalidEmail;
+
+  /// No description provided for @errorPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required.'**
+  String get errorPasswordRequired;
+
+  /// No description provided for @errorPasswordNotMet.
+  ///
+  /// In en, this message translates to:
+  /// **'Password does not meet all security rules.'**
+  String get errorPasswordNotMet;
+
+  /// No description provided for @errorFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required.'**
+  String get errorFieldRequired;
 }
 
 class _AppLocalizationsDelegate

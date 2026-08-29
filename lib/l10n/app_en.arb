@@ -43,6 +43,21 @@
   "errorConflict": "An account with this email address already exists.",
   "errorTooManyRequests": "Too many attempts. Please wait and try again.",
   "errorServerError": "Server problem. Try again later.",
+  "errorPasswordLength": "Password must be between 8 and 255 characters.",
   "errorUnknown": "An unknown error occurred (Code: {code}).",
-  "errorInvalidVerificationCode": "Invalid or expired verification code."
+  "errorInvalidVerificationCode": "Invalid or expired verification code.",
+  "errorEmailAlreadyTaken": "This email address is already taken.",
+  "errorEmailSameAsCurrent": "The new email must be different from the current one.",
+  "changeEmailButton": "Wrong email?",
+  "changeEmailDialogTitle": "Change Email Address",
+  "changeEmailDialogSubtitle": "Enter your current email, password, and the correct email address.",
+  "newEmailLabel": "New email address",
+  "currentPasswordLabel": "Current password",
+  "currentEmailLabel": "Current email address",
+  "changeEmailSuccess": "Email address updated. A new verification code has been sent.",
+  "errorEmailRequired": "Email is required.",
+  "errorInvalidEmail": "Invalid email format.",
+  "errorPasswordRequired": "Password is required.",
+  "errorPasswordNotMet": "Password does not meet all security rules.",
+  "errorFieldRequired": "This field is required."
 }

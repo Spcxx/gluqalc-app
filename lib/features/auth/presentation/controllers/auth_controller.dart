@@ -79,6 +79,11 @@ class AuthController extends _$AuthController {
     if (serverMsg != null) {
       final msg = serverMsg.toLowerCase();
 
+      if (msg.contains('account is not verified') ||
+          msg.contains('user account is not verified')) {
+        return 'ACCOUNT_NOT_VERIFIED';
+      }
+
       if (msg.contains('invalid email or password')) {
         return l10n.errorInvalidCredentials;
       }
@@ -92,6 +97,9 @@ class AuthController extends _$AuthController {
       if (msg.contains('account is locked')) return l10n.errorAccountLocked;
       if (msg.contains('user not found')) return l10n.errorUserNotFound;
 
+      if (msg.contains('password must be between')) {
+        return l10n.errorPasswordLength;
+      }
       if (msg.contains('password is too common')) {
         return l10n.errorPasswordTooCommon;
       }
