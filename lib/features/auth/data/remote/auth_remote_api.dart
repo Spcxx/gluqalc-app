@@ -35,6 +35,7 @@ class AuthRemoteApi {
       data: {
         'code': code,
       },
+      options: Options(extra: {'ignore401': true}),
     );
   }
 
@@ -50,6 +51,7 @@ class AuthRemoteApi {
         'password': password,
         'deviceId': deviceId,
       },
+      options: Options(extra: {'ignore401': true}),
     );
     return response.data!;
   }
@@ -75,6 +77,72 @@ class AuthRemoteApi {
         'password': password,
         'newEmail': newEmail,
       },
+      options: Options(extra: {'ignore401': true}),
+    );
+  }
+
+  Future<void> requestVerifiedEmailChange({
+    required String newEmail,
+    required String password,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/v1/change-email/request',
+      data: {
+        'newEmail': newEmail,
+        'password': password,
+      },
+      options: Options(extra: {'ignore401': true}),
+    );
+  }
+
+  Future<void> confirmVerifiedEmailChange({
+    required String newEmail,
+    required String code,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/v1/change-email/confirm',
+      data: {
+        'newEmail': newEmail,
+        'code': code,
+      },
+      options: Options(extra: {'ignore401': true}),
+    );
+  }
+
+  Future<void> requestPasswordReset({
+    required String email,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/v1/reset-password/request',
+      data: {'email': email},
+    );
+  }
+
+  Future<void> confirmPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _dio.post<dynamic>(
+      '/api/v1/reset-password/confirm',
+      data: {
+        'email': email,
+        'code': code,
+        'newPassword': newPassword,
+      },
+      options: Options(extra: {'ignore401': true}),
+    );
+  }
+
+  Future<void> requestAccountDeletion() async {
+    await _dio.post<dynamic>('/api/v1/users/me/delete/request');
+  }
+
+  Future<void> confirmAccountDeletion({required String code}) async {
+    await _dio.post<dynamic>(
+      '/api/v1/users/me/delete/confirm',
+      data: {'code': code},
+      options: Options(extra: {'ignore401': true}),
     );
   }
 }

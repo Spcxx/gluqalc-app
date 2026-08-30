@@ -389,7 +389,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get macroFat => 'Fat';
 
   @override
-  String get macroCarbs => 'Carbs';
+  String get macroCarbs => 'Carbohydrates';
 
   @override
   String get macroWarningText =>
@@ -872,4 +872,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tooltipFrontendRepo => 'Frontend';
+
+  @override
+  String get profileScreenTitle => 'Profile';
+
+  @override
+  String get profileAccountSettingsTitle => 'Account settings';
+
+  @override
+  String get profileEditButton => 'Edit';
+
+  @override
+  String get profileChangeEmailButton => 'Change email';
+
+  @override
+  String get profileChangePasswordButton => 'Change password';
+
+  @override
+  String get profileDeleteAccountButton => 'Delete account';
+
+  @override
+  String get profileActiveSessionsTitle => 'Active sessions';
+
+  @override
+  String get profileSessionCurrent => 'Current device';
+
+  @override
+  String get profileSessionRevoke => 'Revoke';
+
+  @override
+  String get featureComingSoon => 'Feature coming soon';
+
+  @override
+  String get profileChangeEmailDialogSubtitle =>
+      'Enter your current password and the new email address.';
+
+  @override
+  String get profileChangeEmailCodeSubtitle =>
+      'Enter the 6-digit verification code sent to your new email.';
+
+  @override
+  String get errorInvalidPassword => 'Invalid current password.';
+
+  @override
+  String get emailChangedSuccessfully => 'Email address successfully changed!';
+
+  @override
+  String get sendCodeButton => 'Send code';
+
+  @override
+  String get profileChangePasswordDialogSubtitle =>
+      'Enter and confirm your new password.';
+
+  @override
+  String get profileChangePasswordCodeSubtitle =>
+      'Enter the 6-digit verification code sent to your email.';
+
+  @override
+  String get passwordChangedSuccessfully =>
+      'Password successfully changed! Please log in again.';
+
+  @override
+  String get newPasswordLabel => 'New password';
+
+  @override
+  String get confirmNewPasswordLabel => 'Confirm new password';
+
+  @override
+  String get errorPasswordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get profileDeleteAccountDialogTitle => 'Delete account';
+
+  @override
+  String get profileDeleteAccountWarning =>
+      'Are you sure you want to delete your account? This action is permanent and cannot be undone.';
+
+  @override
+  String get profileDeleteAccountCodeSubtitle =>
+      'Enter the 6-digit verification code sent to your email to permanently delete your account.';
+
+  @override
+  String get accountDeletedSuccessfully =>
+      'Your account has been successfully deleted.';
+
+  @override
+  String get requestDeleteButton => 'Request deletion';
+
+  @override
+  String get confirmDeleteButton => 'Permanently delete';
+
+  @override
+  String get deviceWeb => 'Web Browser';
+
+  @override
+  String get deviceAndroid => 'Android Device';
+
+  @override
+  String get deviceIos => 'iOS Device';
+
+  @override
+  String get deviceWindows => 'Windows PC';
+
+  @override
+  String get deviceLinux => 'Linux Native App';
+
+  @override
+  String get deviceMac => 'Mac / MacBook';
+
+  @override
+  String get deviceUnknown => 'Unknown Device';
+
+  @override
+  String get lastActive => 'Last active';
+
+  @override
+  String get errorSessionRevoke => 'Failed to revoke session';
 }

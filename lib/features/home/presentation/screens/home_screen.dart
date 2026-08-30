@@ -1,44 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gluqalc_app/core/config/app_config.dart';
 import 'package:gluqalc_app/core/gen/assets.gen.dart';
 import 'package:gluqalc_app/core/networking/connectivity_service.dart';
-import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
+import 'package:gluqalc_app/core/presentation/widgets/app_drawer.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-part 'home_screen.g.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  Future<void> _launchUrl(String urlString) async {
-    final uri = Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-
-    final emailAsync = ref.watch(currentUserEmailProvider);
-    final userEmail = emailAsync.asData?.value ?? '...';
-
-    final versionAsync = ref.watch(appVersionProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     final profileState = ref.watch(profileControllerProvider);
     final targets = profileState.value?.targets;
 
-    final limitKcal = targets?.dailyKcalGoal ?? 0.0;
-    final limitCarbs = targets?.carbsGrams ?? 0.0;
-    final limitProtein = targets?.proteinGrams ?? 0.0;
-    final limitFat = targets?.fatGrams ?? 0.0;
+    final limitKcal = targets?.dailyKcalGoal ?? 1.0;
+    final limitCarbs = targets?.carbsGrams ?? 1.0;
+    final limitProtein = targets?.proteinGrams ?? 1.0;
+    final limitFat = targets?.fatGrams ?? 1.0;
 
     const currentKcal = 0.0;
     const currentCarbs = 0.0;
@@ -52,7 +36,8 @@ class HomeScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.snackbarOffline),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: colorScheme.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       } else if (next == AppConnectionState.online &&
@@ -61,6 +46,7 @@ class HomeScreen extends ConsumerWidget {
           SnackBar(
             content: Text(l10n.snackbarOnline),
             backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -80,7 +66,7 @@ class HomeScreen extends ConsumerWidget {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: isOnline ? Colors.blue : Colors.red,
+                color: isOnline ? Colors.blue : colorScheme.error,
                 shape: BoxShape.circle,
               ),
             ),
@@ -94,172 +80,30 @@ class HomeScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Builder(
-              builder: (context) => IconButton(
+              builder: (ctx) => IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                onPressed: () => Scaffold.of(ctx).openEndDrawer(),
               ),
             ),
           ),
         ],
       ),
-
-      endDrawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                color: Theme.of(context).colorScheme.primaryContainer
-                    .withValues(alpha: 0.4),
-                child: Column(
-                  children: [
-                    const CircleAvatar(
-                      radius: 28,
-                      child: Icon(Icons.person, size: 32),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      userEmail,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        await ref
-                            .read(authStateControllerProvider.notifier)
-                            .logout();
-                      },
-                      icon: const Icon(Icons.logout, size: 18),
-                      label: Text(l10n.drawerLogout),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.error,
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              _buildDrawerItem(
-                icon: Icons.person_outline,
-                title: l10n.drawerProfile,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _buildDrawerItem(
-                icon: Icons.settings_outlined,
-                title: l10n.drawerSettings,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _buildDrawerItem(
-                icon: Icons.download_outlined,
-                title: l10n.drawerExport,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _buildDrawerItem(
-                icon: Icons.info_outline,
-                title: l10n.drawerAbout,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-
-              const Spacer(),
-
-              const Divider(),
-              const SizedBox(height: 8),
-              versionAsync.when(
-                data: (version) => Text(
-                  'v$version',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, _) => const SizedBox.shrink(),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                l10n.madeByLabel,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade400,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Tooltip(
-                    message: l10n.tooltipApiRepo,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => _launchUrl(AppConfig.githubApiUrl),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Assets.icons.githubBlack.svg(
-                          height: 20,
-                          colorFilter: ColorFilter.mode(
-                            Colors.grey.shade400,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Tooltip(
-                    message: l10n.tooltipFrontendRepo,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => _launchUrl(AppConfig.githubAppUrl),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Assets.icons.githubBlack.svg(
-                          height: 20,
-                          colorFilter: ColorFilter.mode(
-                            Colors.grey.shade400,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-
+      endDrawer: const AppDrawer(),
       body: Center(
-        child: Text(
-          l10n.homeTabLabel,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade300,
-          ),
-        ),
+        child: profileState.isLoading
+            ? const CircularProgressIndicator()
+            : Text(
+                l10n.homeTabLabel,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
       ),
-
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: colorScheme.surface,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -275,6 +119,7 @@ class HomeScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildKcalBar(
+                  context: context,
                   label: l10n.macroKcal,
                   current: currentKcal,
                   limit: limitKcal,
@@ -287,25 +132,28 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildCircularMacro(
-                      l10n.macroCarbs,
-                      currentCarbs,
-                      limitCarbs,
-                      Colors.blue.shade500,
-                      'g',
+                      context: context,
+                      label: l10n.macroCarbs,
+                      current: currentCarbs,
+                      limit: limitCarbs,
+                      color: Colors.blue.shade500,
+                      unit: 'g',
                     ),
                     _buildCircularMacro(
-                      l10n.macroProtein,
-                      currentProtein,
-                      limitProtein,
-                      Colors.red.shade500,
-                      'g',
+                      context: context,
+                      label: l10n.macroProtein,
+                      current: currentProtein,
+                      limit: limitProtein,
+                      color: Colors.red.shade500,
+                      unit: 'g',
                     ),
                     _buildCircularMacro(
-                      l10n.macroFat,
-                      currentFat,
-                      limitFat,
-                      Colors.amber.shade600,
-                      'g',
+                      context: context,
+                      label: l10n.macroFat,
+                      current: currentFat,
+                      limit: limitFat,
+                      color: Colors.amber.shade600,
+                      unit: 'g',
                     ),
                   ],
                 ),
@@ -317,25 +165,15 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.grey.shade700),
-      title: Text(title),
-      onTap: onTap,
-    );
-  }
-
   Widget _buildKcalBar({
+    required BuildContext context,
     required String label,
     required double current,
     required double limit,
     required Color color,
     required AppLocalizations l10n,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     final progress = limit > 0 ? (current / limit).clamp(0.0, 1.0) : 0.0;
     final remaining = (limit - current).clamp(0.0, double.infinity).toInt();
 
@@ -354,7 +192,7 @@ class HomeScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade800,
+                  color: colorScheme.onSurface,
                 ),
               ),
               Text(
@@ -362,7 +200,7 @@ class HomeScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                  color: colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -382,13 +220,15 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCircularMacro(
-    String label,
-    double current,
-    double limit,
-    Color color,
-    String unit,
-  ) {
+  Widget _buildCircularMacro({
+    required BuildContext context,
+    required String label,
+    required double current,
+    required double limit,
+    required Color color,
+    required String unit,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
     final progress = limit > 0 ? (current / limit).clamp(0.0, 1.0) : 0.0;
 
     return Expanded(
@@ -417,7 +257,7 @@ class HomeScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade800,
+                          color: colorScheme.onSurface,
                         ),
                         maxLines: 1,
                       ),
@@ -426,7 +266,7 @@ class HomeScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade500,
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                         maxLines: 1,
                       ),
@@ -442,7 +282,7 @@ class HomeScreen extends ConsumerWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.grey.shade700,
+              color: colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -451,10 +291,4 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-@Riverpod(keepAlive: true)
-Future<String> appVersion(Ref ref) async {
-  final packageInfo = await PackageInfo.fromPlatform();
-  return packageInfo.version;
 }

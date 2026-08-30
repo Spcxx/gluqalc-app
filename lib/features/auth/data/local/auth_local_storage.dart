@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -78,25 +80,53 @@ class AuthLocalStorage {
       var deviceId = await _storage.read(key: _keyDeviceId);
       if (deviceId != null) return deviceId;
 
-      final deviceInfo = DeviceInfoPlugin();
+      final deviceInfoPlugin = DeviceInfoPlugin();
+      String rawIdentifier;
 
       if (kIsWeb) {
-        deviceId = 'web-${const Uuid().v4()}';
+        final web = await deviceInfoPlugin.webBrowserInfo;
+        rawIdentifier = 'web-${web.browserName.name}-${const Uuid().v4()}';
       } else if (Platform.isAndroid) {
-        final android = await deviceInfo.androidInfo;
-        deviceId = 'android-${android.model}-${android.id}';
+        final android = await deviceInfoPlugin.androidInfo;
+        rawIdentifier = 'android-${android.model}-${android.id}';
       } else if (Platform.isIOS) {
-        final ios = await deviceInfo.iosInfo;
-        deviceId =
+        final ios = await deviceInfoPlugin.iosInfo;
+        rawIdentifier =
             'ios-${ios.utsname.machine}-${ios.identifierForVendor ?? const Uuid().v4()}';
+      } else if (Platform.isWindows) {
+        final windows = await deviceInfoPlugin.windowsInfo;
+        rawIdentifier = 'windows-${windows.computerName}-${windows.deviceId}';
+      } else if (Platform.isLinux) {
+        final linux = await deviceInfoPlugin.linuxInfo;
+        rawIdentifier =
+            'linux-${linux.name}-${linux.machineId ?? const Uuid().v4()}';
+      } else if (Platform.isMacOS) {
+        final mac = await deviceInfoPlugin.macOsInfo;
+        rawIdentifier =
+            'macos-${mac.computerName}-${mac.systemGUID ?? const Uuid().v4()}';
       } else {
-        deviceId = 'desktop-${const Uuid().v4()}';
+        rawIdentifier = 'unknown-${const Uuid().v4()}';
       }
+
+      final bytes = utf8.encode(rawIdentifier);
+      final digest = sha256.convert(bytes);
+
+      final prefix = rawIdentifier.split('-').first;
+      deviceId = '$prefix-$digest';
 
       await _storage.write(key: _keyDeviceId, value: deviceId);
       return deviceId;
     } on Object catch (_) {
-      return 'fallback-device-id-${const Uuid().v4()}';
+      try {
+        var fallbackId = await _storage.read(key: _keyDeviceId);
+        if (fallbackId != null) return fallbackId;
+
+        fallbackId = 'fallback-${const Uuid().v4()}';
+        await _storage.write(key: _keyDeviceId, value: fallbackId);
+        return fallbackId;
+      } on Object catch (_) {
+        return 'critical-fallback-${const Uuid().v4()}';
+      }
     }
   }
 }

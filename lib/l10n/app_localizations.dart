@@ -781,7 +781,7 @@ abstract class AppLocalizations {
   /// No description provided for @macroCarbs.
   ///
   /// In en, this message translates to:
-  /// **'Carbs'**
+  /// **'Carbohydrates'**
   String get macroCarbs;
 
   /// No description provided for @macroWarningText.
@@ -1659,6 +1659,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Frontend'**
   String get tooltipFrontendRepo;
+
+  /// No description provided for @profileScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileScreenTitle;
+
+  /// No description provided for @profileAccountSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account settings'**
+  String get profileAccountSettingsTitle;
+
+  /// No description provided for @profileEditButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get profileEditButton;
+
+  /// No description provided for @profileChangeEmailButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change email'**
+  String get profileChangeEmailButton;
+
+  /// No description provided for @profileChangePasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get profileChangePasswordButton;
+
+  /// No description provided for @profileDeleteAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get profileDeleteAccountButton;
+
+  /// No description provided for @profileActiveSessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active sessions'**
+  String get profileActiveSessionsTitle;
+
+  /// No description provided for @profileSessionCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current device'**
+  String get profileSessionCurrent;
+
+  /// No description provided for @profileSessionRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get profileSessionRevoke;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature coming soon'**
+  String get featureComingSoon;
+
+  /// No description provided for @profileChangeEmailDialogSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password and the new email address.'**
+  String get profileChangeEmailDialogSubtitle;
+
+  /// No description provided for @profileChangeEmailCodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit verification code sent to your new email.'**
+  String get profileChangeEmailCodeSubtitle;
+
+  /// No description provided for @errorInvalidPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid current password.'**
+  String get errorInvalidPassword;
+
+  /// No description provided for @emailChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address successfully changed!'**
+  String get emailChangedSuccessfully;
+
+  /// No description provided for @sendCodeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get sendCodeButton;
+
+  /// No description provided for @profileChangePasswordDialogSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter and confirm your new password.'**
+  String get profileChangePasswordDialogSubtitle;
+
+  /// No description provided for @profileChangePasswordCodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit verification code sent to your email.'**
+  String get profileChangePasswordCodeSubtitle;
+
+  /// No description provided for @passwordChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password successfully changed! Please log in again.'**
+  String get passwordChangedSuccessfully;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @confirmNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPasswordLabel;
+
+  /// No description provided for @errorPasswordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get errorPasswordsDoNotMatch;
+
+  /// No description provided for @profileDeleteAccountDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get profileDeleteAccountDialogTitle;
+
+  /// No description provided for @profileDeleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action is permanent and cannot be undone.'**
+  String get profileDeleteAccountWarning;
+
+  /// No description provided for @profileDeleteAccountCodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit verification code sent to your email to permanently delete your account.'**
+  String get profileDeleteAccountCodeSubtitle;
+
+  /// No description provided for @accountDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been successfully deleted.'**
+  String get accountDeletedSuccessfully;
+
+  /// No description provided for @requestDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request deletion'**
+  String get requestDeleteButton;
+
+  /// No description provided for @confirmDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete'**
+  String get confirmDeleteButton;
+
+  /// No description provided for @deviceWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Browser'**
+  String get deviceWeb;
+
+  /// No description provided for @deviceAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Android Device'**
+  String get deviceAndroid;
+
+  /// No description provided for @deviceIos.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS Device'**
+  String get deviceIos;
+
+  /// No description provided for @deviceWindows.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows PC'**
+  String get deviceWindows;
+
+  /// No description provided for @deviceLinux.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux Native App'**
+  String get deviceLinux;
+
+  /// No description provided for @deviceMac.
+  ///
+  /// In en, this message translates to:
+  /// **'Mac / MacBook'**
+  String get deviceMac;
+
+  /// No description provided for @deviceUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Device'**
+  String get deviceUnknown;
+
+  /// No description provided for @lastActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Last active'**
+  String get lastActive;
+
+  /// No description provided for @errorSessionRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to revoke session'**
+  String get errorSessionRevoke;
 }
 
 class _AppLocalizationsDelegate

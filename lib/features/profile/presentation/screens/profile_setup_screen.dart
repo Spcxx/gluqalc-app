@@ -41,7 +41,8 @@ enum WeekDayEnum {
 }
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
-  const ProfileSetupScreen({super.key});
+  const ProfileSetupScreen({this.isEditing = false, super.key});
+  final bool isEditing;
 
   @override
   ConsumerState<ProfileSetupScreen> createState() => ProfileSetupScreenState();
@@ -108,6 +109,107 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     for (final controller in dayControllers.values) {
       controller.addListener(_onWeeklyDistributionChanged);
     }
+
+    if (widget.isEditing) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final profile = ref.read(profileControllerProvider).value;
+        if (profile != null) _prefillData(profile);
+      });
+    }
+  }
+
+  void _prefillData(ProfileResponse profile) {
+    setState(() {
+      if (profile.gender == 'FEMALE') selectedGender = GenderEnum.female;
+      if (profile.gender == 'MALE') selectedGender = GenderEnum.male;
+      if (profile.gender == 'OTHER') selectedGender = GenderEnum.other;
+
+      if (profile.birthDate != null) {
+        selectedBirthDate = DateTime.tryParse(profile.birthDate!);
+      }
+      heightController.text = profile.heightInCm?.toString() ?? '';
+      weightController.text = profile.weightInKg?.toString() ?? '';
+      if (profile.bodyFatPercentage != null) {
+        knowsBodyFat = true;
+        bodyFatController.text = profile.bodyFatPercentage.toString();
+      }
+
+      if (profile.bmrMethod == 'HARRIS_BENEDICT') {
+        selectedBmrMethod = BmrMethodEnum.harrisBenedict;
+      }
+      if (profile.bmrMethod == 'MIFFLIN_ST_JEOR') {
+        selectedBmrMethod = BmrMethodEnum.mifflinStJeor;
+      }
+      if (profile.bmrMethod == 'KATCH_MCARDLE') {
+        selectedBmrMethod = BmrMethodEnum.katchMcArdle;
+      }
+      if (profile.bmrMethod == 'OWEN') selectedBmrMethod = BmrMethodEnum.owen;
+
+      palValue = profile.physicalActivityLevel ?? 1.4;
+      isManualPal = true;
+
+      if (profile.kcalGoalDifference != null) {
+        kcalGoalDifference = profile.kcalGoalDifference!;
+        if (kcalGoalDifference < 0) {
+          goalType = GoalTypeEnum.lose;
+          weightChangeTargetKg = (kcalGoalDifference.abs() / 48)
+              .roundToDouble()
+              .clamp(0.5, 30.0);
+        } else if (kcalGoalDifference > 0) {
+          goalType = GoalTypeEnum.gain;
+          weightChangeTargetKg = (kcalGoalDifference / 48)
+              .roundToDouble()
+              .clamp(0.5, 30.0);
+        } else {
+          goalType = GoalTypeEnum.maintain;
+        }
+      }
+
+      if (profile.weeklyKcalDistribution != null &&
+          profile.weeklyKcalDistribution!.isNotEmpty) {
+        enableWeeklyDistribution = true;
+        profile.weeklyKcalDistribution!.forEach((dayStr, kcal) {
+          final dayEnum = WeekDayEnum.values.firstWhere(
+            (e) => e.name.toUpperCase() == dayStr,
+            orElse: () => WeekDayEnum.monday,
+          );
+          dayControllers[dayEnum]?.text = kcal.toString();
+        });
+      }
+
+      if (profile.macroStrategy != null) {
+        macroPreset = MacroPresetEnum.custom;
+        proteinPercent = (profile.macroStrategy!['PROTEIN'] ?? 0.3) * 100;
+        fatPercent = (profile.macroStrategy!['FAT'] ?? 0.25) * 100;
+        carbPercent = (profile.macroStrategy!['CARBOHYDRATE'] ?? 0.45) * 100;
+      }
+
+      isfController.text = profile.insulinSensitivityFactor?.toString() ?? '';
+      ifpController.text = profile.insulinFatProteinRatio?.toString() ?? '';
+
+      if (profile.insulinDeliveryMethod == 'PUMP') {
+        insulinDeliveryMethod = InsulinDeliveryEnum.pump;
+      } else {
+        insulinDeliveryMethod = InsulinDeliveryEnum.pen;
+      }
+
+      if (profile.combinedInsulinCalculationMethod == 'SIERADZKI') {
+        combinedInsulinMethod = CombinedInsulinEnum.sieradzki;
+      } else {
+        combinedInsulinMethod = CombinedInsulinEnum.pankowska;
+      }
+
+      if (profile.hourlyCarbRatio != null &&
+          profile.hourlyCarbRatio!.isNotEmpty) {
+        hourIcrItems.clear();
+        profile.hourlyCarbRatio!.forEach((hourStr, icr) {
+          hourIcrItems.add(
+            HourIcrItem(hour: int.parse(hourStr), icrValue: icr),
+          );
+        });
+        hourIcrItems.sort((a, b) => a.hour.compareTo(b.hour));
+      }
+    });
   }
 
   @override
@@ -259,7 +361,7 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       weightInKg: double.tryParse(weightController.text.replaceAll(',', '.')),
       heightInCm: double.tryParse(heightController.text.replaceAll(',', '.')),
       birthDate: selectedBirthDate?.toIso8601String().split('T')[0],
-      physicalActivityLevel: palValue,
+      physicalActivityLevel: double.parse(palValue.toStringAsFixed(2)),
       kcalGoalDifference: kcalGoalDifference,
       weeklyKcalDistribution: weeklyDistribution,
       bodyFatPercentage: knowsBodyFat
@@ -289,7 +391,11 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       await ref.read(profileControllerProvider.notifier).submitProfile(request);
 
       if (mounted) {
-        context.go('/home');
+        if (widget.isEditing) {
+          context.pop();
+        } else {
+          context.go('/home');
+        }
       }
     } on Object catch (e) {
       if (mounted) {
@@ -313,7 +419,7 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
     return profileState.when(
       data: (profile) {
-        if (profile != null) {
+        if (profile != null && !widget.isEditing) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) context.go('/home');
           });

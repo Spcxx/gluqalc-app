@@ -63,9 +63,9 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401 &&
-        !err.requestOptions.path.contains('/auth/login') &&
-        !err.requestOptions.path.contains('/auth/refresh')) {
+    final shouldIgnore401 = err.requestOptions.extra['ignore401'] == true;
+
+    if (err.response?.statusCode == 401 && !shouldIgnore401) {
       final storage = _ref.read(authLocalStorageProvider);
 
       if (_refreshTokenFuture != null) {
@@ -109,7 +109,18 @@ class AuthInterceptor extends Interceptor {
       throw Exception('No refresh token found');
     }
 
-    final refreshDio = Dio(BaseOptions(baseUrl: AppConfig.apiUrl));
+    final refreshDio = Dio(
+      BaseOptions(
+        baseUrl: AppConfig.apiUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
     final response = await refreshDio.post<Map<String, dynamic>>(
       '/api/v1/auth/refresh',
       data: {'refreshToken': refreshToken},

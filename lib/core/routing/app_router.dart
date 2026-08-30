@@ -8,6 +8,7 @@ import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.da
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/home_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:gluqalc_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +50,7 @@ GoRouter appRouter(Ref ref) {
         '/settings',
         '/consents',
         '/profile-setup',
+        '/profile',
       ];
       final isValidPath = validPaths.contains(path);
 
@@ -85,12 +87,24 @@ GoRouter appRouter(Ref ref) {
       ),
       GoRoute(
         path: '/profile-setup',
-        builder: (context, state) => const ProfileSetupScreen(),
+        builder: (context, state) {
+          final isEditing = state.uri.queryParameters['edit'] == 'true';
+          return ProfileSetupScreen(isEditing: isEditing);
+        },
       ),
       GoRoute(
         path: '/home',
         builder: (context, state) => const ProfileGuard(
           child: HomeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/profile',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ProfileGuard(child: ProfileScreen()),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
         ),
       ),
     ],

@@ -78,4 +78,50 @@ class AuthRepository {
       newEmail: newEmail,
     );
   }
+
+  Future<void> requestVerifiedEmailChange({
+    required String newEmail,
+    required String password,
+  }) async {
+    await _remoteApi.requestVerifiedEmailChange(
+      newEmail: newEmail,
+      password: password,
+    );
+  }
+
+  Future<void> confirmVerifiedEmailChange({
+    required String newEmail,
+    required String code,
+  }) async {
+    await _remoteApi.confirmVerifiedEmailChange(
+      newEmail: newEmail,
+      code: code,
+    );
+  }
+
+  Future<void> requestPasswordReset({
+    required String email,
+  }) async {
+    await _remoteApi.requestPasswordReset(email: email);
+  }
+
+  Future<void> confirmPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _remoteApi.confirmPasswordReset(
+      email: email,
+      code: code,
+      newPassword: newPassword,
+    );
+  }
+
+  Future<void> requestAccountDeletion() async {
+    await _remoteApi.requestAccountDeletion();
+  }
+
+  Future<void> confirmAccountDeletion({required String code}) async {
+    await _remoteApi.confirmAccountDeletion(code: code);
+  }
 }
