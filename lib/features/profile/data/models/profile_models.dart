@@ -40,8 +40,17 @@ abstract class ProfileTargets with _$ProfileTargets {
     required double carbsGrams,
   }) = _ProfileTargets;
 
-  factory ProfileTargets.fromJson(Map<String, dynamic> json) =>
-      _$ProfileTargetsFromJson(json);
+  factory ProfileTargets.fromJson(Map<String, dynamic> json) {
+    final parsed = _$ProfileTargetsFromJson(json);
+    return parsed.copyWith(
+      dailyKcalGoal: parsed.dailyKcalGoal.clamp(0.0, double.infinity),
+      proteinGrams: parsed.proteinGrams.clamp(0.0, double.infinity),
+      fatGrams: parsed.fatGrams.clamp(0.0, double.infinity),
+      carbsGrams: parsed.carbsGrams.clamp(0.0, double.infinity),
+      bmr: parsed.bmr.clamp(0.0, double.infinity),
+      tdee: parsed.tdee.clamp(0.0, double.infinity),
+    );
+  }
 }
 
 @freezed

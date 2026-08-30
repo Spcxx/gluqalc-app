@@ -356,5 +356,10 @@
   "deviceMac": "Mac / MacBook",
   "deviceUnknown": "Unknown Device",
   "lastActive": "Last active",
-  "errorSessionRevoke": "Failed to revoke session"
+  "errorSessionRevoke": "Failed to revoke session",
+  "warningHighDeficitYellow": "This is a fast reduction pace. Ensure you get enough nutrients.",
+  "warningExtremeDeficitRed": "Extreme caloric deficit! This can lead to muscle loss and health issues. Consider a more moderate pace.",
+  "forgotPasswordButton": "Forgot password?",
+  "forgotPasswordDialogSubtitle": "Enter your email address to receive a password reset code.",
+  "forgotPasswordCodeSubtitle": "Enter the 6-digit verification code sent to your email and set a new password."
 }

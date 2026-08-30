@@ -14,6 +14,10 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final maxDate = DateTime(now.year - 18, now.month, now.day);
+    final minDate = DateTime(now.year - 110, now.month, now.day);
+    final initialDate = DateTime(now.year - 25);
 
     return Form(
       key: widget.parent.formKey1,
@@ -81,9 +85,10 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                     onPressed: () async {
                       final picked = await showDatePicker(
                         context: context,
-                        initialDate: DateTime(1995),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
+                        initialDate:
+                            widget.parent.selectedBirthDate ?? initialDate,
+                        firstDate: minDate,
+                        lastDate: maxDate,
                       );
                       if (picked != null) {
                         setState(
@@ -109,8 +114,9 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                             if (val == null || val.isEmpty) {
                               return l10n.errorFieldRequired;
                             }
+
                             final h = double.tryParse(val.replaceAll(',', '.'));
-                            if (h == null || h < 50 || h > 300) {
+                            if (h == null || h < 100 || h > 250) {
                               return l10n.errorHeightRange;
                             }
                             return null;
@@ -133,8 +139,9 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                             if (val == null || val.isEmpty) {
                               return l10n.errorFieldRequired;
                             }
+
                             final w = double.tryParse(val.replaceAll(',', '.'));
-                            if (w == null || w < 20 || w > 500) {
+                            if (w == null || w < 30 || w > 300) {
                               return l10n.errorWeightRange;
                             }
                             return null;
@@ -187,10 +194,11 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                               if (val == null || val.isEmpty) {
                                 return l10n.errorFieldRequired;
                               }
+
                               final bf = double.tryParse(
                                 val.replaceAll(',', '.'),
                               );
-                              if (bf == null || bf <= 0 || bf > 80) {
+                              if (bf == null || bf < 3 || bf > 65) {
                                 return l10n.errorBodyFatRange;
                               }
                               return null;
@@ -215,6 +223,19 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                 );
                 return;
               }
+
+              final age =
+                  DateTime.now()
+                      .difference(widget.parent.selectedBirthDate!)
+                      .inDays ~/
+                  365;
+              if (age < 18 || age > 110) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.errorValidationError)),
+                );
+                return;
+              }
+
               if (!widget.parent.knowsBodyFat &&
                   widget.parent.selectedBmrMethod ==
                       BmrMethodEnum.katchMcArdle) {

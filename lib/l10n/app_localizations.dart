@@ -1875,6 +1875,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to revoke session'**
   String get errorSessionRevoke;
+
+  /// No description provided for @warningHighDeficitYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a fast reduction pace. Ensure you get enough nutrients.'**
+  String get warningHighDeficitYellow;
+
+  /// No description provided for @warningExtremeDeficitRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Extreme caloric deficit! This can lead to muscle loss and health issues. Consider a more moderate pace.'**
+  String get warningExtremeDeficitRed;
+
+  /// No description provided for @forgotPasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPasswordButton;
+
+  /// No description provided for @forgotPasswordDialogSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address to receive a password reset code.'**
+  String get forgotPasswordDialogSubtitle;
+
+  /// No description provided for @forgotPasswordCodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit verification code sent to your email and set a new password.'**
+  String get forgotPasswordCodeSubtitle;
 }
 
 class _AppLocalizationsDelegate

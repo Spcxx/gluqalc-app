@@ -38,6 +38,14 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
         currentGoal == GoalTypeEnum.lose || currentGoal == GoalTypeEnum.gain;
     final isMaintaining = currentGoal == GoalTypeEnum.maintain;
 
+    final isExtremeLoss =
+        currentGoal == GoalTypeEnum.lose &&
+        widget.parent.weightChangeTargetKg > 11.0;
+    final isHighLoss =
+        currentGoal == GoalTypeEnum.lose &&
+        widget.parent.weightChangeTargetKg > 7.0 &&
+        !isExtremeLoss;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -75,7 +83,7 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
             });
           },
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
         Expanded(
           child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
@@ -96,11 +104,11 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Text(
                         '${widget.parent.weightChangeTargetKg.toStringAsFixed(1)} kg',
                         style: TextStyle(
-                          fontSize: 56,
+                          fontSize: 48,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -108,8 +116,8 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                       Slider(
                         value: widget.parent.weightChangeTargetKg,
                         min: 0.5,
-                        max: 30,
-                        divisions: 59,
+                        max: 15,
+                        divisions: 29,
                         label:
                             '${widget.parent.weightChangeTargetKg.toStringAsFixed(1)} kg',
                         onChanged: (val) {
@@ -119,6 +127,52 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                           });
                         },
                       ),
+
+                      if (isHighLoss || isExtremeLoss) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isExtremeLoss
+                                ? Colors.red.shade50
+                                : Colors.amber.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isExtremeLoss
+                                  ? Colors.red.shade300
+                                  : Colors.amber.shade400,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isExtremeLoss
+                                    ? Icons.warning_rounded
+                                    : Icons.info_outline,
+                                color: isExtremeLoss
+                                    ? Colors.red.shade700
+                                    : Colors.amber.shade800,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  isExtremeLoss
+                                      ? l10n.warningExtremeDeficitRed
+                                      : l10n.warningHighDeficitYellow,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: isExtremeLoss
+                                        ? Colors.red.shade900
+                                        : Colors.amber.shade900,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   )
                 : isMaintaining

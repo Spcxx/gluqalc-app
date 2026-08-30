@@ -988,4 +988,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorSessionRevoke => 'Failed to revoke session';
+
+  @override
+  String get warningHighDeficitYellow =>
+      'This is a fast reduction pace. Ensure you get enough nutrients.';
+
+  @override
+  String get warningExtremeDeficitRed =>
+      'Extreme caloric deficit! This can lead to muscle loss and health issues. Consider a more moderate pace.';
+
+  @override
+  String get forgotPasswordButton => 'Forgot password?';
+
+  @override
+  String get forgotPasswordDialogSubtitle =>
+      'Enter your email address to receive a password reset code.';
+
+  @override
+  String get forgotPasswordCodeSubtitle =>
+      'Enter the 6-digit verification code sent to your email and set a new password.';
 }
