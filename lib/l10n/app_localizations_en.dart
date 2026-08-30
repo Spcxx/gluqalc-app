@@ -1062,4 +1062,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorNoProfile => 'User profile missing.';
+
+  @override
+  String get shortMon => 'MON';
+
+  @override
+  String get shortTue => 'TUE';
+
+  @override
+  String get shortWed => 'WED';
+
+  @override
+  String get shortThu => 'THU';
+
+  @override
+  String get shortFri => 'FRI';
+
+  @override
+  String get shortSat => 'SAT';
+
+  @override
+  String get shortSun => 'SUN';
+
+  @override
+  String get backToToday => 'Back to today';
 }

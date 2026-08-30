@@ -2007,6 +2007,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User profile missing.'**
   String get errorNoProfile;
+
+  /// No description provided for @shortMon.
+  ///
+  /// In en, this message translates to:
+  /// **'MON'**
+  String get shortMon;
+
+  /// No description provided for @shortTue.
+  ///
+  /// In en, this message translates to:
+  /// **'TUE'**
+  String get shortTue;
+
+  /// No description provided for @shortWed.
+  ///
+  /// In en, this message translates to:
+  /// **'WED'**
+  String get shortWed;
+
+  /// No description provided for @shortThu.
+  ///
+  /// In en, this message translates to:
+  /// **'THU'**
+  String get shortThu;
+
+  /// No description provided for @shortFri.
+  ///
+  /// In en, this message translates to:
+  /// **'FRI'**
+  String get shortFri;
+
+  /// No description provided for @shortSat.
+  ///
+  /// In en, this message translates to:
+  /// **'SAT'**
+  String get shortSat;
+
+  /// No description provided for @shortSun.
+  ///
+  /// In en, this message translates to:
+  /// **'SUN'**
+  String get shortSun;
+
+  /// No description provided for @backToToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to today'**
+  String get backToToday;
 }
 
 class _AppLocalizationsDelegate

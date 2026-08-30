@@ -378,5 +378,13 @@
   "exportLoading": "Generating file... This might take a few seconds.",
   "exportSuccess": "CSV file successfully generated!",
   "errorRateLimit": "Too many requests. Please wait a moment and try again.",
-  "errorNoProfile": "User profile missing."
+  "errorNoProfile": "User profile missing.",
+  "shortMon": "MON",
+  "shortTue": "TUE",
+  "shortWed": "WED",
+  "shortThu": "THU",
+  "shortFri": "FRI",
+  "shortSat": "SAT",
+  "shortSun": "SUN",
+  "backToToday": "Back to today"
 }
