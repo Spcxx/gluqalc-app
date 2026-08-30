@@ -1905,6 +1905,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the 6-digit verification code sent to your email and set a new password.'**
   String get forgotPasswordCodeSubtitle;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'GluQalc is an application supporting the monitoring of diet, macronutrients, as well as glycemic and insulin parameters.'**
+  String get aboutDescription;
+
+  /// No description provided for @aboutAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get aboutAuthor;
+
+  /// No description provided for @aboutContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get aboutContact;
+
+  /// No description provided for @aboutFrontendRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'Frontend Repository'**
+  String get aboutFrontendRepo;
+
+  /// No description provided for @aboutBackendRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'API Repository'**
+  String get aboutBackendRepo;
+
+  /// No description provided for @aboutTos.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service (ToS)'**
+  String get aboutTos;
+
+  /// No description provided for @aboutPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get aboutPrivacy;
+
+  /// No description provided for @aboutDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Disclaimer'**
+  String get aboutDisclaimer;
+
+  /// No description provided for @errorOpenUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open URL'**
+  String get errorOpenUrl;
 }
 
 class _AppLocalizationsDelegate

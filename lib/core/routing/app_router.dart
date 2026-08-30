@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/networking/connectivity_service.dart';
 import 'package:gluqalc_app/core/presentation/screens/offline_screen.dart';
+import 'package:gluqalc_app/features/about/presentation/screens/about_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/auth_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.dart';
@@ -47,7 +48,7 @@ GoRouter appRouter(Ref ref) {
         '/auth',
         '/verify',
         '/home',
-        '/settings',
+        '/about',
         '/consents',
         '/profile-setup',
         '/profile',
@@ -102,6 +103,15 @@ GoRouter appRouter(Ref ref) {
         path: '/profile',
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const ProfileGuard(child: ProfileScreen()),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/about',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ProfileGuard(child: AboutScreen()),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },

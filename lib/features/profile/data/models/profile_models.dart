@@ -32,25 +32,21 @@ abstract class ProfileResponse with _$ProfileResponse {
 @freezed
 abstract class ProfileTargets with _$ProfileTargets {
   const factory ProfileTargets({
-    required double bmr,
-    required double tdee,
-    required double dailyKcalGoal,
-    required double proteinGrams,
-    required double fatGrams,
-    required double carbsGrams,
+    @JsonKey(fromJson: _clampPositive) required double bmr,
+    @JsonKey(fromJson: _clampPositive) required double tdee,
+    @JsonKey(fromJson: _clampPositive) required double dailyKcalGoal,
+    @JsonKey(fromJson: _clampPositive) required double proteinGrams,
+    @JsonKey(fromJson: _clampPositive) required double fatGrams,
+    @JsonKey(fromJson: _clampPositive) required double carbsGrams,
   }) = _ProfileTargets;
 
-  factory ProfileTargets.fromJson(Map<String, dynamic> json) {
-    final parsed = _$ProfileTargetsFromJson(json);
-    return parsed.copyWith(
-      dailyKcalGoal: parsed.dailyKcalGoal.clamp(0.0, double.infinity),
-      proteinGrams: parsed.proteinGrams.clamp(0.0, double.infinity),
-      fatGrams: parsed.fatGrams.clamp(0.0, double.infinity),
-      carbsGrams: parsed.carbsGrams.clamp(0.0, double.infinity),
-      bmr: parsed.bmr.clamp(0.0, double.infinity),
-      tdee: parsed.tdee.clamp(0.0, double.infinity),
-    );
-  }
+  factory ProfileTargets.fromJson(Map<String, dynamic> json) =>
+      _$ProfileTargetsFromJson(json);
+}
+
+double _clampPositive(dynamic value) {
+  if (value == null) return 0;
+  return (value as num).toDouble().clamp(0.0, double.infinity);
 }
 
 @freezed

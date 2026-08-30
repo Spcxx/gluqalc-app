@@ -20,11 +20,32 @@ Future<String> appVersion(Ref ref) async {
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
 
-  Future<void> _launchUrl(String urlString) async {
-    final uri = Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+  Future<void> _launchUrl(BuildContext context, String urlString) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final uri = Uri.parse(urlString);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && context.mounted) {
+        _showErrorSnackBar(context, l10n);
+      }
+    } on Object catch (_) {
+      if (context.mounted) {
+        _showErrorSnackBar(context, l10n);
+      }
     }
+  }
+
+  void _showErrorSnackBar(BuildContext context, AppLocalizations l10n) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOpenUrl),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -99,13 +120,6 @@ class AppDrawer extends ConsumerWidget {
             ),
             _buildDrawerItem(
               context: context,
-              icon: Icons.settings_outlined,
-              title: l10n.drawerSettings,
-              isSelected: currentPath == '/settings',
-              targetRoute: '/settings',
-            ),
-            _buildDrawerItem(
-              context: context,
               icon: Icons.info_outline,
               title: l10n.drawerAbout,
               isSelected: currentPath == '/about',
@@ -141,7 +155,7 @@ class AppDrawer extends ConsumerWidget {
                   message: l10n.tooltipApiRepo,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
-                    onTap: () => _launchUrl(AppConfig.githubApiUrl),
+                    onTap: () => _launchUrl(context, AppConfig.githubApiUrl),
                     child: Padding(
                       padding: const EdgeInsets.all(6),
                       child: Assets.icons.githubBlack.svg(
@@ -159,7 +173,7 @@ class AppDrawer extends ConsumerWidget {
                   message: l10n.tooltipFrontendRepo,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
-                    onTap: () => _launchUrl(AppConfig.githubAppUrl),
+                    onTap: () => _launchUrl(context, AppConfig.githubAppUrl),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Assets.icons.githubBlack.svg(
@@ -211,7 +225,11 @@ class AppDrawer extends ConsumerWidget {
       onTap: () async {
         Navigator.of(context).pop();
         if (!isSelected) {
-          await context.push(targetRoute);
+          Future.delayed(const Duration(milliseconds: 250), () async {
+            if (context.mounted) {
+              await context.push(targetRoute);
+            }
+          });
         }
       },
     );

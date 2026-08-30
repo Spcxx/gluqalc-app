@@ -2,5 +2,9 @@
   "API_URL": "https://example.com",
   "IS_PROD": "true",
   "GITHUB_API_URL": "https://github.com/Spcxx/gluqalc-api/",
-  "GITHUB_APP_URL": "https://github.com/Spcxx/gluqalc-app/"
+  "GITHUB_APP_URL": "https://github.com/Spcxx/gluqalc-app/",
+  "CONTACT_EMAIL": "rozga.szymon@gmail.com",
+  "TOS_URL": "https://example.com",
+  "PRIVACY_URL": "https://example.com",
+  "DISCLAIMER_URL": "https://example.com"
 }

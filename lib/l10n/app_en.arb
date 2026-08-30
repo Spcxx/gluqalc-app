@@ -361,5 +361,14 @@
   "warningExtremeDeficitRed": "Extreme caloric deficit! This can lead to muscle loss and health issues. Consider a more moderate pace.",
   "forgotPasswordButton": "Forgot password?",
   "forgotPasswordDialogSubtitle": "Enter your email address to receive a password reset code.",
-  "forgotPasswordCodeSubtitle": "Enter the 6-digit verification code sent to your email and set a new password."
+  "forgotPasswordCodeSubtitle": "Enter the 6-digit verification code sent to your email and set a new password.",
+  "aboutDescription": "GluQalc is an application supporting the monitoring of diet, macronutrients, as well as glycemic and insulin parameters.",
+  "aboutAuthor": "Author",
+  "aboutContact": "Contact",
+  "aboutFrontendRepo": "Frontend Repository",
+  "aboutBackendRepo": "API Repository",
+  "aboutTos": "Terms of Service (ToS)",
+  "aboutPrivacy": "Privacy Policy",
+  "aboutDisclaimer": "Medical Disclaimer",
+  "errorOpenUrl": "Could not open URL"
 }

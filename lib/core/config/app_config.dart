@@ -13,22 +13,26 @@ class AppConfig {
   static const bool isProd = bool.fromEnvironment('IS_PROD');
   static const String githubApiUrl = String.fromEnvironment('GITHUB_API_URL');
   static const String githubAppUrl = String.fromEnvironment('GITHUB_APP_URL');
+  static const String contactEmail = String.fromEnvironment('CONTACT_EMAIL');
+  static const String tosUrl = String.fromEnvironment('TOS_URL');
+  static const String privacyUrl = String.fromEnvironment('PRIVACY_URL');
+  static const String disclaimerUrl = String.fromEnvironment('DISCLAIMER_URL');
+
+  static void _require(String value, String envName) {
+    if (value.isEmpty) {
+      throw StateError(
+        '[AppConfig] $envName is empty; environment may be not set',
+      );
+    }
+  }
 
   static void validate() {
-    if (apiUrl.isEmpty) {
-      throw StateError(
-        '[AppConfig] API_URL is empty; environment may be not set',
-      );
-    }
-    if (githubApiUrl.isEmpty) {
-      throw StateError(
-        '[AppConfig] GITHUB_API_URL is empty; environment may be not set',
-      );
-    }
-    if (githubAppUrl.isEmpty) {
-      throw StateError(
-        '[AppConfig] GITHUB_APP_URL is empty; environment may be not set',
-      );
-    }
+    _require(apiUrl, 'API_URL');
+    _require(githubApiUrl, 'GITHUB_API_URL');
+    _require(githubAppUrl, 'GITHUB_APP_URL');
+    _require(contactEmail, 'CONTACT_EMAIL');
+    _require(tosUrl, 'TOS_URL');
+    _require(privacyUrl, 'PRIVACY_URL');
+    _require(disclaimerUrl, 'DISCLAIMER_URL');
   }
 }

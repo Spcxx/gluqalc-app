@@ -1007,4 +1007,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forgotPasswordCodeSubtitle =>
       'Enter the 6-digit verification code sent to your email and set a new password.';
+
+  @override
+  String get aboutDescription =>
+      'GluQalc is an application supporting the monitoring of diet, macronutrients, as well as glycemic and insulin parameters.';
+
+  @override
+  String get aboutAuthor => 'Author';
+
+  @override
+  String get aboutContact => 'Contact';
+
+  @override
+  String get aboutFrontendRepo => 'Frontend Repository';
+
+  @override
+  String get aboutBackendRepo => 'API Repository';
+
+  @override
+  String get aboutTos => 'Terms of Service (ToS)';
+
+  @override
+  String get aboutPrivacy => 'Privacy Policy';
+
+  @override
+  String get aboutDisclaimer => 'Medical Disclaimer';
+
+  @override
+  String get errorOpenUrl => 'Could not open URL';
 }
