@@ -1035,4 +1035,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorOpenUrl => 'Could not open URL';
+
+  @override
+  String get exportTitle => 'Export data';
+
+  @override
+  String get exportDescription =>
+      'Generate a detailed CSV report with your entries, macronutrients, and insulin doses for the selected period.';
+
+  @override
+  String get exportSelectDates => 'Select date range';
+
+  @override
+  String get exportButton => 'Export to CSV';
+
+  @override
+  String get exportLoading =>
+      'Generating file... This might take a few seconds.';
+
+  @override
+  String get exportSuccess => 'CSV file successfully generated!';
+
+  @override
+  String get errorRateLimit =>
+      'Too many requests. Please wait a moment and try again.';
+
+  @override
+  String get errorNoProfile => 'User profile missing.';
 }

@@ -11,6 +11,7 @@ import 'package:gluqalc_app/features/home/presentation/screens/home_screen.dart'
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
+import 'package:gluqalc_app/features/stats/presentation/screens/export_screen.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -52,6 +53,7 @@ GoRouter appRouter(Ref ref) {
         '/consents',
         '/profile-setup',
         '/profile',
+        '/export',
       ];
       final isValidPath = validPaths.contains(path);
 
@@ -112,6 +114,15 @@ GoRouter appRouter(Ref ref) {
         path: '/about',
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const ProfileGuard(child: AboutScreen()),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/export',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ProfileGuard(child: ExportScreen()),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },

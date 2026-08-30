@@ -1959,6 +1959,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open URL'**
   String get errorOpenUrl;
+
+  /// No description provided for @exportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get exportTitle;
+
+  /// No description provided for @exportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a detailed CSV report with your entries, macronutrients, and insulin doses for the selected period.'**
+  String get exportDescription;
+
+  /// No description provided for @exportSelectDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date range'**
+  String get exportSelectDates;
+
+  /// No description provided for @exportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to CSV'**
+  String get exportButton;
+
+  /// No description provided for @exportLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating file... This might take a few seconds.'**
+  String get exportLoading;
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV file successfully generated!'**
+  String get exportSuccess;
+
+  /// No description provided for @errorRateLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please wait a moment and try again.'**
+  String get errorRateLimit;
+
+  /// No description provided for @errorNoProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'User profile missing.'**
+  String get errorNoProfile;
 }
 
 class _AppLocalizationsDelegate
