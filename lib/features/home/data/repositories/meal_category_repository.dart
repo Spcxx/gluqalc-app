@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:gluqalc_app/core/networking/dio_provider.dart';
 import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
+import 'package:gluqalc_app/features/home/data/models/product_response.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -51,7 +52,7 @@ class MealCategoryRepository {
     required DateTime date,
     String? portionId,
   }) async {
-    final dateStr = date.toIso8601String().split('T')[0];
+    final dateStr = DateFormat('yyyy-MM-dd').format(date);
 
     final body = <String, dynamic>{
       'productId': productId,
@@ -69,5 +70,19 @@ class MealCategoryRepository {
 
   Future<void> deleteMealEntry(String entryId) async {
     await _dio.delete<void>('/api/v1/log/$entryId');
+  }
+
+  Future<MealEntryResponse> getMealEntryDetails(String entryId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/api/v1/log/$entryId',
+    );
+    return MealEntryResponse.fromJson(response.data!);
+  }
+
+  Future<ProductResponse> getProductDetails(String productId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/api/v1/products/$productId',
+    );
+    return ProductResponse.fromJson(response.data!);
   }
 }

@@ -6,6 +6,7 @@ import 'package:gluqalc_app/features/home/presentation/controllers/meal_category
 import 'package:gluqalc_app/features/home/presentation/widgets/insulin_details_dialog.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoryTileItem extends ConsumerStatefulWidget {
   const CategoryTileItem({
@@ -336,12 +337,17 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                         entry.id,
                       );
 
+                      final isDefault100g =
+                          entry.portion.name.trim().toLowerCase() == '100g';
+                      final qtyStr = entry.portion.quantity
+                          .toStringAsFixed(1)
+                          .replaceAll(RegExp(r'\.0$'), '');
+                      final portionLabel = isDefault100g
+                          ? '${entry.portion.totalWeight.toInt()} g'
+                          : '$qtyStr x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)';
+
                       return Container(
                         margin: const EdgeInsets.only(bottom: 6),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 8,
-                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHighest.withValues(
                             alpha: 0.3,
@@ -353,90 +359,104 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                             ),
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry.productName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () => context.push(
+                            '/meal-entry-details/${entry.id}?categoryId=${widget.category.id}',
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        entry.productName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        portionLabel,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: colorScheme.onSurface
+                                              .withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 1),
+                                      Text(
+                                        '$entryKcal kcal',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                          color: colorScheme.primary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${entry.portion.quantity} x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: colorScheme.onSurface.withValues(
-                                        alpha: 0.6,
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _buildMacrosExpandableSection(
+                                      isExpanded: isEntryMacrosShown,
+                                      onTap: () {
+                                        setState(() {
+                                          if (isEntryMacrosShown) {
+                                            _showEntryMacrosIds.remove(
+                                              entry.id,
+                                            );
+                                          } else {
+                                            _showEntryMacrosIds.add(entry.id);
+                                          }
+                                        });
+                                      },
+                                      carbs: entryCarbs,
+                                      protein: entryProtein,
+                                      fat: entryFat,
+                                      l10n: l10n,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    SizedBox(
+                                      width: 90,
+                                      child: buildInsulinComponent(
+                                        context,
+                                        entry.insulinDose,
+                                        profile,
+                                        l10n,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 1),
-                                  Text(
-                                    '$entryKcal kcal',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: colorScheme.primary,
+                                    IconButton(
+                                      icon: const Icon(Icons.close, size: 16),
+                                      color: colorScheme.error.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                      constraints: const BoxConstraints(),
+                                      padding: const EdgeInsets.all(4),
+                                      onPressed: () async {
+                                        await ref
+                                            .read(
+                                              mealCategoryControllerProvider
+                                                  .notifier,
+                                            )
+                                            .deleteEntry(entry.id);
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildMacrosExpandableSection(
-                                  isExpanded: isEntryMacrosShown,
-                                  onTap: () {
-                                    setState(() {
-                                      if (isEntryMacrosShown) {
-                                        _showEntryMacrosIds.remove(entry.id);
-                                      } else {
-                                        _showEntryMacrosIds.add(entry.id);
-                                      }
-                                    });
-                                  },
-                                  carbs: entryCarbs,
-                                  protein: entryProtein,
-                                  fat: entryFat,
-                                  l10n: l10n,
-                                  colorScheme: colorScheme,
-                                ),
-                                const SizedBox(width: 4),
-                                SizedBox(
-                                  width: 90,
-                                  child: buildInsulinComponent(
-                                    context,
-                                    entry.insulinDose,
-                                    profile,
-                                    l10n,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.close, size: 16),
-                                  color: colorScheme.error.withValues(
-                                    alpha: 0.7,
-                                  ),
-                                  constraints: const BoxConstraints(),
-                                  padding: const EdgeInsets.all(4),
-                                  onPressed: () async {
-                                    await ref
-                                        .read(
-                                          mealCategoryControllerProvider
-                                              .notifier,
-                                        )
-                                        .deleteEntry(entry.id);
-                                  },
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
                       );
                     }).toList(),

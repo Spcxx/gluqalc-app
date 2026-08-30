@@ -1132,19 +1132,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteEntry => 'Delete entry';
 
   @override
-  String get insulinDoseDetailsTitle => 'Insulin Dose Details';
+  String get insulinDoseDetailsTitle => 'Insulin dose details';
 
   @override
-  String get insulinTotalDose => 'Total Dose:';
+  String get insulinTotalDose => 'Total dose:';
 
   @override
-  String get insulinCarbDose => 'Carb Dose:';
+  String get insulinCarbDose => 'Carb dose:';
 
   @override
-  String get insulinFatProteinDose => 'Fat & Protein Dose:';
+  String get insulinFatProteinDose => 'Fat & Protein dose:';
 
   @override
-  String get insulinBolusDuration => 'Bolus Duration:';
+  String get insulinBolusDuration => 'Bolus duration:';
 
   @override
   String get insulinDescription => 'Description:';
@@ -1169,4 +1169,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitFatProteinExchange => 'FPU';
+
+  @override
+  String get mealDetailsTitle => 'Meal details';
+
+  @override
+  String get brandLabel => 'Brand';
+
+  @override
+  String get editPortionTitle => 'Edit portion';
+
+  @override
+  String get nutritionDetailsTitle => 'Nutritional values';
+
+  @override
+  String get saveButton => 'Save changes';
+
+  @override
+  String get mealDetailsCalculationsInfo =>
+      'Calculations below apply to the saved portion:';
+
+  @override
+  String get insulinDoseTitle => 'Insulin dose';
+
+  @override
+  String get insulinCarbs => 'Carbs';
+
+  @override
+  String get insulinFatProtein => 'Fat & Protein';
+
+  @override
+  String get dailyMacroShareTitle => 'Daily macro share';
+
+  @override
+  String get macroEnergy => 'Energy';
+
+  @override
+  String get macroCarbohydratesFull => 'Carbohydrates';
+
+  @override
+  String get macroProteinFull => 'Protein';
+
+  @override
+  String get macroFatFull => 'Fat';
+
+  @override
+  String get macroSugars => 'Sugars';
+
+  @override
+  String get macroSaturatedFat => 'Saturated fat';
+
+  @override
+  String get macroFiber => 'Fiber';
+
+  @override
+  String get macroSalt => 'Salt';
+
+  @override
+  String get macroGlycemicIndex => 'Glycemic index';
+
+  @override
+  String get portionUpdatedSuccess => 'Portion updated successfully';
 }

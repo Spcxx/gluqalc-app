@@ -2143,31 +2143,31 @@ abstract class AppLocalizations {
   /// No description provided for @insulinDoseDetailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Dose Details'**
+  /// **'Insulin dose details'**
   String get insulinDoseDetailsTitle;
 
   /// No description provided for @insulinTotalDose.
   ///
   /// In en, this message translates to:
-  /// **'Total Dose:'**
+  /// **'Total dose:'**
   String get insulinTotalDose;
 
   /// No description provided for @insulinCarbDose.
   ///
   /// In en, this message translates to:
-  /// **'Carb Dose:'**
+  /// **'Carb dose:'**
   String get insulinCarbDose;
 
   /// No description provided for @insulinFatProteinDose.
   ///
   /// In en, this message translates to:
-  /// **'Fat & Protein Dose:'**
+  /// **'Fat & Protein dose:'**
   String get insulinFatProteinDose;
 
   /// No description provided for @insulinBolusDuration.
   ///
   /// In en, this message translates to:
-  /// **'Bolus Duration:'**
+  /// **'Bolus duration:'**
   String get insulinBolusDuration;
 
   /// No description provided for @insulinDescription.
@@ -2217,6 +2217,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FPU'**
   String get unitFatProteinExchange;
+
+  /// No description provided for @mealDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal details'**
+  String get mealDetailsTitle;
+
+  /// No description provided for @brandLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get brandLabel;
+
+  /// No description provided for @editPortionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit portion'**
+  String get editPortionTitle;
+
+  /// No description provided for @nutritionDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutritional values'**
+  String get nutritionDetailsTitle;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveButton;
+
+  /// No description provided for @mealDetailsCalculationsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculations below apply to the saved portion:'**
+  String get mealDetailsCalculationsInfo;
+
+  /// No description provided for @insulinDoseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insulin dose'**
+  String get insulinDoseTitle;
+
+  /// No description provided for @insulinCarbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get insulinCarbs;
+
+  /// No description provided for @insulinFatProtein.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat & Protein'**
+  String get insulinFatProtein;
+
+  /// No description provided for @dailyMacroShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily macro share'**
+  String get dailyMacroShareTitle;
+
+  /// No description provided for @macroEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get macroEnergy;
+
+  /// No description provided for @macroCarbohydratesFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbohydrates'**
+  String get macroCarbohydratesFull;
+
+  /// No description provided for @macroProteinFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get macroProteinFull;
+
+  /// No description provided for @macroFatFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get macroFatFull;
+
+  /// No description provided for @macroSugars.
+  ///
+  /// In en, this message translates to:
+  /// **'Sugars'**
+  String get macroSugars;
+
+  /// No description provided for @macroSaturatedFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated fat'**
+  String get macroSaturatedFat;
+
+  /// No description provided for @macroFiber.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get macroFiber;
+
+  /// No description provided for @macroSalt.
+  ///
+  /// In en, this message translates to:
+  /// **'Salt'**
+  String get macroSalt;
+
+  /// No description provided for @macroGlycemicIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Glycemic index'**
+  String get macroGlycemicIndex;
+
+  /// No description provided for @portionUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Portion updated successfully'**
+  String get portionUpdatedSuccess;
 }
 
 class _AppLocalizationsDelegate

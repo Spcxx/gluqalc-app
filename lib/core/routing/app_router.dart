@@ -8,6 +8,7 @@ import 'package:gluqalc_app/features/auth/presentation/screens/auth_screen.dart'
 import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/home_screen.dart';
+import 'package:gluqalc_app/features/home/presentation/screens/meal_entry_details_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
@@ -17,6 +18,35 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
+
+const _validRoutePatterns = [
+  '/offline',
+  '/auth',
+  '/verify',
+  '/home',
+  '/about',
+  '/consents',
+  '/profile-setup',
+  '/profile',
+  '/export',
+  '/meal-entry-details/:entryId',
+];
+
+final List<RegExp> _compiledRouteRegexes = _validRoutePatterns.map((pattern) {
+  final regexPattern =
+      '^${pattern.replaceAllMapped(
+        RegExp(r':\w+'),
+        (match) => '[^/]+',
+      )}\$';
+  return RegExp(regexPattern);
+}).toList();
+
+bool _isPathValid(String path) {
+  for (final regex in _compiledRouteRegexes) {
+    if (regex.hasMatch(path)) return true;
+  }
+  return false;
+}
 
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
@@ -44,18 +74,8 @@ GoRouter appRouter(Ref ref) {
 
       const publicPaths = ['/auth', '/verify', '/offline'];
       final isPublicPath = publicPaths.contains(path);
-      const validPaths = [
-        '/offline',
-        '/auth',
-        '/verify',
-        '/home',
-        '/about',
-        '/consents',
-        '/profile-setup',
-        '/profile',
-        '/export',
-      ];
-      final isValidPath = validPaths.contains(path);
+
+      final isValidPath = _isPathValid(path);
 
       if (!isValidPath) {
         return isLoggedIn ? '/consents' : '/auth';
@@ -127,6 +147,17 @@ GoRouter appRouter(Ref ref) {
             return FadeTransition(opacity: animation, child: child);
           },
         ),
+      ),
+      GoRoute(
+        path: '/meal-entry-details/:entryId',
+        builder: (context, state) {
+          final entryId = state.pathParameters['entryId']!;
+          final categoryId = state.uri.queryParameters['categoryId'] ?? '';
+          return MealEntryDetailsScreen(
+            entryId: entryId,
+            categoryId: categoryId,
+          );
+        },
       ),
     ],
   );

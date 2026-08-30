@@ -132,8 +132,12 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
     required AppLocalizations l10n,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final progress = limit > 0 ? (current / limit).clamp(0.0, 1.0) : 0.0;
-    final remaining = (limit - current).clamp(0.0, double.infinity).toInt();
+
+    final rawProgress = limit > 0 ? (current / limit) : 0.0;
+    final progress = rawProgress.clamp(0.0, 1.0);
+
+    final remaining = (limit - current).toInt();
+    final isExceeded = remaining < 0;
 
     return Tooltip(
       message: '${current.toInt()} / ${limit.toInt()} kcal',
@@ -158,7 +162,9 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: isExceeded
+                      ? colorScheme.error
+                      : colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -170,7 +176,9 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
               value: progress,
               minHeight: 10,
               backgroundColor: color.withValues(alpha: 0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                color,
+              ),
             ),
           ),
         ],
@@ -187,7 +195,10 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
     required String unit,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final progress = limit > 0 ? (current / limit).clamp(0.0, 1.0) : 0.0;
+
+    final rawProgress = limit > 0 ? (current / limit) : 0.0;
+    final progress = rawProgress.clamp(0.0, 1.0);
+    final isExceeded = rawProgress > 1.0;
 
     return Expanded(
       child: Column(
@@ -215,7 +226,9 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
+                          color: isExceeded
+                              ? colorScheme.error
+                              : colorScheme.onSurface,
                         ),
                         maxLines: 1,
                       ),
