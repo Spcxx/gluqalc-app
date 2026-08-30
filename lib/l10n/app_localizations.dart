@@ -781,7 +781,7 @@ abstract class AppLocalizations {
   /// No description provided for @macroCarbs.
   ///
   /// In en, this message translates to:
-  /// **'Carbohydrates'**
+  /// **'Carbs'**
   String get macroCarbs;
 
   /// No description provided for @macroWarningText.
@@ -1573,8 +1573,92 @@ abstract class AppLocalizations {
   /// No description provided for @backToFormButton.
   ///
   /// In en, this message translates to:
-  /// **'Back to Form'**
+  /// **'Back'**
   String get backToFormButton;
+
+  /// No description provided for @drawerProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get drawerProfile;
+
+  /// No description provided for @drawerExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get drawerExport;
+
+  /// No description provided for @drawerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get drawerSettings;
+
+  /// No description provided for @drawerAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get drawerAbout;
+
+  /// No description provided for @drawerLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get drawerLogout;
+
+  /// No description provided for @macroKcal.
+  ///
+  /// In en, this message translates to:
+  /// **'Kcal'**
+  String get macroKcal;
+
+  /// No description provided for @appVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'GluQalc v{version}'**
+  String appVersionLabel(String version);
+
+  /// No description provided for @kcalRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal left'**
+  String kcalRemaining(int kcal);
+
+  /// No description provided for @errorLoadingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile.'**
+  String get errorLoadingProfile;
+
+  /// No description provided for @tooltipOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get tooltipOnline;
+
+  /// No description provided for @tooltipOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get tooltipOffline;
+
+  /// No description provided for @madeByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Made by Szymon Rózga'**
+  String get madeByLabel;
+
+  /// No description provided for @tooltipApiRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'API'**
+  String get tooltipApiRepo;
+
+  /// No description provided for @tooltipFrontendRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'Frontend'**
+  String get tooltipFrontendRepo;
 }
 
 class _AppLocalizationsDelegate

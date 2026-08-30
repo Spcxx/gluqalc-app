@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
@@ -32,6 +33,11 @@ class AuthController extends _$AuthController {
             password: password,
             deviceId: deviceId,
           );
+
+          await ref.read(authLocalStorageProvider).saveEmail(email);
+
+          ref.invalidate(currentUserEmailProvider);
+
           await ref.read(authStateControllerProvider.notifier).checkAuth();
         } on DioException catch (e) {
           throw _mapDioError(e, l10n);

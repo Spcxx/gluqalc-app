@@ -1,4 +1,6 @@
 {
   "API_URL": "https://example.com",
-  "IS_PROD": "true"
+  "IS_PROD": "true",
+  "GITHUB_API_URL": "https://github.com/Spcxx/gluqalc-api/",
+  "GITHUB_APP_URL": "https://github.com/Spcxx/gluqalc-app/"
 }

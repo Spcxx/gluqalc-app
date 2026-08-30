@@ -33,6 +33,16 @@ class AuthStateController extends _$AuthStateController {
     final repository = ref.read(authRepositoryProvider);
     await repository.logout();
 
+    await ref.read(authLocalStorageProvider).clearTokens();
+
+    ref.invalidate(currentUserEmailProvider);
+
     state = const AsyncData(false);
   }
+}
+
+@Riverpod(keepAlive: true)
+Future<String?> currentUserEmail(Ref ref) async {
+  final storage = ref.watch(authLocalStorageProvider);
+  return storage.getEmail();
 }

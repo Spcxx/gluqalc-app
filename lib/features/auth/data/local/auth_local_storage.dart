@@ -21,6 +21,7 @@ class AuthLocalStorage {
   static const _keyJwt = 'jwt_token';
   static const _keyRefresh = 'refresh_token';
   static const _keyDeviceId = 'device_id';
+  static const _keyEmail = 'user_email';
 
   Future<void> saveTokens({
     required String jwt,
@@ -30,6 +31,20 @@ class AuthLocalStorage {
       await _storage.write(key: _keyJwt, value: jwt);
       await _storage.write(key: _keyRefresh, value: refresh);
     } on Object catch (_) {}
+  }
+
+  Future<void> saveEmail(String email) async {
+    try {
+      await _storage.write(key: _keyEmail, value: email);
+    } on Object catch (_) {}
+  }
+
+  Future<String?> getEmail() async {
+    try {
+      return await _storage.read(key: _keyEmail);
+    } on Object catch (_) {
+      return null;
+    }
   }
 
   Future<String?> getJwt() async {
@@ -52,6 +67,9 @@ class AuthLocalStorage {
     try {
       await _storage.delete(key: _keyJwt);
       await _storage.delete(key: _keyRefresh);
+      await _storage.delete(
+        key: _keyEmail,
+      );
     } on Object catch (_) {}
   }
 

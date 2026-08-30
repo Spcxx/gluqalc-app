@@ -389,7 +389,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get macroFat => 'Fat';
 
   @override
-  String get macroCarbs => 'Carbohydrates';
+  String get macroCarbs => 'Carbs';
 
   @override
   String get macroWarningText =>
@@ -825,5 +825,51 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get backToFormButton => 'Back to Form';
+  String get backToFormButton => 'Back';
+
+  @override
+  String get drawerProfile => 'Profile';
+
+  @override
+  String get drawerExport => 'Export data';
+
+  @override
+  String get drawerSettings => 'Settings';
+
+  @override
+  String get drawerAbout => 'About';
+
+  @override
+  String get drawerLogout => 'Log out';
+
+  @override
+  String get macroKcal => 'Kcal';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'GluQalc v$version';
+  }
+
+  @override
+  String kcalRemaining(int kcal) {
+    return '$kcal kcal left';
+  }
+
+  @override
+  String get errorLoadingProfile => 'Failed to load profile.';
+
+  @override
+  String get tooltipOnline => 'Online';
+
+  @override
+  String get tooltipOffline => 'Offline';
+
+  @override
+  String get madeByLabel => 'Made by Szymon Rózga';
+
+  @override
+  String get tooltipApiRepo => 'API';
+
+  @override
+  String get tooltipFrontendRepo => 'Frontend';
 }

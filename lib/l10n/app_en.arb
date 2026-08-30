@@ -292,5 +292,36 @@
       }
     }
   },
-  "backToFormButton": "Back to Form"
+  "backToFormButton": "Back",
+  "drawerProfile": "Profile",
+  "drawerExport": "Export data",
+  "drawerSettings": "Settings",
+  "drawerAbout": "About",
+  "drawerLogout": "Log out",
+  "macroKcal": "Kcal",
+  "macroCarbs": "Carbs",
+  "macroProtein": "Protein",
+  "macroFat": "Fat",
+  "appVersionLabel": "GluQalc v{version}",
+  "@appVersionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "kcalRemaining": "{kcal} kcal left",
+  "@kcalRemaining": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingProfile": "Failed to load profile.",
+  "tooltipOnline": "Online",
+  "tooltipOffline": "Offline",
+  "madeByLabel": "Made by Szymon Rózga",
+  "tooltipApiRepo": "API",
+  "tooltipFrontendRepo": "Frontend"
 }
