@@ -2055,6 +2055,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to today'**
   String get backToToday;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add category'**
+  String get addCategory;
+
+  /// No description provided for @categoryNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get categoryNameLabel;
+
+  /// No description provided for @categoryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Breakfast, Lunch'**
+  String get categoryNameHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete category'**
+  String get deleteCategory;
+
+  /// No description provided for @categoryNotEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete a category that contains meal entries.'**
+  String get categoryNotEmptyError;
+
+  /// No description provided for @emptyCategoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories'**
+  String get emptyCategoriesTitle;
+
+  /// No description provided for @emptyCategoriesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first meal category to get started.'**
+  String get emptyCategoriesSubtitle;
+
+  /// No description provided for @placeholderMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries in this category'**
+  String get placeholderMeal;
+
+  /// No description provided for @addMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add meal'**
+  String get addMeal;
+
+  /// No description provided for @kcalUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal'**
+  String get kcalUnit;
+
+  /// No description provided for @carbsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'g carbs'**
+  String get carbsUnit;
+
+  /// No description provided for @deleteEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get deleteEntry;
+
+  /// No description provided for @insulinDoseDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insulin Dose Details'**
+  String get insulinDoseDetailsTitle;
+
+  /// No description provided for @insulinTotalDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Dose:'**
+  String get insulinTotalDose;
+
+  /// No description provided for @insulinCarbDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Carb Dose:'**
+  String get insulinCarbDose;
+
+  /// No description provided for @insulinFatProteinDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat & Protein Dose:'**
+  String get insulinFatProteinDose;
+
+  /// No description provided for @insulinBolusDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Bolus Duration:'**
+  String get insulinBolusDuration;
+
+  /// No description provided for @insulinDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description:'**
+  String get insulinDescription;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
+
+  /// No description provided for @unitCarbShort.
+  ///
+  /// In en, this message translates to:
+  /// **'C'**
+  String get unitCarbShort;
+
+  /// No description provided for @unitProteinShort.
+  ///
+  /// In en, this message translates to:
+  /// **'P'**
+  String get unitProteinShort;
+
+  /// No description provided for @unitFatShort.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get unitFatShort;
+
+  /// No description provided for @unitInsulin.
+  ///
+  /// In en, this message translates to:
+  /// **'u'**
+  String get unitInsulin;
+
+  /// No description provided for @unitCarbExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'CU'**
+  String get unitCarbExchange;
+
+  /// No description provided for @unitFatProteinExchange.
+  ///
+  /// In en, this message translates to:
+  /// **'FPU'**
+  String get unitFatProteinExchange;
 }
 
 class _AppLocalizationsDelegate

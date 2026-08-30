@@ -1086,4 +1086,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToToday => 'Back to today';
+
+  @override
+  String get addCategory => 'Add category';
+
+  @override
+  String get categoryNameLabel => 'Category name';
+
+  @override
+  String get categoryNameHint => 'e.g. Breakfast, Lunch';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get deleteCategory => 'Delete category';
+
+  @override
+  String get categoryNotEmptyError =>
+      'Cannot delete a category that contains meal entries.';
+
+  @override
+  String get emptyCategoriesTitle => 'No categories';
+
+  @override
+  String get emptyCategoriesSubtitle =>
+      'Create your first meal category to get started.';
+
+  @override
+  String get placeholderMeal => 'No entries in this category';
+
+  @override
+  String get addMeal => 'Add meal';
+
+  @override
+  String get kcalUnit => 'kcal';
+
+  @override
+  String get carbsUnit => 'g carbs';
+
+  @override
+  String get deleteEntry => 'Delete entry';
+
+  @override
+  String get insulinDoseDetailsTitle => 'Insulin Dose Details';
+
+  @override
+  String get insulinTotalDose => 'Total Dose:';
+
+  @override
+  String get insulinCarbDose => 'Carb Dose:';
+
+  @override
+  String get insulinFatProteinDose => 'Fat & Protein Dose:';
+
+  @override
+  String get insulinBolusDuration => 'Bolus Duration:';
+
+  @override
+  String get insulinDescription => 'Description:';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get unitCarbShort => 'C';
+
+  @override
+  String get unitProteinShort => 'P';
+
+  @override
+  String get unitFatShort => 'F';
+
+  @override
+  String get unitInsulin => 'u';
+
+  @override
+  String get unitCarbExchange => 'CU';
+
+  @override
+  String get unitFatProteinExchange => 'FPU';
 }
