@@ -179,226 +179,224 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     final contentWidget = SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              l10n.summaryTitle,
-                              style: textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: () =>
-                                  context.push('/profile-setup?edit=true'),
-                              style: TextButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: Text(l10n.profileEditButton),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryGender,
-                          _formatGender(profile.gender, l10n),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryBirthDate,
-                          profile.birthDate ?? l10n.notSet,
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryHeightWeight,
-                          '${profile.heightInCm ?? '-'} cm, ${profile.weightInKg ?? '-'} kg',
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryBodyFat,
-                          profile.bodyFatPercentage != null
-                              ? '${profile.bodyFatPercentage}%'
-                              : l10n.notProvided,
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryBmrMethod,
-                          _formatBmr(profile.bmrMethod, l10n),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryPal,
-                          profile.physicalActivityLevel?.toStringAsFixed(2) ??
-                              l10n.notSet,
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryGoal,
-                          _formatGoal(profile.kcalGoalDifference, l10n),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryWeekly,
-                          (profile.weeklyKcalDistribution?.isNotEmpty ?? false)
-                              ? l10n.summaryWeeklyCustom
-                              : l10n.summaryWeeklyUniform,
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryMacros,
-                          _formatMacros(profile.macroStrategy, l10n),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryInsulinParams,
-                          '${profile.insulinSensitivityFactor ?? '-'} mg/dL/U | ${profile.insulinFatProteinRatio ?? '-'} U/FPU',
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryInsulinDelivery,
-                          _formatDeliveryMethod(
-                            profile.insulinDeliveryMethod,
-                            l10n,
-                          ),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryIcrHours,
-                          l10n.summaryIntervals(
-                            profile.hourlyCarbRatio?.length ?? 0,
-                          ),
-                        ),
-                        _buildDataRow(
-                          context,
-                          l10n.summaryFpuMethod,
-                          _formatCombinedInsulin(
-                            profile.combinedInsulinCalculationMethod,
-                            l10n,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.profileAccountSettingsTitle,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ListTile(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(16),
-                          ),
-                        ),
-                        leading: const Icon(Icons.email_outlined),
-                        title: Text(l10n.profileChangeEmailButton),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () async {
-                          await showDialog<void>(
-                            context: context,
-                            builder: (ctx) =>
-                                _ChangeVerifiedEmailDialog(l10n: l10n),
-                          );
-                        },
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            bottom: Radius.circular(16),
-                          ),
-                        ),
-                        leading: const Icon(Icons.lock_outline),
-                        title: Text(l10n.profileChangePasswordButton),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () async {
-                          await showDialog<void>(
-                            context: context,
-                            builder: (ctx) => _ChangePasswordDialog(
-                              l10n: l10n,
-                              currentEmail: currentEmail,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.summaryTitle,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
+                          ),
+                          TextButton.icon(
+                            onPressed: () =>
+                                context.push('/profile-setup?edit=true'),
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            icon: const Icon(Icons.edit, size: 18),
+                            label: Text(l10n.profileEditButton),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryGender,
+                        _formatGender(profile.gender, l10n),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryBirthDate,
+                        profile.birthDate ?? l10n.notSet,
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryHeightWeight,
+                        '${profile.heightInCm ?? '-'} cm, ${profile.weightInKg ?? '-'} kg',
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryBodyFat,
+                        profile.bodyFatPercentage != null
+                            ? '${profile.bodyFatPercentage}%'
+                            : l10n.notProvided,
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryBmrMethod,
+                        _formatBmr(profile.bmrMethod, l10n),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryPal,
+                        profile.physicalActivityLevel?.toStringAsFixed(2) ??
+                            l10n.notSet,
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryGoal,
+                        _formatGoal(profile.kcalGoalDifference, l10n),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryWeekly,
+                        (profile.weeklyKcalDistribution?.isNotEmpty ?? false)
+                            ? l10n.summaryWeeklyCustom
+                            : l10n.summaryWeeklyUniform,
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryMacros,
+                        _formatMacros(profile.macroStrategy, l10n),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryInsulinParams,
+                        '${profile.insulinSensitivityFactor ?? '-'} mg/dL/U | ${profile.insulinFatProteinRatio ?? '-'} U/FPU',
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryInsulinDelivery,
+                        _formatDeliveryMethod(
+                          profile.insulinDeliveryMethod,
+                          l10n,
+                        ),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryIcrHours,
+                        l10n.summaryIntervals(
+                          profile.hourlyCarbRatio?.length ?? 0,
+                        ),
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryFpuMethod,
+                        _formatCombinedInsulin(
+                          profile.combinedInsulinCalculationMethod,
+                          l10n,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.profileActiveSessionsTitle,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.profileAccountSettingsTitle,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                      ),
+                      leading: const Icon(Icons.email_outlined),
+                      title: Text(l10n.profileChangeEmailButton),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () async {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (ctx) =>
+                              _ChangeVerifiedEmailDialog(l10n: l10n),
+                        );
+                      },
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(16),
+                        ),
+                      ),
+                      leading: const Icon(Icons.lock_outline),
+                      title: Text(l10n.profileChangePasswordButton),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () async {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (ctx) => _ChangePasswordDialog(
+                            l10n: l10n,
+                            currentEmail: currentEmail,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.profileActiveSessionsTitle,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              _buildActiveSessionsCard(context, ref, l10n),
+              const SizedBox(height: 32),
+              Center(
+                child: TextButton.icon(
+                  onPressed: () async {
+                    await showDialog<void>(
+                      context: context,
+                      builder: (ctx) => _DeleteAccountDialog(l10n: l10n),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.error,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  icon: Icon(Icons.delete_forever, color: colorScheme.error),
+                  label: Text(
+                    l10n.profileDeleteAccountButton,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.error,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                _buildActiveSessionsCard(context, ref, l10n),
-                const SizedBox(height: 32),
-                Center(
-                  child: TextButton.icon(
-                    onPressed: () async {
-                      await showDialog<void>(
-                        context: context,
-                        builder: (ctx) => _DeleteAccountDialog(l10n: l10n),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: colorScheme.error,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                    icon: Icon(Icons.delete_forever, color: colorScheme.error),
-                    label: Text(
-                      l10n.profileDeleteAccountButton,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.error,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
       ),
@@ -529,83 +527,131 @@ class ProfileScreen extends ConsumerWidget {
 
                   return Column(
                     children: [
-                      ListTile(
-                        leading: Icon(
-                          deviceInfo.icon,
-                          size: 32,
-                          color: isCurrent
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
                         ),
-                        title: Text(
-                          deviceInfo.name,
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${session.ipAddress}\n${l10n.lastActive}: $dateStr',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        isThreeLine: true,
-                        trailing: isCurrent
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.tertiaryContainer,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  l10n.profileSessionCurrent,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    fontSize: 12,
-                                    color: colorScheme.onTertiaryContainer,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            : TextButton(
-                                onPressed: () async {
-                                  try {
-                                    await ref
-                                        .read(
-                                          sessionsControllerProvider.notifier,
-                                        )
-                                        .revokeSession(session.deviceId);
-                                  } on Object catch (_) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            l10n.errorSessionRevoke,
-                                          ),
-                                          backgroundColor: colorScheme.error,
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              deviceInfo.icon,
+                              size: 32,
+                              color: isCurrent
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          deviceInfo.name,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                      );
-                                    }
-                                  }
-                                },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: colorScheme.error,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      if (isCurrent)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                colorScheme.tertiaryContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            l10n.profileSessionCurrent,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  fontSize: 12,
+                                                  color: colorScheme
+                                                      .onTertiaryContainer,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                        )
+                                      else
+                                        TextButton(
+                                          onPressed: () async {
+                                            try {
+                                              await ref
+                                                  .read(
+                                                    sessionsControllerProvider
+                                                        .notifier,
+                                                  )
+                                                  .revokeSession(
+                                                    session.deviceId,
+                                                  );
+                                            } on Object catch (_) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      l10n.errorSessionRevoke,
+                                                    ),
+                                                    backgroundColor:
+                                                        colorScheme.error,
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          },
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: colorScheme.error,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                          ),
+                                          child: Text(
+                                            l10n.profileSessionRevoke,
+                                          ),
+                                        ),
+                                    ],
                                   ),
-                                ),
-                                child: Text(l10n.profileSessionRevoke),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'IP: ${session.ipAddress}  •  ${l10n.lastActive}: $dateStr',
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+                          ],
+                        ),
                       ),
                       if (index < sessions.length - 1) const Divider(height: 1),
                     ],

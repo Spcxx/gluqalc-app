@@ -144,8 +144,8 @@
   "macroCustom": "Custom",
   "macroProtein": "Protein",
   "macroFat": "Fat",
-  "macroCarbs": "Carbohydrates",
-  "macroWarningText": "Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.",
+  "macroCarbs": "Carbs",
+  "macroWarningText": "Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.",
   "macroSumValid": "Total macros equal 100%",
   "macroSumInvalid": "Total is {total}% (must equal 100%)",
   "@macroSumInvalid": {
@@ -525,5 +525,16 @@
   "portionWeightGramsLabel": "Weight in grams",
   "portionDeletedSuccess": "Portion deleted successfully",
   "errorInvalidNumber": "Please enter a valid number",
-  "loadingState": "..."
+  "loadingState": "...",
+  "errorRange": "Value must be between {min} and {max}",
+  "@errorRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -36,71 +36,78 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildParameterField(
-                    controller: widget.parent.isfController,
-                    labelText: l10n.isfLabel,
-                    suffixText: l10n.isfSuffix,
-                    infoTitle: l10n.isfInfoTitle,
-                    infoDesc: l10n.isfInfoDesc,
-                    l10n: l10n,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildParameterField(
-                    controller: widget.parent.ifpController,
-                    labelText: l10n.ifpLabel,
-                    suffixText: l10n.ifpSuffix,
-                    infoTitle: l10n.ifpInfoTitle,
-                    infoDesc: l10n.ifpInfoDesc,
-                    l10n: l10n,
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Text(
-                        l10n.insulinDeliveryMethodLabel,
-                        style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildParameterField(
+                      controller: widget.parent.isfController,
+                      labelText: l10n.isfLabel,
+                      suffixText: l10n.isfSuffix,
+                      infoTitle: l10n.isfInfoTitle,
+                      infoDesc: l10n.isfInfoDesc,
+                      minValue: 1,
+                      maxValue: 300,
+                      l10n: l10n,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildParameterField(
+                      controller: widget.parent.ifpController,
+                      labelText: l10n.ifpLabel,
+                      suffixText: l10n.ifpSuffix,
+                      infoTitle: l10n.ifpInfoTitle,
+                      infoDesc: l10n.ifpInfoDesc,
+                      minValue: 0,
+                      maxValue: 10,
+                      l10n: l10n,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Text(
+                          l10n.insulinDeliveryMethodLabel,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.info_outline,
-                          color: colorScheme.primary,
+                        IconButton(
+                          icon: Icon(
+                            Icons.info_outline,
+                            color: colorScheme.primary,
+                          ),
+                          onPressed: () => widget.parent.showInfoDialog(
+                            l10n.deliveryMethodInfoTitle,
+                            l10n.deliveryMethodInfoDesc,
+                          ),
                         ),
-                        onPressed: () => widget.parent.showInfoDialog(
-                          l10n.deliveryMethodInfoTitle,
-                          l10n.deliveryMethodInfoDesc,
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SegmentedButton<InsulinDeliveryEnum>(
+                      segments: [
+                        ButtonSegment(
+                          value: InsulinDeliveryEnum.pen,
+                          label: Text(l10n.insulinPen),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SegmentedButton<InsulinDeliveryEnum>(
-                    segments: [
-                      ButtonSegment(
-                        value: InsulinDeliveryEnum.pen,
-                        label: Text(l10n.insulinPen),
-                      ),
-                      ButtonSegment(
-                        value: InsulinDeliveryEnum.pump,
-                        label: Text(l10n.insulinPump),
-                      ),
-                    ],
-                    selected: {widget.parent.insulinDeliveryMethod},
-                    onSelectionChanged: (newSelection) {
-                      setState(() {
-                        widget.parent.insulinDeliveryMethod =
-                            newSelection.first;
-                      });
-                    },
-                  ),
-                ],
+                        ButtonSegment(
+                          value: InsulinDeliveryEnum.pump,
+                          label: Text(l10n.insulinPump),
+                        ),
+                      ],
+                      selected: {widget.parent.insulinDeliveryMethod},
+                      onSelectionChanged: (newSelection) {
+                        setState(() {
+                          widget.parent.insulinDeliveryMethod =
+                              newSelection.first;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -166,6 +173,8 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
     required String suffixText,
     required String infoTitle,
     required String infoDesc,
+    required double minValue,
+    required double maxValue,
     required AppLocalizations l10n,
   }) {
     final theme = Theme.of(context);
@@ -218,9 +227,16 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
               ),
             ),
             validator: (val) {
-              if (val == null || val.isEmpty) return l10n.errorFieldRequired;
+              if (val == null || val.isEmpty) {
+                return l10n.errorFieldRequired;
+              }
               final n = double.tryParse(val.replaceAll(',', '.'));
-              if (n == null || n <= 0) return l10n.errorValidationError;
+              if (n == null) {
+                return l10n.errorValidationError;
+              }
+              if (n < minValue || n > maxValue) {
+                return l10n.errorRange(minValue.toInt(), maxValue.toInt());
+              }
               return null;
             },
           ),

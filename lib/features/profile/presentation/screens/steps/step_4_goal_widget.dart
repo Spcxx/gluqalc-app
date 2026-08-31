@@ -53,52 +53,70 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.goalTitle,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.goalSubtitle,
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 24),
-        SegmentedButton<GoalTypeEnum>(
-          emptySelectionAllowed: true,
-          segments: [
-            ButtonSegment(
-              value: GoalTypeEnum.lose,
-              label: Text(l10n.goalLose),
-            ),
-            ButtonSegment(
-              value: GoalTypeEnum.maintain,
-              label: Text(l10n.goalMaintain),
-            ),
-            ButtonSegment(
-              value: GoalTypeEnum.gain,
-              label: Text(l10n.goalGain),
-            ),
-          ],
-          selected: currentGoal != null ? {currentGoal} : {},
-          onSelectionChanged: (newSelection) {
-            setState(() {
-              widget.parent.goalType = newSelection.firstOrNull;
-              _recalculateGoal();
-            });
-          },
-        ),
-        const SizedBox(height: 24),
         Expanded(
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            alignment: Alignment.topCenter,
-            child: isChangingWeight
-                ? Column(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.goalTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.goalSubtitle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                Column(
+                  children: [
+                    _buildGoalChoiceCard(
+                      title: l10n.goalLose,
+                      icon: Icons.trending_down,
+                      isSelected: currentGoal == GoalTypeEnum.lose,
+                      onTap: () {
+                        setState(() {
+                          widget.parent.goalType = GoalTypeEnum.lose;
+                          _recalculateGoal();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildGoalChoiceCard(
+                      title: l10n.goalMaintain,
+                      icon: Icons.balance,
+                      isSelected: currentGoal == GoalTypeEnum.maintain,
+                      onTap: () {
+                        setState(() {
+                          widget.parent.goalType = GoalTypeEnum.maintain;
+                          _recalculateGoal();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildGoalChoiceCard(
+                      title: l10n.goalGain,
+                      icon: Icons.trending_up,
+                      isSelected: currentGoal == GoalTypeEnum.gain,
+                      onTap: () {
+                        setState(() {
+                          widget.parent.goalType = GoalTypeEnum.gain;
+                          _recalculateGoal();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                if (isChangingWeight)
+                  Column(
                     children: [
                       Text(
                         l10n.goalLoseGainQuestion(
@@ -183,8 +201,9 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                       ],
                     ],
                   )
-                : isMaintaining
-                ? Center(
+                else if (isMaintaining)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
                       l10n.goalMaintainDesc,
                       textAlign: TextAlign.center,
@@ -192,18 +211,12 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: Alignment.bottomCenter,
-          child: currentGoal != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Container(
+                  ),
+
+                const SizedBox(height: 24),
+
+                if (currentGoal != null)
+                  Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerHighest.withValues(
@@ -253,9 +266,13 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                       ],
                     ),
                   ),
-                )
-              : const SizedBox.shrink(),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
         ),
+        const SizedBox(height: 12),
+
         Row(
           children: [
             OutlinedButton(
@@ -301,6 +318,66 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildGoalChoiceCard({
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primaryContainer.withValues(alpha: 0.4)
+              : colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outline.withValues(alpha: 0.3),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+              size: 24,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurface,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: colorScheme.primary,
+                size: 20,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

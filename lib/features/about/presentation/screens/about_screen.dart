@@ -63,7 +63,7 @@ class AboutScreen extends ConsumerWidget {
     );
 
     final contentWidget = SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),

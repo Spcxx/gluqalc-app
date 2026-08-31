@@ -280,7 +280,11 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   BmrMethodEnum getRecommendedBmrMethod() {
     if (knowsBodyFat && bodyFatController.text.isNotEmpty) {
-      return BmrMethodEnum.katchMcArdle;
+      final bodyFat =
+          double.tryParse(bodyFatController.text.replaceAll(',', '.')) ?? 0;
+      if (bodyFat > 3 && bodyFat < 70) {
+        return BmrMethodEnum.katchMcArdle;
+      }
     }
     final h =
         double.tryParse(heightController.text.replaceAll(',', '.')) ?? 170;
