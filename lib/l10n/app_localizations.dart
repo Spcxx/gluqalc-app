@@ -2415,6 +2415,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to import product'**
   String get productImportError;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving'**
+  String get saving;
+
+  /// No description provided for @productEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit product'**
+  String get productEditTitle;
+
+  /// No description provided for @productEditSectionIdentification.
+  ///
+  /// In en, this message translates to:
+  /// **'Identification'**
+  String get productEditSectionIdentification;
+
+  /// No description provided for @productEditNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name *'**
+  String get productEditNameLabel;
+
+  /// No description provided for @productEditBrandLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand (optional)'**
+  String get productEditBrandLabel;
+
+  /// No description provided for @productEditMainMacrosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Main macros per 100g'**
+  String get productEditMainMacrosTitle;
+
+  /// No description provided for @productEditDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional nutrients per 100g'**
+  String get productEditDetailsTitle;
+
+  /// No description provided for @productEditSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get productEditSaveChanges;
+
+  /// No description provided for @productEditValidationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name and main macros (Kcal, Carbs, Protein, Fat) are required.'**
+  String get productEditValidationRequired;
+
+  /// No description provided for @productEditValidationCaloricMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered calories ({kcal} kcal) differ too much from calculated macros (~{calculated} kcal). Please check your data.'**
+  String productEditValidationCaloricMismatch(String kcal, String calculated);
+
+  /// No description provided for @productEditSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved successfully'**
+  String get productEditSuccess;
+
+  /// No description provided for @productEditError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while saving changes.'**
+  String get productEditError;
 }
 
 class _AppLocalizationsDelegate

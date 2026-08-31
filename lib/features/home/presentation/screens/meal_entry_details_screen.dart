@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/home_selected_date_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/widgets/insulin_details_dialog.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
@@ -64,8 +65,9 @@ class _MealEntryDetailsScreenState
                   : state.entry!.consumptionTime;
               formattedDateTime = '$formattedDate, $formattedTime';
             } else {
+              final selectedDate = ref.read(homeSelectedDateProvider);
               final formattedDate = DateFormat.yMMMMd(l10n.localeName)
-                  .format(DateTime.now());
+                  .format(selectedDate);
               final formattedTime = DateFormat.Hm().format(DateTime.now());
               formattedDateTime = '$formattedDate, $formattedTime';
             }
@@ -145,22 +147,63 @@ class _MealEntryDetailsScreenState
                 Row(
                   children: [
                     Flexible(
-                      child: Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w900,
-                          height: 1.1,
+                      child: Material(
+                        color: colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: () async {
+                            await context.push('/product-edit', extra: product);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    product.name,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.1,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.edit_rounded,
+                                    size: 20,
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
                     if (product.provider?.toUpperCase() != 'LOCAL') ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Tooltip(
                         message: l10n.externalDatabaseTooltip,
                         child: Icon(
                           Icons.public,
-                          size: 22,
+                          size: 24,
                           color: Colors.blue.shade600,
                         ),
                       ),
@@ -168,13 +211,16 @@ class _MealEntryDetailsScreenState
                   ],
                 ),
                 if (product.brand != null && product.brand!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    product.brand!,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontWeight: FontWeight.w500,
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Text(
+                      product.brand!,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -649,6 +695,8 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
         ? widget.entryId
         : widget.currentEntry!.productId;
 
+    final selectedDate = ref.read(homeSelectedDateProvider);
+
     final success = await ref
         .read(
           mealEntryDetailControllerProvider(
@@ -663,7 +711,7 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
           quantity: quantity,
           date: widget.currentEntry != null
               ? DateTime.parse(widget.currentEntry!.consumptionDate)
-              : DateTime.now(),
+              : selectedDate, // Używa daty wybranej w kalendarzu
           portionId: widget.portion.id,
           isCreation: widget.isCreation,
           oldEntryId: widget.currentEntry?.id,

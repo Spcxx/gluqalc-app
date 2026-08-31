@@ -1269,4 +1269,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productImportError => 'Failed to import product';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get saving => 'Saving';
+
+  @override
+  String get productEditTitle => 'Edit product';
+
+  @override
+  String get productEditSectionIdentification => 'Identification';
+
+  @override
+  String get productEditNameLabel => 'Product name *';
+
+  @override
+  String get productEditBrandLabel => 'Brand (optional)';
+
+  @override
+  String get productEditMainMacrosTitle => 'Main macros per 100g';
+
+  @override
+  String get productEditDetailsTitle => 'Optional nutrients per 100g';
+
+  @override
+  String get productEditSaveChanges => 'Save changes';
+
+  @override
+  String get productEditValidationRequired =>
+      'Product name and main macros (Kcal, Carbs, Protein, Fat) are required.';
+
+  @override
+  String productEditValidationCaloricMismatch(String kcal, String calculated) {
+    return 'Entered calories ($kcal kcal) differ too much from calculated macros (~$calculated kcal). Please check your data.';
+  }
+
+  @override
+  String get productEditSuccess => 'Changes saved successfully';
+
+  @override
+  String get productEditError => 'An error occurred while saving changes.';
 }

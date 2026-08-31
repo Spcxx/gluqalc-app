@@ -7,8 +7,10 @@ import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_co
 import 'package:gluqalc_app/features/auth/presentation/screens/auth_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.dart';
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
+import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/home_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/meal_entry_details_screen.dart';
+import 'package:gluqalc_app/features/home/presentation/screens/product_edit_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/product_search_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_screen.dart';
@@ -32,6 +34,7 @@ const _validRoutePatterns = [
   '/export',
   '/meal-entry-details/:entryId',
   '/product-search/:categoryId',
+  '/product-edit',
 ];
 
 final List<RegExp> _compiledRouteRegexes = _validRoutePatterns.map((pattern) {
@@ -168,6 +171,13 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) {
           final categoryId = state.pathParameters['categoryId']!;
           return ProductSearchScreen(categoryId: categoryId);
+        },
+      ),
+      GoRoute(
+        path: '/product-edit',
+        builder: (context, state) {
+          final product = state.extra! as ProductResponse;
+          return ProductEditScreen(product: product);
         },
       ),
     ],

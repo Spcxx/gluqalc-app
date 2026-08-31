@@ -446,5 +446,28 @@
   "mealAddedSuccessfully": "Meal added successfully",
   "verifiedProductTooltip": "Verified product",
   "externalDatabaseTooltip": "External database",
-  "productImportError": "Failed to import product"
+  "productImportError": "Failed to import product",
+  "optional": "Optional",
+  "saving": "Saving",
+  "productEditTitle": "Edit product",
+  "productEditSectionIdentification": "Identification",
+  "productEditNameLabel": "Product name *",
+  "productEditBrandLabel": "Brand (optional)",
+  "productEditMainMacrosTitle": "Main macros per 100g",
+  "productEditDetailsTitle": "Optional nutrients per 100g",
+  "productEditSaveChanges": "Save changes",
+  "productEditValidationRequired": "Product name and main macros (Kcal, Carbs, Protein, Fat) are required.",
+  "productEditValidationCaloricMismatch": "Entered calories ({kcal} kcal) differ too much from calculated macros (~{calculated} kcal). Please check your data.",
+  "@productEditValidationCaloricMismatch": {
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "calculated": {
+        "type": "String"
+      }
+    }
+  },
+  "productEditSuccess": "Changes saved successfully",
+  "productEditError": "An error occurred while saving changes."
 }

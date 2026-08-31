@@ -140,4 +140,20 @@ class MealCategoryRepository {
     );
     return ProductResponse.fromJson(response.data!);
   }
+
+  Future<ProductResponse> updateProduct(
+    String productId,
+    Map<String, dynamic> updatedFields,
+  ) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/api/v1/products/$productId',
+      data: updatedFields,
+    );
+
+    if (response.data == null || response.data!.isEmpty) {
+      return getProductDetails(productId);
+    }
+
+    return ProductResponse.fromJson(response.data!);
+  }
 }
