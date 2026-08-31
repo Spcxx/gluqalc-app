@@ -389,11 +389,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get macroFat => 'Fat';
 
   @override
-  String get macroCarbs => 'Carbohydrates';
+  String get macroCarbs => 'Carbs';
 
   @override
   String get macroWarningText =>
-      'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.';
+      'Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.';
 
   @override
   String get macroSumValid => 'Total macros equal 100%';
@@ -1362,4 +1362,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingState => '...';
+
+  @override
+  String errorRange(int min, int max) {
+    return 'Value must be between $min and $max';
+  }
 }

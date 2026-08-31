@@ -781,13 +781,13 @@ abstract class AppLocalizations {
   /// No description provided for @macroCarbs.
   ///
   /// In en, this message translates to:
-  /// **'Carbohydrates'**
+  /// **'Carbs'**
   String get macroCarbs;
 
   /// No description provided for @macroWarningText.
   ///
   /// In en, this message translates to:
-  /// **'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.'**
+  /// **'Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.'**
   String get macroWarningText;
 
   /// No description provided for @macroSumValid.
@@ -2589,6 +2589,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'...'**
   String get loadingState;
+
+  /// No description provided for @errorRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be between {min} and {max}'**
+  String errorRange(int min, int max);
 }
 
 class _AppLocalizationsDelegate

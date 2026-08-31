@@ -90,7 +90,7 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOutCubic,
-                            height: _isExpanded ? 110.0 : 0.0,
+                            height: _isExpanded ? 115.0 : 0.0,
                             child: SingleChildScrollView(
                               physics: const NeverScrollableScrollPhysics(),
                               child: Padding(

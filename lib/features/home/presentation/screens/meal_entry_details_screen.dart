@@ -148,8 +148,17 @@ class _MealEntryDetailsScreenState
                 return 0;
               });
 
+          final durationText = entry?.insulinDose != null
+              ? getInsulinDurationText(entry!.insulinDose!, profile)
+              : '';
+          final isPen = profile?.insulinDeliveryMethod == 'PEN';
+          final showDurationRow =
+              entry?.insulinDose != null &&
+              (entry!.insulinDose!.bolusDurationMinutes > 0 ||
+                  (isPen && entry.insulinDose!.fatProteinDose > 0));
+
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 700),
@@ -264,8 +273,10 @@ class _MealEntryDetailsScreenState
                               : portion.id == defaultPortion?.id;
 
                           return Column(
+                            key: ValueKey('col_${portion.id}'),
                             children: [
                               _PortionRow(
+                                key: ValueKey(portion.id),
                                 portion: portion,
                                 product: product,
                                 currentEntry: entry,
@@ -316,12 +327,15 @@ class _MealEntryDetailsScreenState
                     if (entry?.insulinDose != null &&
                         entry!.insulinDose!.totalDose > 0)
                       Card(
-                        elevation: 1,
+                        elevation: 0,
                         color: colorScheme.primaryContainer.withValues(
-                          alpha: 0.6,
+                          alpha: 0.3,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: colorScheme.primary.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
@@ -332,7 +346,10 @@ class _MealEntryDetailsScreenState
                             l10n,
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 20,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -353,54 +370,85 @@ class _MealEntryDetailsScreenState
                                           style: textTheme.titleMedium
                                               ?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: colorScheme
-                                                    .onPrimaryContainer,
+                                                color: colorScheme.onSurface,
                                               ),
                                         ),
                                       ],
                                     ),
                                     Icon(
                                       Icons.chevron_right,
-                                      color: colorScheme.primary,
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
-                                Center(
-                                  child: Text(
-                                    '${entry.insulinDose!.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                    style: textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      color: colorScheme.primary,
-                                      height: 1,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 24),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    _buildInsulinSubDetail(
-                                      l10n.insulinCarbs,
-                                      '${entry.insulinDose!.carbDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                      colorScheme,
-                                      textTheme,
-                                    ),
-                                    Container(
-                                      width: 1,
-                                      height: 24,
-                                      color: colorScheme.primary.withValues(
-                                        alpha: 0.3,
+                                    Text(
+                                      l10n.insulinTotalDose,
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    _buildInsulinSubDetail(
-                                      l10n.insulinFatProtein,
-                                      '${entry.insulinDose!.fatProteinDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                      colorScheme,
-                                      textTheme,
+                                    Text(
+                                      '${entry.insulinDose!.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.primary,
+                                      ),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 16),
+                                Divider(
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  height: 1,
+                                ),
+                                const SizedBox(height: 16),
+                                IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Expanded(
+                                        child: _buildInsulinColumn(
+                                          context: context,
+                                          title: l10n.insulinCarbDose,
+                                          doseVal: entry.insulinDose!.carbDose,
+                                          unit: entry.insulinDose!.carbUnit,
+                                          unitLabel: l10n.unitCarbExchange,
+                                          l10n: l10n,
+                                        ),
+                                      ),
+                                      VerticalDivider(
+                                        width: 1,
+                                        color: colorScheme.primary.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _buildInsulinColumn(
+                                          context: context,
+                                          title: l10n.insulinFatProteinDose,
+                                          doseVal:
+                                              entry.insulinDose!.fatProteinDose,
+                                          unit:
+                                              entry.insulinDose!.fatProteinUnit,
+                                          unitLabel:
+                                              l10n.unitFatProteinExchange,
+                                          durationText: showDurationRow
+                                              ? durationText
+                                              : null,
+                                          l10n: l10n,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -523,7 +571,6 @@ class _MealEntryDetailsScreenState
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -566,30 +613,67 @@ class _MealEntryDetailsScreenState
     );
   }
 
-  Widget _buildInsulinSubDetail(
-    String label,
-    String value,
-    ColorScheme colorScheme,
-    TextTheme textTheme,
-  ) {
+  Widget _buildInsulinColumn({
+    required BuildContext context,
+    required String title,
+    required double doseVal,
+    required double unit,
+    required String unitLabel,
+    required AppLocalizations l10n,
+    String? durationText,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
+          title,
           style: textTheme.bodySmall?.copyWith(
-            color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurfaceVariant,
           ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${doseVal.toStringAsFixed(2)} ${l10n.unitInsulin}',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.primary,
+          ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 2),
         Text(
-          value,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimaryContainer,
+          '${unit.toStringAsFixed(1)} $unitLabel',
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
           ),
+          textAlign: TextAlign.center,
         ),
+        if (durationText != null && durationText.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
+            decoration: BoxDecoration(
+              color: colorScheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              durationText,
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.onTertiaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -670,6 +754,7 @@ class _PortionRow extends ConsumerStatefulWidget {
     required this.categoryId,
     required this.entryId,
     required this.isCreation,
+    super.key,
   });
 
   final ProductPortionResponse portion;

@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gluqalc_app/features/stats/data/repositories/stats_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -21,12 +20,26 @@ class ExportController extends _$ExportController {
       final toStr = to.toIso8601String().split('T')[0];
       final filename = 'gluqalc_export_${fromStr}_$toStr';
 
-      await FileSaver.instance.saveFile(
-        name: filename,
-        bytes: Uint8List.fromList(bytes),
-        fileExtension: 'csv',
-        mimeType: MimeType.csv,
-      );
+      final isMobile =
+          !kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.android ||
+              defaultTargetPlatform == TargetPlatform.iOS);
+
+      if (isMobile) {
+        await FileSaver.instance.saveAs(
+          name: filename,
+          bytes: Uint8List.fromList(bytes),
+          fileExtension: 'csv',
+          mimeType: MimeType.csv,
+        );
+      } else {
+        await FileSaver.instance.saveFile(
+          name: filename,
+          bytes: Uint8List.fromList(bytes),
+          fileExtension: 'csv',
+          mimeType: MimeType.csv,
+        );
+      }
 
       state = const AsyncData(null);
     } on Object catch (e, st) {

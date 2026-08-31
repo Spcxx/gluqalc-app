@@ -24,28 +24,43 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
   }
 
   void _recalculatePal() {
-    var total = 1.1;
-    if (widget.parent.q1Answer == 1) total += 0.10;
-    if (widget.parent.q1Answer == 2) total += 0.25;
-    if (widget.parent.q1Answer == 3) total += 0.40;
-    if (widget.parent.q1Answer == 4) total += 0.60;
+    var total = 1.20;
 
-    if (widget.parent.q2Answer == 1) total += 0.10;
-    if (widget.parent.q2Answer == 2) total += 0.15;
-    if (widget.parent.q2Answer == 3) total += 0.25;
+    if (widget.parent.q1Answer == 1) {
+      total = 1.40;
+    } else if (widget.parent.q1Answer == 2) {
+      total = 1.65;
+    } else if (widget.parent.q1Answer == 3) {
+      total = 1.85;
+    } else if (widget.parent.q1Answer == 4) {
+      total = 2.0;
+    }
 
-    if (widget.parent.q3Answer == 1) total += 0.05;
-    if (widget.parent.q3Answer == 2) total += 0.10;
-    if (widget.parent.q3Answer == 3) total += 0.15;
+    if (widget.parent.q2Answer == 1) {
+      total += 0.04;
+    } else if (widget.parent.q2Answer == 2) {
+      total += 0.08;
+    } else if (widget.parent.q2Answer == 3) {
+      total += 0.15;
+    }
+
+    if (widget.parent.q3Answer == 1) {
+      total += 0.02;
+    } else if (widget.parent.q3Answer == 2) {
+      total += 0.06;
+    } else if (widget.parent.q3Answer == 3) {
+      total += 0.12;
+    }
 
     if (widget.parent.q3Answer != null &&
         widget.parent.q3Answer! > 0 &&
         widget.parent.q4Answer != null) {
-      if (widget.parent.q4Answer == 1) total += 0.05;
-      if (widget.parent.q4Answer == 2) total += 0.10;
+      if (widget.parent.q4Answer == 1) total += 0.03;
+      if (widget.parent.q4Answer == 2) total += 0.07;
     }
+
     setState(
-      () => widget.parent.palValue = double.parse(total.toStringAsFixed(2)),
+      () => widget.parent.palValue = total.clamp(1.1, 2.4),
     );
   }
 
@@ -57,147 +72,150 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
     final l10n = AppLocalizations.of(context)!;
     final canFinish = widget.parent.isManualPal || _isQuizComplete();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l10n.palTitle,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.palTitle,
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.palSubtitle,
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
+          const SizedBox(height: 8),
+          Text(
+            l10n.palSubtitle,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: widget.parent.isManualPal
-              ? _buildManualPalEditor(l10n)
-              : _buildPalQuiz(l10n),
-        ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: Alignment.bottomCenter,
-          child: (!widget.parent.isManualPal && _isQuizComplete())
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer.withValues(
-                        alpha: 0.3,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          size: 32,
-                          color: colorScheme.primary,
+          const SizedBox(height: 16),
+          Expanded(
+            child: widget.parent.isManualPal
+                ? _buildManualPalEditor(l10n)
+                : _buildPalQuiz(l10n),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            alignment: Alignment.bottomCenter,
+            child: (!widget.parent.isManualPal && _isQuizComplete())
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'PAL: ${widget.parent.palValue.toStringAsFixed(2)}',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                l10n.readyToProceed,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: 32,
+                            color: colorScheme.primary,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'PAL: ${widget.parent.palValue.toStringAsFixed(2)}',
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  l10n.readyToProceed,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                widget.parent.isManualPal = !widget.parent.isManualPal;
+                if (!widget.parent.isManualPal) _recalculatePal();
+              });
+            },
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            icon: Icon(widget.parent.isManualPal ? Icons.quiz : Icons.tune),
+            label: Text(
+              widget.parent.isManualPal
+                  ? l10n.quizPalSwitch
+                  : l10n.manualPalSwitch,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              OutlinedButton(
+                onPressed: widget.parent.prevStep,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 24,
                   ),
-                )
-              : const SizedBox.shrink(),
-        ),
-        TextButton.icon(
-          onPressed: () {
-            setState(() {
-              widget.parent.isManualPal = !widget.parent.isManualPal;
-              if (!widget.parent.isManualPal) _recalculatePal();
-            });
-          },
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          icon: Icon(widget.parent.isManualPal ? Icons.quiz : Icons.tune),
-          label: Text(
-            widget.parent.isManualPal
-                ? l10n.quizPalSwitch
-                : l10n.manualPalSwitch,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            OutlinedButton(
-              onPressed: widget.parent.prevStep,
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 24,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                side: BorderSide(
-                  color: colorScheme.outline.withValues(alpha: 0.5),
-                ),
-              ),
-              child: Text(
-                l10n.backButton,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: FilledButton(
-                onPressed: canFinish ? widget.parent.nextPage : null,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  side: BorderSide(
+                    color: colorScheme.outline.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Text(
-                  l10n.nextButton,
-                  style: textTheme.titleMedium?.copyWith(
+                  l10n.backButton,
+                  style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: colorScheme.onPrimary,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: FilledButton(
+                  onPressed: canFinish ? widget.parent.nextPage : null,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.nextButton,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

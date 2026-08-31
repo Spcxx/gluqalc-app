@@ -1,5 +1,5 @@
 {
-  "API_URL": "http://127.0.0.1:8080",
+  "API_URL": "http://192.168.0.100:8080",
   "IS_PROD": "false",
   "GITHUB_API_URL": "https://github.com/Spcxx/gluqalc-api/",
   "GITHUB_APP_URL": "https://github.com/Spcxx/gluqalc-app/",
