@@ -29,7 +29,9 @@ Future<void> showInsulinDetailsModal(
   ProfileResponse? profile,
   AppLocalizations l10n,
 ) async {
-  final colorScheme = Theme.of(context).colorScheme;
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  final textTheme = theme.textTheme;
 
   var descriptionSentences = <String>[];
   if (dose.description != null && dose.description!.isNotEmpty) {
@@ -55,81 +57,96 @@ Future<void> showInsulinDetailsModal(
   await showDialog<void>(
     context: context,
     builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Row(
         children: [
           Icon(Icons.bolt, color: colorScheme.primary),
           const SizedBox(width: 8),
           Text(
             l10n.insulinDoseDetailsTitle,
-            style: const TextStyle(fontSize: 16),
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDetailRow(
-            l10n.insulinTotalDose,
-            '${dose.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-            isBold: true,
-          ),
-          const Divider(height: 16),
-          _buildDetailRow(
-            l10n.insulinCarbDose,
-            '${dose.carbDose.toStringAsFixed(2)} ${l10n.unitInsulin} (${dose.carbUnit.toStringAsFixed(1)} ${l10n.unitCarbExchange})',
-          ),
-          _buildDetailRow(
-            l10n.insulinFatProteinDose,
-            '${dose.fatProteinDose.toStringAsFixed(2)} ${l10n.unitInsulin} (${dose.fatProteinUnit.toStringAsFixed(1)} ${l10n.unitFatProteinExchange})',
-          ),
-          if (showDurationRow && durationText.isNotEmpty)
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             _buildDetailRow(
-              l10n.insulinBolusDuration,
-              durationText,
+              context,
+              l10n.insulinTotalDose,
+              '${dose.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+              isBold: true,
             ),
-          if (descriptionSentences.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              l10n.insulinDescription,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
+            const Divider(height: 16),
+            _buildDetailRow(
+              context,
+              l10n.insulinCarbDose,
+              '${dose.carbDose.toStringAsFixed(2)} ${l10n.unitInsulin} (${dose.carbUnit.toStringAsFixed(1)} ${l10n.unitCarbExchange})',
+            ),
+            const SizedBox(height: 4),
+            _buildDetailRow(
+              context,
+              l10n.insulinFatProteinDose,
+              '${dose.fatProteinDose.toStringAsFixed(2)} ${l10n.unitInsulin} (${dose.fatProteinUnit.toStringAsFixed(1)} ${l10n.unitFatProteinExchange})',
+            ),
+            if (showDurationRow && durationText.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              _buildDetailRow(
+                context,
+                l10n.insulinBolusDuration,
+                durationText,
               ),
-            ),
-            const SizedBox(height: 6),
-            for (final sentence in descriptionSentences)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '• ',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildDescriptionSentence(
-                        context,
-                        sentence,
-                        colorScheme,
-                      ),
-                    ),
-                  ],
+            ],
+            if (descriptionSentences.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                l10n.insulinDescription,
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
+              const SizedBox(height: 6),
+              for (final sentence in descriptionSentences)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '• ',
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildDescriptionSentence(
+                          context,
+                          sentence,
+                          colorScheme,
+                          textTheme,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ],
-        ],
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: Text(l10n.closeButton),
         ),
       ],
@@ -141,6 +158,7 @@ Widget _buildDescriptionSentence(
   BuildContext context,
   String sentence,
   ColorScheme colorScheme,
+  TextTheme textTheme,
 ) {
   final colonIndex = sentence.indexOf(':');
   if (colonIndex != -1) {
@@ -148,8 +166,7 @@ Widget _buildDescriptionSentence(
     final content = sentence.substring(colonIndex + 1).trim();
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          fontSize: 13,
+        style: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface,
           fontFamily: DefaultTextStyle.of(context).style.fontFamily,
         ),
@@ -167,26 +184,39 @@ Widget _buildDescriptionSentence(
   } else {
     return Text(
       '$sentence.',
-      style: TextStyle(
-        fontSize: 13,
+      style: textTheme.bodyMedium?.copyWith(
         color: colorScheme.onSurface,
       ),
     );
   }
 }
 
-Widget _buildDetailRow(String label, String value, {bool isBold = false}) {
+Widget _buildDetailRow(
+  BuildContext context,
+  String label,
+  String value, {
+  bool isBold = false,
+}) {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  final textTheme = theme.textTheme;
+
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 13)),
+        Text(
+          label,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+          style: textTheme.bodyMedium?.copyWith(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+            color: colorScheme.onSurface,
           ),
         ),
       ],
@@ -194,21 +224,21 @@ Widget _buildDetailRow(String label, String value, {bool isBold = false}) {
   );
 }
 
-// Funkcja publiczna używana w kategoriach i posiłkach
 Widget buildInsulinComponent(
   BuildContext context,
   InsulinDoseInfo? dose,
   ProfileResponse? profile,
   AppLocalizations l10n,
 ) {
-  final colorScheme = Theme.of(context).colorScheme;
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  final textTheme = theme.textTheme;
 
   if (dose == null || dose.totalDose <= 0) {
     return Center(
       child: Text(
         '-',
-        style: TextStyle(
-          fontSize: 14,
+        style: textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
           color: colorScheme.onSurface.withValues(alpha: 0.4),
         ),
@@ -231,17 +261,16 @@ Widget buildInsulinComponent(
 
   return InkWell(
     onTap: () => showInsulinDetailsModal(context, dose, profile, l10n),
-    borderRadius: BorderRadius.circular(6),
+    borderRadius: BorderRadius.circular(10),
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             '${primaryDose.toStringAsFixed(2)}${l10n.unitInsulin}',
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.primary,
             ),
@@ -251,8 +280,7 @@ Widget buildInsulinComponent(
             const SizedBox(height: 1),
             Text(
               line2,
-              style: TextStyle(
-                fontSize: 11,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colorScheme.onSurface,
               ),

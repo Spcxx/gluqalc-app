@@ -13,7 +13,11 @@ class Step2BmrWidget extends StatefulWidget {
 class _Step2BmrWidgetState extends State<Step2BmrWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     final recommendedMethod = widget.parent.getRecommendedBmrMethod();
     final isBodyFatProvided =
         widget.parent.knowsBodyFat &&
@@ -48,12 +52,16 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
       children: [
         Text(
           l10n.bmrMethodTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.bmrMethodSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -89,14 +97,13 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey.shade300,
+                              ? colorScheme.primary
+                              : colorScheme.outline.withValues(alpha: 0.5),
                           width: isSelected ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(12),
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                                  .withValues(alpha: 0.05)
+                            ? colorScheme.primary.withValues(alpha: 0.05)
                             : Colors.transparent,
                       ),
                       padding: const EdgeInsets.only(
@@ -117,8 +124,7 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                               children: [
                                 Text(
                                   method['title']! as String,
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -126,9 +132,8 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                                   const SizedBox(height: 2),
                                   Text(
                                     l10n.katchMcArdleDisabledReason,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.red.shade700,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.error,
                                     ),
                                   ),
                                 ],
@@ -140,15 +145,15 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.shade100,
+                                      color: colorScheme.tertiaryContainer,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       l10n.recommendedForYou,
-                                      style: TextStyle(
+                                      style: textTheme.bodySmall?.copyWith(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.green.shade800,
+                                        color: colorScheme.onTertiaryContainer,
                                       ),
                                     ),
                                   ),
@@ -159,7 +164,7 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                           IconButton(
                             icon: Icon(
                               Icons.info_outline,
-                              color: Colors.grey.shade600,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () => widget.parent.showInfoDialog(
                               method['title']! as String,
@@ -185,10 +190,18 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -199,10 +212,16 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                     : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

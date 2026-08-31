@@ -162,8 +162,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password must be between 8 and 255 characters.';
 
   @override
-  String errorUnknown(Object code) {
-    return 'An unknown error occurred (Code: $code).';
+  String errorUnknown(String code) {
+    return 'An unknown error occurred (code: $code).';
   }
 
   @override
@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changeEmailButton => 'Wrong email?';
 
   @override
-  String get changeEmailDialogTitle => 'Change Email Address';
+  String get changeEmailDialogTitle => 'Change email address';
 
   @override
   String get changeEmailDialogSubtitle =>
@@ -239,10 +239,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingConsents => 'Error loading consents';
 
   @override
-  String get profileSetupTitle => 'Profile Setup';
+  String get profileSetupTitle => 'Profile setup';
 
   @override
-  String profileStepIndicator(Object current, Object total) {
+  String profileStepIndicator(int current, int total) {
     return 'Step $current of $total';
   }
 
@@ -271,7 +271,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genderOther => 'Other';
 
   @override
-  String get birthDateLabel => 'Date of Birth';
+  String get birthDateLabel => 'Date of birth';
 
   @override
   String get selectDate => 'Select date';
@@ -286,10 +286,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bodyFatCheckbox => 'I know my body fat percentage';
 
   @override
-  String get bodyFatLabel => 'Body Fat';
+  String get bodyFatLabel => 'Body fat';
 
   @override
-  String get bmrMethodTitle => 'BMR Calculation Method';
+  String get bmrMethodTitle => 'BMR calculation method';
 
   @override
   String get bmrMethodSubtitle =>
@@ -299,7 +299,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendedForYou => 'Recommended for you';
 
   @override
-  String get palTitle => 'Lifestyle & Activity (PAL)';
+  String get palTitle => 'Lifestyle & activity (PAL)';
 
   @override
   String get palSubtitle =>
@@ -312,7 +312,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quizPalSwitch => 'Back to questionnaire';
 
   @override
-  String get goalTitle => 'Silhouette Goal';
+  String get goalTitle => 'Silhouette goal';
 
   @override
   String get goalSubtitle =>
@@ -328,7 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goalGain => 'Gain weight';
 
   @override
-  String goalLoseGainQuestion(Object action) {
+  String goalLoseGainQuestion(String action) {
     return 'How many kilograms do you want to $action in a year?';
   }
 
@@ -343,7 +343,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Maintaining weight means zero caloric deficit/surplus.';
 
   @override
-  String get weeklyDistributionTitle => 'Flexible Weekly Schedule';
+  String get weeklyDistributionTitle => 'Flexible weekly schedule';
 
   @override
   String get weeklyDistributionSubtitle =>
@@ -356,12 +356,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklySumValid => 'Weekly sum is 0 kcal (perfect!)';
 
   @override
-  String weeklySumInvalid(Object sum) {
+  String weeklySumInvalid(int sum) {
     return 'Sum is $sum kcal. Must equal exactly 0.';
   }
 
   @override
-  String get macroTitle => 'Macronutrient Strategy';
+  String get macroTitle => 'Macronutrient strategy';
 
   @override
   String get macroSubtitle =>
@@ -371,10 +371,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get macroBalanced => 'Balanced';
 
   @override
-  String get macroHighProtein => 'High Protein';
+  String get macroHighProtein => 'High protein';
 
   @override
-  String get macroLowCarb => 'Low Carb';
+  String get macroLowCarb => 'Low carb';
 
   @override
   String get macroKeto => 'Keto';
@@ -393,25 +393,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get macroWarningText =>
-      'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-20%, Fat 20-35%). Make sure you know what you are doing.';
+      'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.';
 
   @override
   String get macroSumValid => 'Total macros equal 100%';
 
   @override
-  String macroSumInvalid(Object total) {
-    return 'Total is $total% (Must equal 100%)';
+  String macroSumInvalid(int total) {
+    return 'Total is $total% (must equal 100%)';
   }
 
   @override
-  String get insulinSettingsTitle => 'Insulin Parameters';
+  String get insulinSettingsTitle => 'Insulin parameters';
 
   @override
   String get insulinSettingsSubtitle =>
       'Key parameters for calculating insulin doses and corrections.';
 
   @override
-  String get insulinDeliveryMethodLabel => 'Insulin Delivery Method';
+  String get insulinDeliveryMethodLabel => 'Insulin delivery method';
 
   @override
   String get insulinPen => 'Pen';
@@ -420,7 +420,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insulinPump => 'Pump';
 
   @override
-  String get icrTitle => 'Insulin to Carb Ratio (ICR)';
+  String get icrTitle => 'Insulin to carb ratio (ICR)';
 
   @override
   String get icrSubtitle =>
@@ -433,7 +433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get icrValid => 'Hourly configuration is fully valid.';
 
   @override
-  String get fpuMethodTitle => 'FPU Calculation Method';
+  String get fpuMethodTitle => 'FPU calculation method';
 
   @override
   String get fpuMethodSubtitle =>
@@ -453,22 +453,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get summaryBirthDate => 'Date of birth';
 
   @override
-  String get summaryHeightWeight => 'Height & Weight';
+  String get summaryHeightWeight => 'Height & weight';
 
   @override
-  String get summaryBodyFat => 'Body Fat';
+  String get summaryBodyFat => 'Body fat';
 
   @override
-  String get summaryBmrMethod => 'BMR Method';
+  String get summaryBmrMethod => 'BMR method';
 
   @override
-  String get summaryPal => 'PAL Value';
+  String get summaryPal => 'PAL value';
 
   @override
-  String get summaryGoal => 'Caloric Goal';
+  String get summaryGoal => 'Caloric goal';
 
   @override
-  String get summaryWeekly => 'Weekly Schedule';
+  String get summaryWeekly => 'Weekly schedule';
 
   @override
   String get summaryMacros => 'Macronutrients';
@@ -477,13 +477,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get summaryInsulinParams => 'ISF / IFP';
 
   @override
-  String get summaryInsulinDelivery => 'Delivery Method';
+  String get summaryInsulinDelivery => 'Delivery method';
 
   @override
-  String get summaryIcrHours => 'ICR Hours';
+  String get summaryIcrHours => 'ICR hours';
 
   @override
-  String get summaryFpuMethod => 'FPU Method';
+  String get summaryFpuMethod => 'FPU method';
 
   @override
   String get errorHeightRange => 'Height must be between 50 and 300 cm';
@@ -504,7 +504,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorIcrValue => 'ICR value must be greater than 0.';
 
   @override
-  String errorIcrDuplicate(Object hour) {
+  String errorIcrDuplicate(int hour) {
     return 'Hour $hour:00 is duplicated. Each hour can only appear once.';
   }
 
@@ -515,7 +515,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get icrConfigValid => 'Hourly configuration is fully valid.';
 
   @override
-  String get deliveryMethodInfoTitle => 'Insulin Delivery Method';
+  String get deliveryMethodInfoTitle => 'Insulin delivery method';
 
   @override
   String get deliveryMethodInfoDesc =>
@@ -727,33 +727,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get isfLabel => 'Insulin Sensitivity Factor (ISF)';
+  String get isfLabel => 'Insulin sensitivity factor (ISF)';
 
   @override
   String get isfSuffix => 'mg/dL / U';
 
   @override
-  String get isfInfoTitle => 'ISF (Insulin Sensitivity Factor)';
+  String get isfInfoTitle => 'ISF (Insulin sensitivity factor)';
 
   @override
   String get isfInfoDesc =>
       'Specifies how many mg/dL your blood glucose drops after taking 1 unit of rapid-acting insulin.';
 
   @override
-  String get ifpLabel => 'Insulin Fat-Protein Ratio (IFP)';
+  String get ifpLabel => 'Insulin fat-protein ratio (IFP)';
 
   @override
   String get ifpSuffix => 'U / FPU';
 
   @override
-  String get ifpInfoTitle => 'IFP / FPU Ratio';
+  String get ifpInfoTitle => 'IFP / FPU ratio';
 
   @override
   String get ifpInfoDesc =>
       'Specifies how many units of insulin are needed for 1 FPU (Fat-Protein Unit), which corresponds to every 100 kcal coming from dietary fats and proteins.';
 
   @override
-  String get icrInfoTitle => 'ICR (Insulin to Carb Ratio)';
+  String get icrInfoTitle => 'ICR (Insulin to carb ratio)';
 
   @override
   String get icrInfoDesc =>
@@ -766,10 +766,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get icrValueLabel => 'ICR (g/U)';
 
   @override
-  String get pankowskaTitle => 'Pańkowska Method (Warsaw Method)';
+  String get pankowskaTitle => 'Pańkowska method (Warsaw method)';
 
   @override
-  String get sieradzkiTitle => 'Sieradzki Method (Percentage Method)';
+  String get sieradzkiTitle => 'Sieradzki method (Percentage method)';
 
   @override
   String get notSet => 'Not set';
@@ -805,7 +805,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readyToProceed => 'Ready to proceed.';
 
   @override
-  String get palMultiplierLabel => 'PAL Multiplier';
+  String get palMultiplierLabel => 'PAL multiplier';
 
   @override
   String get errorTitle => 'Error';
@@ -814,7 +814,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutTooltip => 'Logout';
 
   @override
-  String get tryAgainButton => 'Try Again';
+  String get tryAgainButton => 'Try again';
 
   @override
   String get okButton => 'OK';
@@ -963,25 +963,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDeleteButton => 'Permanently delete';
 
   @override
-  String get deviceWeb => 'Web Browser';
+  String get deviceWeb => 'Web browser';
 
   @override
-  String get deviceAndroid => 'Android Device';
+  String get deviceAndroid => 'Android device';
 
   @override
-  String get deviceIos => 'iOS Device';
+  String get deviceIos => 'iOS device';
 
   @override
   String get deviceWindows => 'Windows PC';
 
   @override
-  String get deviceLinux => 'Linux Native App';
+  String get deviceLinux => 'Linux native app';
 
   @override
   String get deviceMac => 'Mac / MacBook';
 
   @override
-  String get deviceUnknown => 'Unknown Device';
+  String get deviceUnknown => 'Unknown device';
 
   @override
   String get lastActive => 'Last active';
@@ -1019,19 +1019,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutContact => 'Contact';
 
   @override
-  String get aboutFrontendRepo => 'Frontend Repository';
+  String get aboutFrontendRepo => 'Frontend repository';
 
   @override
-  String get aboutBackendRepo => 'API Repository';
+  String get aboutBackendRepo => 'API repository';
 
   @override
-  String get aboutTos => 'Terms of Service (ToS)';
+  String get aboutTos => 'Terms of service (ToS)';
 
   @override
-  String get aboutPrivacy => 'Privacy Policy';
+  String get aboutPrivacy => 'Privacy policy';
 
   @override
-  String get aboutDisclaimer => 'Medical Disclaimer';
+  String get aboutDisclaimer => 'Medical disclaimer';
 
   @override
   String get errorOpenUrl => 'Could not open URL';
@@ -1141,7 +1141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insulinCarbDose => 'Carb dose:';
 
   @override
-  String get insulinFatProteinDose => 'Fat & Protein dose:';
+  String get insulinFatProteinDose => 'Fat & protein dose:';
 
   @override
   String get insulinBolusDuration => 'Bolus duration:';
@@ -1196,7 +1196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insulinCarbs => 'Carbs';
 
   @override
-  String get insulinFatProtein => 'Fat & Protein';
+  String get insulinFatProtein => 'Fat & protein';
 
   @override
   String get dailyMacroShareTitle => 'Daily macro share';
@@ -1299,7 +1299,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productEditValidationRequired =>
-      'Product name and main macros (Kcal, Carbs, Protein, Fat) are required.';
+      'Product name and main macros (kcal, carbs, protein, fat) are required.';
 
   @override
   String productEditValidationCaloricMismatch(String kcal, String calculated) {
@@ -1359,4 +1359,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorInvalidNumber => 'Please enter a valid number';
+
+  @override
+  String get loadingState => '...';
 }

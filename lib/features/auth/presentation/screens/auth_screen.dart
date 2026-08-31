@@ -126,10 +126,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    ref.listen<AsyncValue<void>>(authControllerProvider, (prev, next) {
-      next.whenOrNull(
+    ref.listen<AsyncValue<void>>(authControllerProvider, (prev, next) async {
+      await next.whenOrNull(
         error: (error, stackTrace) {
           final errorMessage = error.toString().replaceAll('Exception: ', '');
 
@@ -141,8 +144,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: colorScheme.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         },
@@ -163,8 +169,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.snackbarOffline),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       } else if (next == AppConnectionState.online &&
@@ -172,8 +181,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.snackbarOnline),
-            backgroundColor: Colors.green,
+            backgroundColor: colorScheme.tertiary,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -185,7 +197,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
+            color: colorScheme.primary,
           ),
         ),
       );
@@ -203,158 +215,249 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 32,
-            ),
-            child: Form(
-              key: _formKey,
-              child: AutofillGroup(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Assets.images.appLogo.image(
-                      height: 100,
-                    ),
-                    const SizedBox(height: 32),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.email],
-                      decoration: InputDecoration(
-                        labelText: l10n.emailLabel,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: const OutlineInputBorder(),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 32,
+              ),
+              child: Form(
+                key: _formKey,
+                child: AutofillGroup(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Assets.images.appLogo.image(
+                        height: 100,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.errorEmailRequired;
-                        }
-                        if (!_emailRegex.hasMatch(value)) {
-                          return l10n.errorInvalidEmail;
-                        }
-                        return null;
-                      },
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      textInputAction: TextInputAction.done,
-                      autofillHints: [
-                        if (_isLogin)
-                          AutofillHints.password
-                        else
-                          AutofillHints.newPassword,
-                      ],
-                      onFieldSubmitted: (_) {
-                        if (isFormValid && !isLoading) _submit(l10n);
-                      },
-                      decoration: InputDecoration(
-                        labelText: l10n.passwordLabel,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
+                      const SizedBox(height: 32),
+                      TextFormField(
+                        controller: _emailController,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.errorPasswordRequired;
-                        }
-                        if (!_isLogin && !rulesWidget.isValid) {
-                          return l10n.errorPasswordNotMet;
-                        }
-                        return null;
-                      },
-                      onChanged: (val) {
-                        setState(() {
-                          _currentPassword = val;
-                        });
-                      },
-                    ),
-                    if (_isLogin) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: isLoading
-                                ? null
-                                : () async {
-                                    await showDialog<void>(
-                                      context: context,
-                                      builder: (ctx) => _ForgotPasswordDialog(
-                                        l10n: l10n,
-                                        initialEmail: _emailController.text
-                                            .trim(),
-                                      ),
-                                    );
-                                  },
-                            child: Text(l10n.forgotPasswordButton),
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        autofillHints: const [AutofillHints.email],
+                        decoration: InputDecoration(
+                          labelText: l10n.emailLabel,
+                          labelStyle: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
-                        ),
-                      ),
-                    ] else ...[
-                      const SizedBox(height: 16),
-                    ],
-                    if (!_isLogin) ...[
-                      rulesWidget,
-                      const SizedBox(height: 24),
-                    ],
-                    FilledButton(
-                      onPressed: (isFormValid && !isLoading)
-                          ? () => _submit(l10n)
-                          : null,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.2),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
                               ),
-                            )
-                          : Text(
-                              _isLogin ? l10n.loginButton : l10n.signupButton,
-                              style: const TextStyle(fontSize: 16),
                             ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.errorEmailRequired;
+                          }
+                          if (!_emailRegex.hasMatch(value)) {
+                            return l10n.errorInvalidEmail;
+                          }
+                          return null;
+                        },
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        obscureText: !_isPasswordVisible,
+                        textInputAction: TextInputAction.done,
+                        autofillHints: [
+                          if (_isLogin)
+                            AutofillHints.password
+                          else
+                            AutofillHints.newPassword,
+                        ],
+                        onFieldSubmitted: (_) {
+                          if (isFormValid && !isLoading) _submit(l10n);
+                        },
+                        decoration: InputDecoration(
+                          labelText: l10n.passwordLabel,
+                          labelStyle: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.2),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
                               setState(() {
-                                _isLogin = !_isLogin;
-                                _currentPassword = '';
-                                _passwordController.clear();
-                                _formKey.currentState?.reset();
+                                _isPasswordVisible = !_isPasswordVisible;
                               });
                             },
-                      child: Text(
-                        _isLogin
-                            ? l10n.noAccountPrompt
-                            : l10n.alreadyHaveAccountPrompt,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.errorPasswordRequired;
+                          }
+                          if (!_isLogin && !rulesWidget.isValid) {
+                            return l10n.errorPasswordNotMet;
+                          }
+                          return null;
+                        },
+                        onChanged: (val) {
+                          setState(() {
+                            _currentPassword = val;
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      if (_isLogin) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () async {
+                                      await showDialog<void>(
+                                        context: context,
+                                        builder: (ctx) => _ForgotPasswordDialog(
+                                          l10n: l10n,
+                                          initialEmail: _emailController.text
+                                              .trim(),
+                                        ),
+                                      );
+                                    },
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(l10n.forgotPasswordButton),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        const SizedBox(height: 16),
+                      ],
+                      if (!_isLogin) ...[
+                        rulesWidget,
+                        const SizedBox(height: 24),
+                      ],
+                      FilledButton(
+                        onPressed: (isFormValid && !isLoading)
+                            ? () => _submit(l10n)
+                            : null,
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: isLoading
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              )
+                            : Text(
+                                _isLogin ? l10n.loginButton : l10n.signupButton,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                setState(() {
+                                  _isLogin = !_isLogin;
+                                  _currentPassword = '';
+                                  _passwordController.clear();
+                                  _formKey.currentState?.reset();
+                                });
+                              },
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          _isLogin
+                              ? l10n.noAccountPrompt
+                              : l10n.alreadyHaveAccountPrompt,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -405,6 +508,7 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final colorScheme = Theme.of(context).colorScheme;
 
     final passwordRules = PasswordRulesWidget(
       password: _newPasswordController.text,
@@ -430,8 +534,11 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(widget.l10n.passwordChangedSuccessfully),
-              backgroundColor: Colors.green,
+              backgroundColor: colorScheme.tertiary,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         }
@@ -443,8 +550,11 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
             content: Text(
               _mapDioError(e, widget.l10n, isSecondStep: _isCodeSent),
             ),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -455,6 +565,10 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final rulesWidget = PasswordRulesWidget(
       password: _newPasswordController.text,
     );
@@ -465,7 +579,11 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
     final canSubmitStep2 = isCodeValid && rulesWidget.isValid;
 
     return AlertDialog(
-      title: Text(widget.l10n.forgotPasswordButton),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        widget.l10n.forgotPasswordButton,
+        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -477,16 +595,55 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
                 _isCodeSent
                     ? widget.l10n.forgotPasswordCodeSubtitle
                     : widget.l10n.forgotPasswordDialogSubtitle,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 16),
               if (!_isCodeSent) ...[
                 TextFormField(
                   controller: _emailController,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: widget.l10n.emailLabel,
-                    border: const OutlineInputBorder(),
+                    labelStyle: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.2,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
                   ),
                   onChanged: (_) => setState(() {}),
                   validator: (v) {
@@ -506,8 +663,7 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
                   textAlign: TextAlign.center,
                   maxLength: 6,
                   autofillHints: const [AutofillHints.oneTimeCode],
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: textTheme.headlineMedium?.copyWith(
                     letterSpacing: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -517,12 +673,45 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
                   ],
                   decoration: InputDecoration(
                     hintText: '123456',
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
+                    hintStyle: textTheme.headlineMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                       letterSpacing: 12,
                       fontWeight: FontWeight.normal,
                     ),
-                    border: const OutlineInputBorder(),
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.2,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
                     counterText: '',
                   ),
                   onChanged: (_) => setState(() {}),
@@ -537,9 +726,46 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
                 TextFormField(
                   controller: _newPasswordController,
                   obscureText: !_isPasswordVisible,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   decoration: InputDecoration(
                     labelText: widget.l10n.newPasswordLabel,
-                    border: const OutlineInputBorder(),
+                    labelStyle: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.2,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible
@@ -566,6 +792,11 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
         ),
         FilledButton(
@@ -575,13 +806,18 @@ class _ForgotPasswordDialogState extends ConsumerState<_ForgotPasswordDialog> {
                   (_isCodeSent && !canSubmitStep2)
               ? null
               : _submit,
+          style: FilledButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: _isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 )
               : Text(

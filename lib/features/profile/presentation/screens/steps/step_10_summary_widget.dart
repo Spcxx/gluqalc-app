@@ -68,7 +68,15 @@ class Step10SummaryWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildSummaryItem(String label, String value) {
+  Widget _buildSummaryItem(
+    BuildContext context,
+    String label,
+    String value,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -77,14 +85,18 @@ class Step10SummaryWidget extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(width: 16),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -94,6 +106,9 @@ class Step10SummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -101,12 +116,16 @@ class Step10SummaryWidget extends StatelessWidget {
       children: [
         Text(
           l10n.summaryTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.summarySubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -120,33 +139,40 @@ class Step10SummaryWidget extends StatelessWidget {
               child: ListView(
                 children: [
                   _buildSummaryItem(
+                    context,
                     l10n.summaryGender,
                     _formatGender(parent.selectedGender, l10n),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryBirthDate,
                     parent.selectedBirthDate?.toIso8601String().split('T')[0] ??
                         l10n.notSet,
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryHeightWeight,
                     '${parent.heightController.text} cm, ${parent.weightController.text} kg',
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryBodyFat,
                     parent.knowsBodyFat
                         ? '${parent.bodyFatController.text}%'
                         : l10n.notProvided,
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryBmrMethod,
                     _formatBmr(parent.selectedBmrMethod, l10n),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryPal,
                     parent.palValue.toStringAsFixed(2),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryGoal,
                     _formatGoal(
                       parent.goalType,
@@ -155,28 +181,34 @@ class Step10SummaryWidget extends StatelessWidget {
                     ),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryWeekly,
                     parent.enableWeeklyDistribution
                         ? l10n.summaryWeeklyCustom
                         : l10n.summaryWeeklyUniform,
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryMacros,
                     'P: ${parent.proteinPercent.toInt()}%, F: ${parent.fatPercent.toInt()}%, C: ${parent.carbPercent.toInt()}%',
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryInsulinParams,
                     '${parent.isfController.text} mg/dL/U | ${parent.ifpController.text} U/FPU',
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryInsulinDelivery,
                     _formatDeliveryMethod(parent.insulinDeliveryMethod, l10n),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryIcrHours,
                     l10n.summaryIntervals(parent.hourIcrItems.length),
                   ),
                   _buildSummaryItem(
+                    context,
                     l10n.summaryFpuMethod,
                     _formatCombinedInsulin(parent.combinedInsulinMethod, l10n),
                   ),
@@ -195,10 +227,18 @@ class Step10SummaryWidget extends StatelessWidget {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -207,10 +247,16 @@ class Step10SummaryWidget extends StatelessWidget {
                 onPressed: parent.finishSetup,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.finishButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

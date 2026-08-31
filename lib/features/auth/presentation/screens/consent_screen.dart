@@ -20,11 +20,15 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
   bool _isSubmitting = false;
 
   void _showError(String message) {
+    final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
+        backgroundColor: colorScheme.error,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
@@ -100,6 +104,9 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final consentsAsync = ref.watch(consentControllerProvider);
 
@@ -109,8 +116,10 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) context.go('/home');
           });
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: colorScheme.primary),
+            ),
           );
         }
 
@@ -122,99 +131,158 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
 
         return Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             title: Text(
               '${l10n.consentTitle} ${_currentIndex + 1} / ${consents.length}',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
             ),
             automaticallyImplyLeading: false,
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LinearProgressIndicator(
-                    value: (_currentIndex + 1) / consents.length,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '${l10n.consentVersionLabel}: ${consent.version}',
-                    style: TextStyle(color: Colors.grey.shade600),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Text(
-                          consent.description,
-                          style: const TextStyle(fontSize: 15, height: 1.5),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: (_currentIndex + 1) / consents.length,
+                          minHeight: 6,
+                          backgroundColor: colorScheme.primary.withValues(
+                            alpha: 0.15,
+                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (consent.required)
-                    Text(
-                      l10n.consentRequiredLabel,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(height: 16),
+                      Text(
+                        '${l10n.consentVersionLabel}: ${consent.version}',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => _handleAccept(consents, l10n),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.2),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
                             ),
-                          )
-                        : Text(
-                            l10n.acceptButton,
-                            style: const TextStyle(fontSize: 16),
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          child: Scrollbar(
+                            child: SingleChildScrollView(
+                              child: Text(
+                                consent.description,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (consent.required)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            l10n.consentRequiredLabel,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.error,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: _isSubmitting
+                            ? null
+                            : () => _handleAccept(consents, l10n),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isSubmitting
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              )
+                            : Text(
+                                l10n.acceptButton,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: _isSubmitting
+                            ? null
+                            : () => _handleDecline(consents, l10n),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: BorderSide(
+                            color: colorScheme.outline.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Text(
+                          l10n.declineButton,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => _handleDecline(consents, l10n),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: Text(
-                      l10n.declineButton,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      loading: () => Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: colorScheme.primary),
+        ),
       ),
       error: (error, _) => Scaffold(
         appBar: AppBar(
-          title: Text(l10n.errorTitle),
+          centerTitle: true,
+          title: Text(
+            l10n.errorTitle,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.primary,
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -226,32 +294,59 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
           ],
         ),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.errorLoadingConsents,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  error.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: () {
-                    ref.invalidate(consentControllerProvider);
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.tryAgainButton),
-                ),
-              ],
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: colorScheme.error,
+                    size: 48,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.errorLoadingConsents,
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref.invalidate(consentControllerProvider);
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.refresh),
+                    label: Text(
+                      l10n.tryAgainButton,
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

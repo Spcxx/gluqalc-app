@@ -13,7 +13,11 @@ class Step1BasicsWidget extends StatefulWidget {
 class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     final now = DateTime.now();
     final maxDate = DateTime(now.year - 18, now.month, now.day);
     final minDate = DateTime(now.year - 110, now.month, now.day);
@@ -31,8 +35,7 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                 children: [
                   Text(
                     l10n.genderLabel,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -64,16 +67,24 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                   const SizedBox(height: 24),
                   Text(
                     l10n.birthDateLabel,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
                       alignment: Alignment.centerLeft,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      side: BorderSide(
+                        color: colorScheme.outline.withValues(alpha: 0.5),
+                      ),
                     ),
                     icon: const Icon(Icons.calendar_today),
                     label: Text(
@@ -81,6 +92,7 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                           ? '${widget.parent.selectedBirthDate!.toLocal()}'
                                 .split(' ')[0]
                           : l10n.selectDate,
+                      style: textTheme.bodyMedium,
                     ),
                     onPressed: () async {
                       final picked = await showDatePicker(
@@ -104,11 +116,55 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                       Expanded(
                         child: TextFormField(
                           controller: widget.parent.heightController,
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: l10n.heightLabel,
+                            labelStyle: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
                             suffixText: 'cm',
-                            border: const OutlineInputBorder(),
+                            suffixStyle: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            filled: true,
+                            fillColor: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.2),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
                           ),
                           validator: (val) {
                             if (val == null || val.isEmpty) {
@@ -127,13 +183,57 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                       Expanded(
                         child: TextFormField(
                           controller: widget.parent.weightController,
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
                           decoration: InputDecoration(
                             labelText: l10n.weightLabel,
+                            labelStyle: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
                             suffixText: 'kg',
-                            border: const OutlineInputBorder(),
+                            suffixStyle: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            filled: true,
+                            fillColor: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.2),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
                           ),
                           validator: (val) {
                             if (val == null || val.isEmpty) {
@@ -154,8 +254,13 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.outline.withValues(alpha: 0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.1,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,7 +268,9 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                         CheckboxListTile(
                           title: Text(
                             l10n.bodyFatCheckbox,
-                            style: const TextStyle(fontSize: 14),
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           contentPadding: EdgeInsets.zero,
                           controlAffinity: ListTileControlAffinity.leading,
@@ -181,13 +288,57 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: widget.parent.bodyFatController,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
                             decoration: InputDecoration(
                               labelText: l10n.bodyFatLabel,
+                              labelStyle: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
                               suffixText: '%',
-                              border: const OutlineInputBorder(),
+                              suffixStyle: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
+                                fontWeight: FontWeight.bold,
+                              ),
+                              filled: true,
+                              fillColor: colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.2),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
                             ),
                             validator: (val) {
                               if (!widget.parent.knowsBodyFat) return null;
@@ -219,7 +370,14 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
               if (widget.parent.selectedGender == null ||
                   widget.parent.selectedBirthDate == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.errorFieldRequired)),
+                  SnackBar(
+                    content: Text(l10n.errorFieldRequired),
+                    backgroundColor: colorScheme.error,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 );
                 return;
               }
@@ -231,7 +389,14 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
                   365;
               if (age < 18 || age > 110) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.errorValidationError)),
+                  SnackBar(
+                    content: Text(l10n.errorValidationError),
+                    backgroundColor: colorScheme.error,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 );
                 return;
               }
@@ -245,8 +410,17 @@ class _Step1BasicsWidgetState extends State<Step1BasicsWidget> {
             },
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: Text(l10n.nextButton, style: const TextStyle(fontSize: 16)),
+            child: Text(
+              l10n.nextButton,
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
           ),
         ],
       ),

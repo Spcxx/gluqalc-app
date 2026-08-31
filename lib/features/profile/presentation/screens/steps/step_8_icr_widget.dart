@@ -13,6 +13,9 @@ class Step8IcrWidget extends StatefulWidget {
 class _Step8IcrWidgetState extends State<Step8IcrWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final stringError = widget.parent.validateHourlyIcr(l10n);
 
@@ -24,14 +27,13 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
             Expanded(
               child: Text(
                 l10n.icrTitle,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.info_outline, color: Colors.blue),
+              icon: Icon(Icons.info_outline, color: colorScheme.primary),
               onPressed: () => widget.parent.showInfoDialog(
                 l10n.icrInfoTitle,
                 l10n.icrInfoDesc,
@@ -42,7 +44,9 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
         const SizedBox(height: 8),
         Text(
           l10n.icrSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -62,6 +66,15 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
               );
             });
           },
+          style: OutlinedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            side: BorderSide(
+              color: colorScheme.outline.withValues(alpha: 0.5),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
           icon: const Icon(Icons.add),
           label: Text(l10n.addHourButton),
         ),
@@ -70,31 +83,32 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: stringError == null
-                ? Colors.green.shade50
-                : Colors.red.shade50,
+                ? colorScheme.tertiaryContainer.withValues(alpha: 0.3)
+                : colorScheme.errorContainer.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: stringError == null
-                  ? Colors.green.shade200
-                  : Colors.red.shade200,
+                  ? colorScheme.tertiary.withValues(alpha: 0.5)
+                  : colorScheme.error.withValues(alpha: 0.5),
             ),
           ),
           child: Row(
             children: [
               Icon(
                 stringError == null ? Icons.check_circle : Icons.error_outline,
-                color: stringError == null ? Colors.green : Colors.red,
+                color: stringError == null
+                    ? colorScheme.tertiary
+                    : colorScheme.error,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   stringError ?? l10n.icrConfigValid,
-                  style: TextStyle(
+                  style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 13,
                     color: stringError == null
-                        ? Colors.green.shade800
-                        : Colors.red.shade800,
+                        ? colorScheme.onTertiaryContainer
+                        : colorScheme.onErrorContainer,
                   ),
                 ),
               ),
@@ -111,10 +125,18 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -123,10 +145,16 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
                 onPressed: stringError == null ? widget.parent.nextPage : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),
@@ -137,12 +165,16 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
   }
 
   Widget _buildIcrCard(HourIcrItem item, int index, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Card(
       key: ObjectKey(item),
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 1,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -152,16 +184,48 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
               flex: 2,
               child: DropdownButtonFormField<int>(
                 initialValue: item.hour,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 decoration: InputDecoration(
                   labelText: l10n.hourLabel,
+                  labelStyle: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.2,
+                  ),
                   isDense: true,
-                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 items: List.generate(
                   24,
                   (h) => DropdownMenuItem(
                     value: h,
-                    child: Text('$h:00'),
+                    child: Text('$h:00', style: textTheme.bodyMedium),
                   ),
                 ),
                 onChanged: (val) {
@@ -174,13 +238,45 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
               flex: 2,
               child: TextFormField(
                 initialValue: item.icrValue.toString(),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
                 decoration: InputDecoration(
                   labelText: l10n.icrValueLabel,
+                  labelStyle: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.2,
+                  ),
                   isDense: true,
-                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 onChanged: (val) {
                   item.icrValue =
@@ -190,9 +286,9 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
             ),
             if (widget.parent.hourIcrItems.length > 1)
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline,
-                  color: Colors.red,
+                  color: colorScheme.error,
                 ),
                 onPressed: () {
                   setState(() {

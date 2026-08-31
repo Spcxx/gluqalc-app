@@ -367,8 +367,8 @@ abstract class AppLocalizations {
   /// No description provided for @errorUnknown.
   ///
   /// In en, this message translates to:
-  /// **'An unknown error occurred (Code: {code}).'**
-  String errorUnknown(Object code);
+  /// **'An unknown error occurred (code: {code}).'**
+  String errorUnknown(String code);
 
   /// No description provided for @errorInvalidVerificationCode.
   ///
@@ -397,7 +397,7 @@ abstract class AppLocalizations {
   /// No description provided for @changeEmailDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Change Email Address'**
+  /// **'Change email address'**
   String get changeEmailDialogTitle;
 
   /// No description provided for @changeEmailDialogSubtitle.
@@ -505,14 +505,14 @@ abstract class AppLocalizations {
   /// No description provided for @profileSetupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Profile Setup'**
+  /// **'Profile setup'**
   String get profileSetupTitle;
 
   /// No description provided for @profileStepIndicator.
   ///
   /// In en, this message translates to:
   /// **'Step {current} of {total}'**
-  String profileStepIndicator(Object current, Object total);
+  String profileStepIndicator(int current, int total);
 
   /// No description provided for @nextButton.
   ///
@@ -565,7 +565,7 @@ abstract class AppLocalizations {
   /// No description provided for @birthDateLabel.
   ///
   /// In en, this message translates to:
-  /// **'Date of Birth'**
+  /// **'Date of birth'**
   String get birthDateLabel;
 
   /// No description provided for @selectDate.
@@ -595,13 +595,13 @@ abstract class AppLocalizations {
   /// No description provided for @bodyFatLabel.
   ///
   /// In en, this message translates to:
-  /// **'Body Fat'**
+  /// **'Body fat'**
   String get bodyFatLabel;
 
   /// No description provided for @bmrMethodTitle.
   ///
   /// In en, this message translates to:
-  /// **'BMR Calculation Method'**
+  /// **'BMR calculation method'**
   String get bmrMethodTitle;
 
   /// No description provided for @bmrMethodSubtitle.
@@ -619,7 +619,7 @@ abstract class AppLocalizations {
   /// No description provided for @palTitle.
   ///
   /// In en, this message translates to:
-  /// **'Lifestyle & Activity (PAL)'**
+  /// **'Lifestyle & activity (PAL)'**
   String get palTitle;
 
   /// No description provided for @palSubtitle.
@@ -643,7 +643,7 @@ abstract class AppLocalizations {
   /// No description provided for @goalTitle.
   ///
   /// In en, this message translates to:
-  /// **'Silhouette Goal'**
+  /// **'Silhouette goal'**
   String get goalTitle;
 
   /// No description provided for @goalSubtitle.
@@ -674,7 +674,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'How many kilograms do you want to {action} in a year?'**
-  String goalLoseGainQuestion(Object action);
+  String goalLoseGainQuestion(String action);
 
   /// No description provided for @goalActionLose.
   ///
@@ -697,7 +697,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklyDistributionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Flexible Weekly Schedule'**
+  /// **'Flexible weekly schedule'**
   String get weeklyDistributionTitle;
 
   /// No description provided for @weeklyDistributionSubtitle.
@@ -722,12 +722,12 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Sum is {sum} kcal. Must equal exactly 0.'**
-  String weeklySumInvalid(Object sum);
+  String weeklySumInvalid(int sum);
 
   /// No description provided for @macroTitle.
   ///
   /// In en, this message translates to:
-  /// **'Macronutrient Strategy'**
+  /// **'Macronutrient strategy'**
   String get macroTitle;
 
   /// No description provided for @macroSubtitle.
@@ -745,13 +745,13 @@ abstract class AppLocalizations {
   /// No description provided for @macroHighProtein.
   ///
   /// In en, this message translates to:
-  /// **'High Protein'**
+  /// **'High protein'**
   String get macroHighProtein;
 
   /// No description provided for @macroLowCarb.
   ///
   /// In en, this message translates to:
-  /// **'Low Carb'**
+  /// **'Low carb'**
   String get macroLowCarb;
 
   /// No description provided for @macroKeto.
@@ -787,7 +787,7 @@ abstract class AppLocalizations {
   /// No description provided for @macroWarningText.
   ///
   /// In en, this message translates to:
-  /// **'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-20%, Fat 20-35%). Make sure you know what you are doing.'**
+  /// **'Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.'**
   String get macroWarningText;
 
   /// No description provided for @macroSumValid.
@@ -799,13 +799,13 @@ abstract class AppLocalizations {
   /// No description provided for @macroSumInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Total is {total}% (Must equal 100%)'**
-  String macroSumInvalid(Object total);
+  /// **'Total is {total}% (must equal 100%)'**
+  String macroSumInvalid(int total);
 
   /// No description provided for @insulinSettingsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Parameters'**
+  /// **'Insulin parameters'**
   String get insulinSettingsTitle;
 
   /// No description provided for @insulinSettingsSubtitle.
@@ -817,7 +817,7 @@ abstract class AppLocalizations {
   /// No description provided for @insulinDeliveryMethodLabel.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Delivery Method'**
+  /// **'Insulin delivery method'**
   String get insulinDeliveryMethodLabel;
 
   /// No description provided for @insulinPen.
@@ -835,7 +835,7 @@ abstract class AppLocalizations {
   /// No description provided for @icrTitle.
   ///
   /// In en, this message translates to:
-  /// **'Insulin to Carb Ratio (ICR)'**
+  /// **'Insulin to carb ratio (ICR)'**
   String get icrTitle;
 
   /// No description provided for @icrSubtitle.
@@ -859,7 +859,7 @@ abstract class AppLocalizations {
   /// No description provided for @fpuMethodTitle.
   ///
   /// In en, this message translates to:
-  /// **'FPU Calculation Method'**
+  /// **'FPU calculation method'**
   String get fpuMethodTitle;
 
   /// No description provided for @fpuMethodSubtitle.
@@ -895,37 +895,37 @@ abstract class AppLocalizations {
   /// No description provided for @summaryHeightWeight.
   ///
   /// In en, this message translates to:
-  /// **'Height & Weight'**
+  /// **'Height & weight'**
   String get summaryHeightWeight;
 
   /// No description provided for @summaryBodyFat.
   ///
   /// In en, this message translates to:
-  /// **'Body Fat'**
+  /// **'Body fat'**
   String get summaryBodyFat;
 
   /// No description provided for @summaryBmrMethod.
   ///
   /// In en, this message translates to:
-  /// **'BMR Method'**
+  /// **'BMR method'**
   String get summaryBmrMethod;
 
   /// No description provided for @summaryPal.
   ///
   /// In en, this message translates to:
-  /// **'PAL Value'**
+  /// **'PAL value'**
   String get summaryPal;
 
   /// No description provided for @summaryGoal.
   ///
   /// In en, this message translates to:
-  /// **'Caloric Goal'**
+  /// **'Caloric goal'**
   String get summaryGoal;
 
   /// No description provided for @summaryWeekly.
   ///
   /// In en, this message translates to:
-  /// **'Weekly Schedule'**
+  /// **'Weekly schedule'**
   String get summaryWeekly;
 
   /// No description provided for @summaryMacros.
@@ -943,19 +943,19 @@ abstract class AppLocalizations {
   /// No description provided for @summaryInsulinDelivery.
   ///
   /// In en, this message translates to:
-  /// **'Delivery Method'**
+  /// **'Delivery method'**
   String get summaryInsulinDelivery;
 
   /// No description provided for @summaryIcrHours.
   ///
   /// In en, this message translates to:
-  /// **'ICR Hours'**
+  /// **'ICR hours'**
   String get summaryIcrHours;
 
   /// No description provided for @summaryFpuMethod.
   ///
   /// In en, this message translates to:
-  /// **'FPU Method'**
+  /// **'FPU method'**
   String get summaryFpuMethod;
 
   /// No description provided for @errorHeightRange.
@@ -998,7 +998,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Hour {hour}:00 is duplicated. Each hour can only appear once.'**
-  String errorIcrDuplicate(Object hour);
+  String errorIcrDuplicate(int hour);
 
   /// No description provided for @errorIcrBaseRequired.
   ///
@@ -1015,7 +1015,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryMethodInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Delivery Method'**
+  /// **'Insulin delivery method'**
   String get deliveryMethodInfoTitle;
 
   /// No description provided for @deliveryMethodInfoDesc.
@@ -1399,7 +1399,7 @@ abstract class AppLocalizations {
   /// No description provided for @isfLabel.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Sensitivity Factor (ISF)'**
+  /// **'Insulin sensitivity factor (ISF)'**
   String get isfLabel;
 
   /// No description provided for @isfSuffix.
@@ -1411,7 +1411,7 @@ abstract class AppLocalizations {
   /// No description provided for @isfInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'ISF (Insulin Sensitivity Factor)'**
+  /// **'ISF (Insulin sensitivity factor)'**
   String get isfInfoTitle;
 
   /// No description provided for @isfInfoDesc.
@@ -1423,7 +1423,7 @@ abstract class AppLocalizations {
   /// No description provided for @ifpLabel.
   ///
   /// In en, this message translates to:
-  /// **'Insulin Fat-Protein Ratio (IFP)'**
+  /// **'Insulin fat-protein ratio (IFP)'**
   String get ifpLabel;
 
   /// No description provided for @ifpSuffix.
@@ -1435,7 +1435,7 @@ abstract class AppLocalizations {
   /// No description provided for @ifpInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'IFP / FPU Ratio'**
+  /// **'IFP / FPU ratio'**
   String get ifpInfoTitle;
 
   /// No description provided for @ifpInfoDesc.
@@ -1447,7 +1447,7 @@ abstract class AppLocalizations {
   /// No description provided for @icrInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'ICR (Insulin to Carb Ratio)'**
+  /// **'ICR (Insulin to carb ratio)'**
   String get icrInfoTitle;
 
   /// No description provided for @icrInfoDesc.
@@ -1471,13 +1471,13 @@ abstract class AppLocalizations {
   /// No description provided for @pankowskaTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pańkowska Method (Warsaw Method)'**
+  /// **'Pańkowska method (Warsaw method)'**
   String get pankowskaTitle;
 
   /// No description provided for @sieradzkiTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sieradzki Method (Percentage Method)'**
+  /// **'Sieradzki method (Percentage method)'**
   String get sieradzkiTitle;
 
   /// No description provided for @notSet.
@@ -1537,7 +1537,7 @@ abstract class AppLocalizations {
   /// No description provided for @palMultiplierLabel.
   ///
   /// In en, this message translates to:
-  /// **'PAL Multiplier'**
+  /// **'PAL multiplier'**
   String get palMultiplierLabel;
 
   /// No description provided for @errorTitle.
@@ -1555,7 +1555,7 @@ abstract class AppLocalizations {
   /// No description provided for @tryAgainButton.
   ///
   /// In en, this message translates to:
-  /// **'Try Again'**
+  /// **'Try again'**
   String get tryAgainButton;
 
   /// No description provided for @okButton.
@@ -1825,19 +1825,19 @@ abstract class AppLocalizations {
   /// No description provided for @deviceWeb.
   ///
   /// In en, this message translates to:
-  /// **'Web Browser'**
+  /// **'Web browser'**
   String get deviceWeb;
 
   /// No description provided for @deviceAndroid.
   ///
   /// In en, this message translates to:
-  /// **'Android Device'**
+  /// **'Android device'**
   String get deviceAndroid;
 
   /// No description provided for @deviceIos.
   ///
   /// In en, this message translates to:
-  /// **'iOS Device'**
+  /// **'iOS device'**
   String get deviceIos;
 
   /// No description provided for @deviceWindows.
@@ -1849,7 +1849,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceLinux.
   ///
   /// In en, this message translates to:
-  /// **'Linux Native App'**
+  /// **'Linux native app'**
   String get deviceLinux;
 
   /// No description provided for @deviceMac.
@@ -1861,7 +1861,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceUnknown.
   ///
   /// In en, this message translates to:
-  /// **'Unknown Device'**
+  /// **'Unknown device'**
   String get deviceUnknown;
 
   /// No description provided for @lastActive.
@@ -1927,31 +1927,31 @@ abstract class AppLocalizations {
   /// No description provided for @aboutFrontendRepo.
   ///
   /// In en, this message translates to:
-  /// **'Frontend Repository'**
+  /// **'Frontend repository'**
   String get aboutFrontendRepo;
 
   /// No description provided for @aboutBackendRepo.
   ///
   /// In en, this message translates to:
-  /// **'API Repository'**
+  /// **'API repository'**
   String get aboutBackendRepo;
 
   /// No description provided for @aboutTos.
   ///
   /// In en, this message translates to:
-  /// **'Terms of Service (ToS)'**
+  /// **'Terms of service (ToS)'**
   String get aboutTos;
 
   /// No description provided for @aboutPrivacy.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy'**
+  /// **'Privacy policy'**
   String get aboutPrivacy;
 
   /// No description provided for @aboutDisclaimer.
   ///
   /// In en, this message translates to:
-  /// **'Medical Disclaimer'**
+  /// **'Medical disclaimer'**
   String get aboutDisclaimer;
 
   /// No description provided for @errorOpenUrl.
@@ -2161,7 +2161,7 @@ abstract class AppLocalizations {
   /// No description provided for @insulinFatProteinDose.
   ///
   /// In en, this message translates to:
-  /// **'Fat & Protein dose:'**
+  /// **'Fat & protein dose:'**
   String get insulinFatProteinDose;
 
   /// No description provided for @insulinBolusDuration.
@@ -2269,7 +2269,7 @@ abstract class AppLocalizations {
   /// No description provided for @insulinFatProtein.
   ///
   /// In en, this message translates to:
-  /// **'Fat & Protein'**
+  /// **'Fat & protein'**
   String get insulinFatProtein;
 
   /// No description provided for @dailyMacroShareTitle.
@@ -2473,7 +2473,7 @@ abstract class AppLocalizations {
   /// No description provided for @productEditValidationRequired.
   ///
   /// In en, this message translates to:
-  /// **'Product name and main macros (Kcal, Carbs, Protein, Fat) are required.'**
+  /// **'Product name and main macros (kcal, carbs, protein, fat) are required.'**
   String get productEditValidationRequired;
 
   /// No description provided for @productEditValidationCaloricMismatch.
@@ -2583,6 +2583,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid number'**
   String get errorInvalidNumber;
+
+  /// No description provided for @loadingState.
+  ///
+  /// In en, this message translates to:
+  /// **'...'**
+  String get loadingState;
 }
 
 class _AppLocalizationsDelegate

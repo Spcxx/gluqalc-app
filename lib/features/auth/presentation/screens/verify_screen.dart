@@ -119,6 +119,9 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     ref.listen<AsyncValue<void>>(verifyControllerProvider, (prev, next) {
@@ -127,8 +130,11 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(error.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: colorScheme.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         },
@@ -137,8 +143,11 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.verifyAccountSuccess),
-                backgroundColor: Colors.green,
+                backgroundColor: colorScheme.tertiary,
                 behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             );
             context.go('/auth');
@@ -155,92 +164,139 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 32,
-            ),
-            child: AutofillGroup(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Assets.images.appLogo.image(height: 100),
-                  const SizedBox(height: 32),
-                  Text(
-                    l10n.verifyScreenTitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.verifyScreenSubtitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: 32),
-
-                  TextFormField(
-                    controller: _codeController,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    maxLength: 6,
-                    autofillHints: const [AutofillHints.oneTimeCode],
-                    style: const TextStyle(
-                      fontSize: 24,
-                      letterSpacing: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(6),
-                    ],
-                    decoration: InputDecoration(
-                      hintText: '123456',
-                      hintStyle: TextStyle(
-                        color: Colors.grey.shade400,
-                        letterSpacing: 12,
-                        fontWeight: FontWeight.normal,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 32,
+              ),
+              child: AutofillGroup(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Assets.images.appLogo.image(height: 100),
+                    const SizedBox(height: 32),
+                    Text(
+                      l10n.verifyScreenTitle,
+                      textAlign: TextAlign.center,
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      border: const OutlineInputBorder(),
-                      counterText: '',
                     ),
-                    onChanged: (_) => setState(() {}),
-                    onFieldSubmitted: (_) {
-                      if (isFormValid && !isLoading) _submit(l10n);
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: (isFormValid && !isLoading)
-                        ? () => _submit(l10n)
-                        : null,
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.verifyScreenSubtitle,
+                      textAlign: TextAlign.center,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            l10n.verifyButton,
-                            style: const TextStyle(fontSize: 16),
+                    const SizedBox(height: 32),
+                    TextFormField(
+                      controller: _codeController,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      maxLength: 6,
+                      autofillHints: const [AutofillHints.oneTimeCode],
+                      style: textTheme.headlineMedium?.copyWith(
+                        letterSpacing: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(6),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: '123456',
+                        hintStyle: textTheme.headlineMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
                           ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: isLoading
-                        ? null
-                        : () => _showChangeEmailDialog(context, l10n),
-                    child: Text(l10n.changeEmailButton),
-                  ),
-                ],
+                          letterSpacing: 12,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.2),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        counterText: '',
+                      ),
+                      onChanged: (_) => setState(() {}),
+                      onFieldSubmitted: (_) {
+                        if (isFormValid && !isLoading) _submit(l10n);
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: (isFormValid && !isLoading)
+                          ? () => _submit(l10n)
+                          : null,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colorScheme.onPrimary,
+                              ),
+                            )
+                          : Text(
+                              l10n.verifyButton,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onPrimary,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => _showChangeEmailDialog(context, l10n),
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(l10n.changeEmailButton),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -280,8 +336,16 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return AlertDialog(
-      title: Text(widget.l10n.changeEmailDialogTitle),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        widget.l10n.changeEmailDialogTitle,
+        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -290,18 +354,50 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
             children: [
               Text(
                 widget.l10n.changeEmailDialogSubtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade600,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _oldEmailController,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: widget.l10n.currentEmailLabel,
-                  border: const OutlineInputBorder(),
+                  labelStyle: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.2,
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 validator: (v) => v == null || v.isEmpty
                     ? widget.l10n.errorFieldRequired
@@ -311,9 +407,42 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 decoration: InputDecoration(
                   labelText: widget.l10n.currentPasswordLabel,
-                  border: const OutlineInputBorder(),
+                  labelStyle: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.2,
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 validator: (v) => v == null || v.isEmpty
                     ? widget.l10n.errorPasswordRequired
@@ -323,9 +452,42 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
               TextFormField(
                 controller: _newEmailController,
                 keyboardType: TextInputType.emailAddress,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 decoration: InputDecoration(
                   labelText: widget.l10n.newEmailLabel,
-                  border: const OutlineInputBorder(),
+                  labelStyle: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.2,
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 validator: (v) => v == null || v.isEmpty
                     ? widget.l10n.errorFieldRequired
@@ -338,6 +500,11 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
       actions: [
         TextButton(
           onPressed: _isDialogLoading ? null : () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: Text(
             MaterialLocalizations.of(context).cancelButtonLabel,
           ),
@@ -362,8 +529,11 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(widget.l10n.changeEmailSuccess),
-                          backgroundColor: Colors.green,
+                          backgroundColor: colorScheme.tertiary,
                           behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       );
                     }
@@ -374,8 +544,11 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(errorMsg),
-                          backgroundColor: Colors.redAccent,
+                          backgroundColor: colorScheme.error,
                           behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       );
                     }
@@ -385,13 +558,18 @@ class _ChangeEmailDialogState extends ConsumerState<_ChangeEmailDialog> {
                     }
                   }
                 },
+          style: FilledButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: _isDialogLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 )
               : Text(

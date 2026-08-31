@@ -13,6 +13,9 @@ class Step9FpuWidget extends StatefulWidget {
 class _Step9FpuWidgetState extends State<Step9FpuWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     final availableMethods = [
@@ -33,12 +36,16 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
       children: [
         Text(
           l10n.fpuMethodTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.fpuMethodSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 24),
         Expanded(
@@ -67,14 +74,13 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey.shade300,
+                            ? colorScheme.primary
+                            : colorScheme.outline.withValues(alpha: 0.5),
                         width: isSelected ? 2 : 1,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                                .withValues(alpha: 0.05)
+                          ? colorScheme.primary.withValues(alpha: 0.05)
                           : Colors.transparent,
                     ),
                     padding: const EdgeInsets.only(
@@ -94,8 +100,7 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
                             children: [
                               Text(
                                 method['title']! as String,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -105,7 +110,7 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
                         IconButton(
                           icon: Icon(
                             Icons.info_outline,
-                            color: Colors.grey.shade600,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () => widget.parent.showInfoDialog(
                             method['title']! as String,
@@ -130,10 +135,18 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -142,10 +155,16 @@ class _Step9FpuWidgetState extends State<Step9FpuWidget> {
                 onPressed: widget.parent.nextPage,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

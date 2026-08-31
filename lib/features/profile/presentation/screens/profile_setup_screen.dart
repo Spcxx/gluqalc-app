@@ -291,16 +291,35 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   void showInfoDialog(String title, String description) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     unawaited(
       showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(title),
-          content: Text(description),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            title,
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            description,
+            style: textTheme.bodyMedium,
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               child: Text(l10n.okButton),
             ),
           ],
@@ -339,6 +358,8 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   Future<void> finishSetup() async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     Map<String, int>? weeklyDistribution;
@@ -404,8 +425,11 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
             content: Text(
               l10n.errorGeneric(e.toString()),
             ),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -414,6 +438,9 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final profileState = ref.watch(profileControllerProvider);
 
@@ -430,51 +457,72 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(l10n.profileSetupTitle),
+            centerTitle: true,
+            title: Text(
+              l10n.profileSetupTitle,
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
+            ),
             automaticallyImplyLeading: false,
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LinearProgressIndicator(
-                    value: (currentStep + 1) / totalSteps,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.profileStepIndicator(currentStep + 1, totalSteps),
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: (currentStep + 1) / totalSteps,
+                          minHeight: 6,
+                          backgroundColor: colorScheme.primary.withValues(
+                            alpha: 0.15,
+                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.profileStepIndicator(currentStep + 1, totalSteps),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: PageView(
+                          controller: _pageController,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            Step1BasicsWidget(parent: this),
+                            Step2BmrWidget(parent: this),
+                            Step3PalWidget(parent: this),
+                            Step4GoalWidget(parent: this),
+                            Step5WeeklyWidget(parent: this),
+                            Step6MacroWidget(parent: this),
+                            Step7DiabeticWidget(parent: this),
+                            Step8IcrWidget(parent: this),
+                            Step9FpuWidget(parent: this),
+                            Step10SummaryWidget(parent: this),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        Step1BasicsWidget(parent: this),
-                        Step2BmrWidget(parent: this),
-                        Step3PalWidget(parent: this),
-                        Step4GoalWidget(parent: this),
-                        Step5WeeklyWidget(parent: this),
-                        Step6MacroWidget(parent: this),
-                        Step7DiabeticWidget(parent: this),
-                        Step8IcrWidget(parent: this),
-                        Step9FpuWidget(parent: this),
-                        Step10SummaryWidget(parent: this),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -482,10 +530,16 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       },
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-
       error: (err, _) => Scaffold(
         appBar: AppBar(
-          title: Text(l10n.errorTitle),
+          centerTitle: true,
+          title: Text(
+            l10n.errorTitle,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.primary,
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -497,32 +551,58 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           ],
         ),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.errorTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  err.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: () {
-                    ref.invalidate(profileControllerProvider);
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                  label: Text(l10n.backToFormButton),
-                ),
-              ],
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: colorScheme.error,
+                    size: 48,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.errorTitle,
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    err.toString(),
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref.invalidate(profileControllerProvider);
+                    },
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    icon: const Icon(Icons.arrow_back),
+                    label: Text(
+                      l10n.backToFormButton,
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

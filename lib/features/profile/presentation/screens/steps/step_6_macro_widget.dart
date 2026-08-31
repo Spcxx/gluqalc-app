@@ -39,7 +39,11 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     final totalMacro =
         widget.parent.proteinPercent +
         widget.parent.fatPercent +
@@ -59,12 +63,16 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
       children: [
         Text(
           l10n.macroTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.macroSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Wrap(
@@ -90,7 +98,7 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                 _buildMacroSlider(
                   title: l10n.macroProtein,
                   value: widget.parent.proteinPercent,
-                  color: Colors.red.shade400,
+                  color: colorScheme.error,
                   isWarning: isProteinWarning,
                   warningText: l10n.macroProteinNorm,
                   onChanged: widget.parent.macroPreset == MacroPresetEnum.custom
@@ -103,7 +111,7 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                 _buildMacroSlider(
                   title: l10n.macroFat,
                   value: widget.parent.fatPercent,
-                  color: Colors.amber.shade700,
+                  color: colorScheme.tertiary,
                   isWarning: isFatWarning,
                   warningText: l10n.macroFatNorm,
                   onChanged: widget.parent.macroPreset == MacroPresetEnum.custom
@@ -115,7 +123,7 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                 _buildMacroSlider(
                   title: l10n.macroCarbs,
                   value: widget.parent.carbPercent,
-                  color: Colors.blue.shade400,
+                  color: colorScheme.primary,
                   isWarning: isCarbWarning,
                   warningText: l10n.macroCarbsNorm,
                   onChanged: widget.parent.macroPreset == MacroPresetEnum.custom
@@ -129,24 +137,27 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                     margin: const EdgeInsets.only(bottom: 16),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
+                      color: colorScheme.tertiaryContainer.withValues(
+                        alpha: 0.3,
+                      ),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.orange.shade300),
+                      border: Border.all(
+                        color: colorScheme.tertiary.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.warning_amber_rounded,
-                          color: Colors.orange.shade800,
+                          color: colorScheme.tertiary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             l10n.macroWarningText,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.orange.shade900,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onTertiaryContainer,
                               height: 1.3,
                             ),
                           ),
@@ -158,13 +169,13 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isMacroValid
-                        ? Colors.green.shade50
-                        : Colors.red.shade50,
+                        ? colorScheme.tertiaryContainer.withValues(alpha: 0.3)
+                        : colorScheme.errorContainer.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isMacroValid
-                          ? Colors.green.shade200
-                          : Colors.red.shade200,
+                          ? colorScheme.tertiary.withValues(alpha: 0.5)
+                          : colorScheme.error.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Row(
@@ -173,7 +184,9 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                         isMacroValid
                             ? Icons.check_circle
                             : Icons.warning_amber_rounded,
-                        color: isMacroValid ? Colors.green : Colors.red,
+                        color: isMacroValid
+                            ? colorScheme.tertiary
+                            : colorScheme.error,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -181,11 +194,11 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                           isMacroValid
                               ? l10n.macroSumValid
                               : l10n.macroSumInvalid(totalMacro.toInt()),
-                          style: TextStyle(
+                          style: textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isMacroValid
-                                ? Colors.green.shade800
-                                : Colors.red.shade800,
+                                ? colorScheme.onTertiaryContainer
+                                : colorScheme.onErrorContainer,
                           ),
                         ),
                       ),
@@ -206,10 +219,18 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -218,10 +239,16 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                 onPressed: isMacroValid ? widget.parent.nextPage : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),
@@ -232,9 +259,27 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
   }
 
   Widget _buildPresetChip(String label, MacroPresetEnum preset) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final isSelected = widget.parent.macroPreset == preset;
+
     return ChoiceChip(
-      label: Text(label),
-      selected: widget.parent.macroPreset == preset,
+      label: Text(
+        label,
+        style: textTheme.bodySmall?.copyWith(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+        ),
+      ),
+      selected: isSelected,
+      selectedColor: colorScheme.primary,
+      backgroundColor: colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       onSelected: (_) => _applyMacroPreset(preset),
     );
   }
@@ -248,6 +293,10 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
     required ValueChanged<double>? onChanged,
     required AppLocalizations l10n,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -258,9 +307,8 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 15,
                   ),
                 ),
                 if (isWarning) ...[
@@ -270,7 +318,7 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
                     child: Icon(
                       Icons.info,
                       size: 16,
-                      color: Colors.orange.shade700,
+                      color: colorScheme.tertiary,
                     ),
                   ),
                 ],
@@ -278,10 +326,9 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
             ),
             Text(
               '${value.toInt()}%',
-              style: TextStyle(
+              style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: isWarning ? Colors.orange.shade800 : color,
+                color: isWarning ? colorScheme.tertiary : color,
               ),
             ),
           ],
@@ -290,7 +337,7 @@ class _Step6MacroWidgetState extends State<Step6MacroWidget> {
           value: value,
           max: 100,
           divisions: 100,
-          activeColor: isWarning ? Colors.orange : color,
+          activeColor: isWarning ? colorScheme.tertiary : color,
           label: '${value.toInt()}%',
           onChanged: onChanged,
         ),

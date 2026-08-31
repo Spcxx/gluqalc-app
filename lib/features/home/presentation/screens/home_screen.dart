@@ -25,6 +25,9 @@ class HomeScreen extends ConsumerWidget {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (ctx) => const AddCategoryModal(),
     );
   }
@@ -34,6 +37,10 @@ class HomeScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 1100;
 
     final selectedDate = ref.watch(homeSelectedDateProvider);
     final summaryAsync = ref.watch(daySummaryControllerProvider);
@@ -52,6 +59,9 @@ class HomeScreen extends ConsumerWidget {
             content: Text(l10n.snackbarOffline),
             backgroundColor: colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       } else if (next == AppConnectionState.online &&
@@ -59,8 +69,11 @@ class HomeScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.snackbarOnline),
-            backgroundColor: Colors.green,
+            backgroundColor: colorScheme.tertiary,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -68,6 +81,26 @@ class HomeScreen extends ConsumerWidget {
 
     final connectionState = ref.watch(connectivityServiceProvider);
     final isOnline = connectionState == AppConnectionState.online;
+
+    final macroSummaryWidget = BottomMacroSummary(
+      consumed:
+          summary?.consumed ??
+          const NutrientValues(
+            energyKcal: 0,
+            protein: 0,
+            fat: 0,
+            carbohydrates: 0,
+          ),
+      target:
+          summary?.target ??
+          const NutrientValues(
+            energyKcal: 2000,
+            protein: 150,
+            fat: 65,
+            carbohydrates: 200,
+          ),
+      l10n: l10n,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -80,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: isOnline ? Colors.blue : colorScheme.error,
+                color: isOnline ? colorScheme.tertiary : colorScheme.error,
                 shape: BoxShape.circle,
               ),
             ),
@@ -90,114 +123,143 @@ class HomeScreen extends ConsumerWidget {
           height: 42,
           fit: BoxFit.contain,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Builder(
-              builder: (ctx) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-              ),
-            ),
-          ),
-        ],
-      ),
-      endDrawer: const AppDrawer(),
-      body: Column(
-        children: [
-          const DateSliderSelector(),
-          const Divider(height: 1),
-          if (summaryAsync.isLoading || categoriesAsync.isLoading)
-            const LinearProgressIndicator(minHeight: 2),
-          Expanded(
-            child: categoriesAsync.when(
-              loading: () => categoriesAsync.hasValue
-                  ? _buildCategoriesList(
-                      context,
-                      ref,
-                      categoriesAsync.value!,
-                      l10n,
-                    )
-                  : const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(
-                child: Text(
-                  l10n.errorUnknown(err.toString()),
-                  style: TextStyle(color: colorScheme.error),
-                  textAlign: TextAlign.center,
+        actions: isDesktop
+            ? []
+            : [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => Scaffold.of(ctx).openEndDrawer(),
+                    ),
+                  ),
                 ),
-              ),
-              data: (categories) {
-                if (categories.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.restaurant_menu_rounded,
-                            size: 64,
-                            color: colorScheme.primary.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.emptyCategoriesTitle,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            l10n.emptyCategoriesSubtitle,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.6,
+              ],
+      ),
+      endDrawer: isDesktop ? null : const AppDrawer(),
+      body: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                const DateSliderSelector(),
+                const Divider(height: 1),
+                if (summaryAsync.isLoading || categoriesAsync.isLoading)
+                  const LinearProgressIndicator(minHeight: 2),
+                Expanded(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 700),
+                      child: categoriesAsync.when(
+                        loading: () => categoriesAsync.hasValue
+                            ? _buildCategoriesList(
+                                context,
+                                ref,
+                                categoriesAsync.value!,
+                                l10n,
+                              )
+                            : const Center(child: CircularProgressIndicator()),
+                        error: (err, _) => Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              l10n.errorUnknown(err.toString()),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.error,
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 24),
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showAddCategoryModal(context, l10n),
-                            icon: const Icon(Icons.add),
-                            label: Text(l10n.addCategory),
-                          ),
-                        ],
+                        ),
+                        data: (categories) {
+                          if (categories.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(24),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primaryContainer
+                                            .withValues(alpha: 0.3),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.restaurant_menu_rounded,
+                                        size: 48,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      l10n.emptyCategoriesTitle,
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      l10n.emptyCategoriesSubtitle,
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 24),
+                                    FilledButton.icon(
+                                      onPressed: () =>
+                                          _showAddCategoryModal(context, l10n),
+                                      style: FilledButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.add),
+                                      label: Text(l10n.addCategory),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+
+                          return _buildCategoriesList(
+                            context,
+                            ref,
+                            categories,
+                            l10n,
+                          );
+                        },
                       ),
                     ),
-                  );
-                }
-
-                return _buildCategoriesList(context, ref, categories, l10n);
-              },
+                  ),
+                ),
+                if (isDesktop) macroSummaryWidget,
+              ],
             ),
           ),
+          if (isDesktop)
+            SizedBox(
+              width: 320,
+              child: Material(
+                color: colorScheme.surface,
+                child: const AppDrawerBody(isDrawer: false),
+              ),
+            ),
         ],
       ),
-      bottomNavigationBar: BottomMacroSummary(
-        consumed:
-            summary?.consumed ??
-            const NutrientValues(
-              energyKcal: 0,
-              protein: 0,
-              fat: 0,
-              carbohydrates: 0,
-            ),
-        target:
-            summary?.target ??
-            const NutrientValues(
-              energyKcal: 2000,
-              protein: 150,
-              fat: 65,
-              carbohydrates: 200,
-            ),
-        l10n: l10n,
-      ),
+      bottomNavigationBar: isDesktop ? null : macroSummaryWidget,
     );
   }
 
@@ -207,7 +269,9 @@ class HomeScreen extends ConsumerWidget {
     List<MealCategoryResponse> categories,
     AppLocalizations l10n,
   ) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -222,10 +286,19 @@ class HomeScreen extends ConsumerWidget {
                 icon: const Icon(Icons.add, size: 16),
                 label: Text(
                   l10n.addCategory,
-                  style: const TextStyle(fontSize: 13),
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: TextButton.styleFrom(
-                  foregroundColor: colorScheme.primary.withValues(alpha: 0.8),
+                  foregroundColor: colorScheme.primary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),

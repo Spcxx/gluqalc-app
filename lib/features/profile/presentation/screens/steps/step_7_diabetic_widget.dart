@@ -13,6 +13,9 @@ class Step7DiabeticWidget extends StatefulWidget {
 class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Form(
@@ -22,12 +25,16 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
         children: [
           Text(
             l10n.insulinSettingsTitle,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.insulinSettingsSubtitle,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 24),
           Expanded(
@@ -57,15 +64,14 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
                     children: [
                       Text(
                         l10n.insulinDeliveryMethodLabel,
-                        style: const TextStyle(
-                          fontSize: 15,
+                        style: textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.info_outline,
-                          color: Colors.blue,
+                          color: colorScheme.primary,
                         ),
                         onPressed: () => widget.parent.showInfoDialog(
                           l10n.deliveryMethodInfoTitle,
@@ -108,10 +114,18 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
                     vertical: 16,
                     horizontal: 24,
                   ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  side: BorderSide(
+                    color: colorScheme.outline.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Text(
                   l10n.backButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -126,10 +140,16 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
                   },
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
                     l10n.nextButton,
-                    style: const TextStyle(fontSize: 16),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimary,
+                    ),
                   ),
                 ),
               ),
@@ -148,18 +168,54 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
     required String infoDesc,
     required AppLocalizations l10n,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Row(
       children: [
         Expanded(
           child: TextFormField(
             controller: controller,
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
             ),
             decoration: InputDecoration(
               labelText: labelText,
+              labelStyle: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
               suffixText: suffixText,
-              border: const OutlineInputBorder(),
+              suffixStyle: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+                fontWeight: FontWeight.bold,
+              ),
+              filled: true,
+              fillColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.2,
+              ),
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.primary, width: 2),
+              ),
             ),
             validator: (val) {
               if (val == null || val.isEmpty) return l10n.errorFieldRequired;
@@ -170,9 +226,9 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
           ),
         ),
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.info_outline,
-            color: Colors.blue,
+            color: colorScheme.primary,
           ),
           onPressed: () => widget.parent.showInfoDialog(
             infoTitle,

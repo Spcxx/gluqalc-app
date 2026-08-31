@@ -33,7 +33,10 @@ class _MealEntryDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final stateAsync = ref.watch(
       mealEntryDetailControllerProvider(
         widget.entryId,
@@ -77,8 +80,7 @@ class _MealEntryDetailsScreenState
               children: [
                 Text(
                   state.categoryName,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
@@ -87,8 +89,7 @@ class _MealEntryDetailsScreenState
                 const SizedBox(height: 2),
                 Text(
                   formattedDateTime,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
@@ -99,8 +100,16 @@ class _MealEntryDetailsScreenState
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) =>
-            Center(child: Text(l10n.errorUnknown(err.toString()))),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.errorUnknown(err.toString()),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.error),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
         data: (state) {
           final product = state.product;
           final entry = state.entry;
@@ -141,247 +150,305 @@ class _MealEntryDetailsScreenState
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Flexible(
-                      child: Material(
-                        color: colorScheme.primaryContainer.withValues(
-                          alpha: 0.3,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        clipBehavior: Clip.antiAlias,
-                        child: InkWell(
-                          onTap: () async {
-                            await context.push('/product-edit', extra: product);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 12,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Material(
+                            color: colorScheme.primaryContainer.withValues(
+                              alpha: 0.3,
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    product.name,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.1,
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
+                            borderRadius: BorderRadius.circular(16),
+                            clipBehavior: Clip.antiAlias,
+                            child: InkWell(
+                              onTap: () async {
+                                await context.push(
+                                  '/product-edit',
+                                  extra: product,
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 16,
                                 ),
-                                const SizedBox(width: 12),
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.primary.withValues(
-                                      alpha: 0.1,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        product.name,
+                                        style: textTheme.headlineSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w900,
+                                              height: 1.1,
+                                              color: colorScheme.onSurface,
+                                            ),
+                                      ),
                                     ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.edit_rounded,
-                                    size: 20,
-                                    color: colorScheme.primary,
-                                  ),
+                                    const SizedBox(width: 12),
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.edit_rounded,
+                                        size: 20,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    if (product.provider?.toUpperCase() != 'LOCAL') ...[
-                      const SizedBox(width: 12),
-                      Tooltip(
-                        message: l10n.externalDatabaseTooltip,
-                        child: Icon(
-                          Icons.public,
-                          size: 24,
-                          color: Colors.blue.shade600,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                if (product.brand != null && product.brand!.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Text(
-                      product.brand!,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: colorScheme.onSurface.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 24),
-
-                Text(
-                  l10n.editPortionTitle,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Card(
-                  elevation: 1,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: sortedPortions.asMap().entries.map((mapEntry) {
-                      final index = mapEntry.key;
-                      final portion = mapEntry.value;
-                      final isLast = index == sortedPortions.length - 1;
-                      final isSelected = entry != null
-                          ? portion.id == entry.portion.id
-                          : portion.id == defaultPortion?.id;
-
-                      return Column(
-                        children: [
-                          _PortionRow(
-                            portion: portion,
-                            product: product,
-                            currentEntry: entry,
-                            isSelected: isSelected,
-                            categoryId: widget.categoryId,
-                            entryId: widget.entryId,
-                            isCreation: widget.isCreation,
+                        if (product.provider?.toUpperCase() != 'LOCAL') ...[
+                          const SizedBox(width: 12),
+                          Tooltip(
+                            message: l10n.externalDatabaseTooltip,
+                            child: Icon(
+                              Icons.public,
+                              size: 24,
+                              color: colorScheme.primary,
+                            ),
                           ),
-                          if (!isLast) const Divider(height: 1),
                         ],
-                      );
-                    }).toList(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer.withValues(
-                      alpha: 0.5,
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 18,
-                        color: colorScheme.onSecondaryContainer,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                    if (product.brand != null && product.brand!.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          '${l10n.mealDetailsCalculationsInfo}\n$currentPortionLabel',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: colorScheme.onSecondaryContainer,
+                          product.brand!,
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                if (entry?.insulinDose != null &&
-                    entry!.insulinDose!.totalDose > 0)
-                  Card(
-                    elevation: 1,
-                    color: colorScheme.primaryContainer.withValues(alpha: 0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => showInsulinDetailsModal(
-                        context,
-                        entry.insulinDose!,
-                        profile,
-                        l10n,
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.editPortionTitle,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    const SizedBox(height: 8),
+                    Card(
+                      elevation: 1,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: sortedPortions.asMap().entries.map((
+                          mapEntry,
+                        ) {
+                          final index = mapEntry.key;
+                          final portion = mapEntry.value;
+                          final isLast = index == sortedPortions.length - 1;
+                          final isSelected = entry != null
+                              ? portion.id == entry.portion.id
+                              : portion.id == defaultPortion?.id;
+
+                          return Column(
+                            children: [
+                              _PortionRow(
+                                portion: portion,
+                                product: product,
+                                currentEntry: entry,
+                                isSelected: isSelected,
+                                categoryId: widget.categoryId,
+                                entryId: widget.entryId,
+                                isCreation: widget.isCreation,
+                              ),
+                              if (!isLast) const Divider(height: 1),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              '${l10n.mealDetailsCalculationsInfo}\n$currentPortionLabel',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSecondaryContainer,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (entry?.insulinDose != null &&
+                        entry!.insulinDose!.totalDose > 0)
+                      Card(
+                        elevation: 1,
+                        color: colorScheme.primaryContainer.withValues(
+                          alpha: 0.6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => showInsulinDetailsModal(
+                            context,
+                            entry.insulinDose!,
+                            profile,
+                            l10n,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(
-                                      Icons.bolt,
-                                      color: colorScheme.primary,
-                                      size: 24,
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.bolt,
+                                          color: colorScheme.primary,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          l10n.insulinDoseTitle,
+                                          style: textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: colorScheme
+                                                    .onPrimaryContainer,
+                                              ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      l10n.insulinDoseTitle,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: colorScheme.onPrimaryContainer,
-                                      ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: colorScheme.primary,
                                     ),
                                   ],
                                 ),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: colorScheme.primary,
+                                const SizedBox(height: 16),
+                                Center(
+                                  child: Text(
+                                    '${entry.insulinDose!.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+                                    style: textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      color: colorScheme.primary,
+                                      height: 1,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _buildInsulinSubDetail(
+                                      l10n.insulinCarbs,
+                                      '${entry.insulinDose!.carbDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+                                      colorScheme,
+                                      textTheme,
+                                    ),
+                                    Container(
+                                      width: 1,
+                                      height: 24,
+                                      color: colorScheme.primary.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
+                                    _buildInsulinSubDetail(
+                                      l10n.insulinFatProtein,
+                                      '${entry.insulinDose!.fatProteinDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+                                      colorScheme,
+                                      textTheme,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: Text(
-                                '${entry.insulinDose!.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  color: colorScheme.primary,
-                                  height: 1,
-                                ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.dailyMacroShareTitle,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                _buildInsulinSubDetail(
-                                  l10n.insulinCarbs,
-                                  '${entry.insulinDose!.carbDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                  colorScheme,
+                                _buildCircularMacroShare(
+                                  context,
+                                  label: l10n.macroCarbohydratesFull,
+                                  current: nutrition.carbohydrates,
+                                  target: targetCarbs,
+                                  color: colorScheme.primary,
                                 ),
-                                Container(
-                                  width: 1,
-                                  height: 24,
-                                  color: colorScheme.primary.withValues(
-                                    alpha: 0.3,
-                                  ),
+                                _buildCircularMacroShare(
+                                  context,
+                                  label: l10n.macroProteinFull,
+                                  current: nutrition.protein,
+                                  target: targetProtein,
+                                  color: colorScheme.error,
                                 ),
-                                _buildInsulinSubDetail(
-                                  l10n.insulinFatProtein,
-                                  '${entry.insulinDose!.fatProteinDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
-                                  colorScheme,
+                                _buildCircularMacroShare(
+                                  context,
+                                  label: l10n.macroFatFull,
+                                  current: nutrition.fat,
+                                  target: targetFat,
+                                  color: colorScheme.tertiary,
                                 ),
                               ],
                             ),
@@ -389,120 +456,77 @@ class _MealEntryDetailsScreenState
                         ),
                       ),
                     ),
-                  ),
-                const SizedBox(height: 16),
-
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          l10n.dailyMacroShareTitle,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _buildCircularMacroShare(
-                              context,
-                              label: l10n.macroCarbohydratesFull,
-                              current: nutrition.carbohydrates,
-                              target: targetCarbs,
-                              color: Colors.blue,
+                            Text(
+                              l10n.nutritionDetailsTitle,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            _buildCircularMacroShare(
+                            const Divider(height: 24),
+                            _buildDataRow(
                               context,
-                              label: l10n.macroProteinFull,
-                              current: nutrition.protein,
-                              target: targetProtein,
-                              color: Colors.red,
+                              l10n.macroEnergy,
+                              '${nutrition.energyKcal.toStringAsFixed(1)} kcal',
                             ),
-                            _buildCircularMacroShare(
+                            _buildDataRow(
                               context,
-                              label: l10n.macroFatFull,
-                              current: nutrition.fat,
-                              target: targetFat,
-                              color: Colors.amber.shade600,
+                              l10n.macroCarbohydratesFull,
+                              '${nutrition.carbohydrates.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroSugars,
+                              '${nutrition.sugars.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroFatFull,
+                              '${nutrition.fat.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroSaturatedFat,
+                              '${nutrition.saturatedFat.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroProteinFull,
+                              '${nutrition.protein.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroFiber,
+                              '${nutrition.fiber.toStringAsFixed(1)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroSalt,
+                              '${nutrition.salt.toStringAsFixed(2)} g',
+                            ),
+                            _buildDataRow(
+                              context,
+                              l10n.macroGlycemicIndex,
+                              nutrition.glycemicIndex.toStringAsFixed(0),
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 32),
+                  ],
                 ),
-                const SizedBox(height: 16),
-
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          l10n.nutritionDetailsTitle,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Divider(height: 24),
-                        _buildDataRow(
-                          l10n.macroEnergy,
-                          '${nutrition.energyKcal.toStringAsFixed(1)} kcal',
-                        ),
-                        _buildDataRow(
-                          l10n.macroCarbohydratesFull,
-                          '${nutrition.carbohydrates.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroSugars,
-                          '${nutrition.sugars.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroFatFull,
-                          '${nutrition.fat.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroSaturatedFat,
-                          '${nutrition.saturatedFat.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroProteinFull,
-                          '${nutrition.protein.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroFiber,
-                          '${nutrition.fiber.toStringAsFixed(1)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroSalt,
-                          '${nutrition.salt.toStringAsFixed(2)} g',
-                        ),
-                        _buildDataRow(
-                          l10n.macroGlycemicIndex,
-                          nutrition.glycemicIndex.toStringAsFixed(0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
+              ),
             ),
           );
         },
@@ -510,7 +534,11 @@ class _MealEntryDetailsScreenState
     );
   }
 
-  Widget _buildDataRow(String label, String value) {
+  Widget _buildDataRow(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -519,14 +547,18 @@ class _MealEntryDetailsScreenState
         children: [
           Text(
             label,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(width: 16),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -538,14 +570,14 @@ class _MealEntryDetailsScreenState
     String label,
     String value,
     ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
+          style: textTheme.bodySmall?.copyWith(
             color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
           ),
@@ -553,8 +585,7 @@ class _MealEntryDetailsScreenState
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
+          style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onPrimaryContainer,
           ),
@@ -570,9 +601,11 @@ class _MealEntryDetailsScreenState
     required double target,
     required Color color,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final rawPercentage = target > 0 ? (current / target) : 0.0;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
+    final rawPercentage = target > 0 ? (current / target) : 0.0;
     final progress = rawPercentage.clamp(0.0, 1.0);
     final percentVal = (rawPercentage * 100).toInt();
     final isExceeded = rawPercentage > 1.0;
@@ -596,8 +629,7 @@ class _MealEntryDetailsScreenState
               Center(
                 child: Text(
                   '$percentVal%',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isExceeded
                         ? colorScheme.error
@@ -611,17 +643,15 @@ class _MealEntryDetailsScreenState
         const SizedBox(height: 12),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
+          style: textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface.withValues(alpha: 0.6),
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           '${current.toStringAsFixed(1)}g',
-          style: TextStyle(
-            fontSize: 14,
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w800,
             color: colorScheme.onSurface.withValues(alpha: 0.8),
           ),
@@ -690,6 +720,8 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
 
   Future<void> _submitUpdate(double quantity) async {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     final actualProductId = widget.isCreation
         ? widget.entryId
@@ -711,7 +743,7 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
           quantity: quantity,
           date: widget.currentEntry != null
               ? DateTime.parse(widget.currentEntry!.consumptionDate)
-              : selectedDate, // Używa daty wybranej w kalendarzu
+              : selectedDate,
           portionId: widget.portion.id,
           isCreation: widget.isCreation,
           oldEntryId: widget.currentEntry?.id,
@@ -725,8 +757,11 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                 ? l10n.mealAddedSuccessfully
                 : l10n.portionUpdatedSuccess,
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: colorScheme.tertiary,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       context.pop();
@@ -735,7 +770,9 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     final parsedInput =
         double.tryParse(_controller.text.replaceAll(',', '.')) ?? 0.0;
@@ -762,7 +799,9 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                 decimal: true,
               ),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*')),
               ],
@@ -773,7 +812,24 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                   vertical: 10,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colorScheme.outline.withValues(alpha: 0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                filled: true,
+                fillColor: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.2,
                 ),
               ),
               onChanged: (_) => setState(() {}),
@@ -788,8 +844,7 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                   children: [
                     Text(
                       _is100g ? 'g' : 'x  ${widget.portion.name}',
-                      style: TextStyle(
-                        fontSize: 15,
+                      style: textTheme.bodyLarge?.copyWith(
                         fontWeight: widget.isSelected
                             ? FontWeight.bold
                             : FontWeight.w600,
@@ -811,8 +866,7 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                   _is100g
                       ? '${totalKcal.toInt()} kcal'
                       : '${totalWeight.toInt()} g  •  ${totalKcal.toInt()} kcal',
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: colorScheme.primary,
                   ),
@@ -822,6 +876,11 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
           ),
           IconButton.filled(
             icon: const Icon(Icons.arrow_forward, size: 18),
+            style: IconButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             onPressed: () async {
               if (displayQty > 0) {
                 await _submitUpdate(displayQty);

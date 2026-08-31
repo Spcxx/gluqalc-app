@@ -39,12 +39,17 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
   }
 
   Future<void> _executeSearch(AppLocalizations l10n) async {
+    final colorScheme = Theme.of(context).colorScheme;
     final query = _searchController.text.trim();
     if (query.length < 3) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.searchQueryTooShortError),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: colorScheme.error,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -56,8 +61,11 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
+
     final searchState = ref.watch(productSearchControllerProvider);
     final searchNotifier = ref.read(productSearchControllerProvider.notifier);
     final recentProducts = ref.watch(recentProductsControllerProvider);
@@ -85,8 +93,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
           children: [
             Text(
               categoryName,
-              style: const TextStyle(
-                fontSize: 16,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 1,
@@ -95,8 +102,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
             const SizedBox(height: 2),
             Text(
               '$formattedDate, $formattedTime',
-              style: TextStyle(
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -116,162 +122,242 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.addMeal,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: l10n.searchProductsHint,
-                                prefixIcon: const Icon(Icons.search),
-                                border: const OutlineInputBorder(),
-                                isDense: true,
-                              ),
-                              onChanged: (val) {
-                                if (val.trim().isEmpty) {
-                                  searchNotifier.clearSearch();
-                                }
-                              },
-                              onSubmitted: (_) => _executeSearch(l10n),
+                          Text(
+                            l10n.addMeal,
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          IconButton.filled(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () => _executeSearch(l10n),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: l10n.searchProductsHint,
+                                    prefixIcon: const Icon(Icons.search),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: colorScheme.outline.withValues(
+                                          alpha: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: colorScheme.primary,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: colorScheme
+                                        .surfaceContainerHighest
+                                        .withValues(alpha: 0.2),
+                                    isDense: true,
+                                  ),
+                                  onChanged: (val) {
+                                    if (val.trim().isEmpty) {
+                                      searchNotifier.clearSearch();
+                                    }
+                                  },
+                                  onSubmitted: (_) => _executeSearch(l10n),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton.filled(
+                                icon: const Icon(Icons.arrow_forward),
+                                style: IconButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                onPressed: () => _executeSearch(l10n),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Expanded(
+                            child: searchState.when(
+                              loading: () => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              error: (err, _) => Center(
+                                child: Text(
+                                  l10n.errorUnknown(err.toString()),
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                              data: (products) {
+                                if (_searchController.text.trim().isEmpty) {
+                                  if (recentProducts.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                        l10n.noRecentProducts,
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: colorScheme.onSurface
+                                              .withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: [
+                                      Text(
+                                        l10n.recentProductsTitle,
+                                        style: textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      ...recentProducts.map(
+                                        (p) => _buildProductTile(
+                                          context,
+                                          ref,
+                                          p,
+                                          l10n,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+
+                                if (products.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      l10n.noProductsFound,
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurface.withValues(
+                                          alpha: 0.6,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildProductTile(
+                                      context,
+                                      ref,
+                                      products[index],
+                                      l10n,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: searchState.when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (err, _) => Center(
-                            child: Text(l10n.errorUnknown(err.toString())),
-                          ),
-                          data: (products) {
-                            if (_searchController.text.trim().isEmpty) {
-                              if (recentProducts.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                    l10n.noRecentProducts,
-                                    style: TextStyle(
-                                      color: colorScheme.onSurface.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              return ListView(
-                                children: [
-                                  Text(
-                                    l10n.recentProductsTitle,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ...recentProducts.map(
-                                    (p) => _buildProductTile(
-                                      context,
-                                      ref,
-                                      p,
-                                      l10n,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-
-                            if (products.isEmpty) {
-                              return Center(child: Text(l10n.noProductsFound));
-                            }
-
-                            return ListView.builder(
-                              itemCount: products.length,
-                              itemBuilder: (context, index) {
-                                return _buildProductTile(
-                                  context,
-                                  ref,
-                                  products[index],
-                                  l10n,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          await context.push(
-                            '/product-create/${widget.categoryId}',
-                          );
-                        },
-                        icon: const Icon(Icons.add),
-                        label: Text(l10n.addNewProductButton),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: FutureBuilder<List<ProductResponse>>(
-                          future: searchNotifier.getMyProducts(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () async {
+                              await context.push(
+                                '/product-create/${widget.categoryId}',
                               );
-                            }
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Text(
-                                  l10n.errorUnknown(snapshot.error.toString()),
-                                ),
-                              );
-                            }
-                            final myProducts = snapshot.data ?? [];
-                            if (myProducts.isEmpty) {
-                              return Center(child: Text(l10n.noCustomProducts));
-                            }
+                            },
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            icon: const Icon(Icons.add),
+                            label: Text(
+                              l10n.addNewProductButton,
+                              style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Expanded(
+                            child: FutureBuilder<List<ProductResponse>>(
+                              future: searchNotifier.getMyProducts(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                      l10n.errorUnknown(
+                                        snapshot.error.toString(),
+                                      ),
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.error,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                final myProducts = snapshot.data ?? [];
+                                if (myProducts.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      l10n.noCustomProducts,
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurface.withValues(
+                                          alpha: 0.6,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
 
-                            return ListView.builder(
-                              itemCount: myProducts.length,
-                              itemBuilder: (context, index) {
-                                return _buildProductTile(
-                                  context,
-                                  ref,
-                                  myProducts[index],
-                                  l10n,
+                                return ListView.builder(
+                                  itemCount: myProducts.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildProductTile(
+                                      context,
+                                      ref,
+                                      myProducts[index],
+                                      l10n,
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -288,7 +374,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
     ProductResponse product,
     AppLocalizations l10n,
   ) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final isExternal = product.provider?.toUpperCase() != 'LOCAL';
 
     final carbs = product.nutrition.carbohydrates.toStringAsFixed(1);
@@ -296,14 +384,23 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
     final fat = product.nutrition.fat.toStringAsFixed(1);
 
     return Card(
+      elevation: 1,
       margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         title: Row(
           children: [
             Flexible(
               child: Text(
                 product.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -314,14 +411,19 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                 child: Icon(
                   Icons.public,
                   size: 16,
-                  color: Colors.blue.shade600,
+                  color: colorScheme.primary,
                 ),
               ),
             ],
           ],
         ),
         subtitle: product.brand != null && product.brand!.isNotEmpty
-            ? Text(product.brand!)
+            ? Text(
+                product.brand!,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              )
             : null,
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -329,15 +431,14 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
           children: [
             Text(
               '${product.nutrition.energyKcal.toInt()} kcal / 100g',
-              style: const TextStyle(
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               '${l10n.unitCarbShort}:${carbs}g • ${l10n.unitProteinShort}:${protein}g • ${l10n.unitFatShort}:${fat}g',
-              style: TextStyle(
+              style: textTheme.bodySmall?.copyWith(
                 fontSize: 10,
                 color: colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w500,
@@ -382,6 +483,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                     content: Text(l10n.productImportError),
                     backgroundColor: colorScheme.error,
                     behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 );
               }

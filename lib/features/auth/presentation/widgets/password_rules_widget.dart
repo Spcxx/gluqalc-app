@@ -36,31 +36,38 @@ class PasswordRulesWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildRuleItem(l10n.passwordRuleMinLength, hasMinLength),
-        _buildRuleItem(l10n.passwordRuleUpper, hasUpper),
-        _buildRuleItem(l10n.passwordRuleLower, hasLower),
-        _buildRuleItem(l10n.passwordRuleDigit, hasDigit),
-        _buildRuleItem(l10n.passwordRuleSpecial, hasSpecial),
-        _buildRuleItem(l10n.passwordRuleNoRepeating, noRepeating),
+        _buildRuleItem(context, l10n.passwordRuleMinLength, hasMinLength),
+        _buildRuleItem(context, l10n.passwordRuleUpper, hasUpper),
+        _buildRuleItem(context, l10n.passwordRuleLower, hasLower),
+        _buildRuleItem(context, l10n.passwordRuleDigit, hasDigit),
+        _buildRuleItem(context, l10n.passwordRuleSpecial, hasSpecial),
+        _buildRuleItem(context, l10n.passwordRuleNoRepeating, noRepeating),
       ],
     );
   }
 
-  Widget _buildRuleItem(String text, bool isMet) {
+  Widget _buildRuleItem(BuildContext context, String text, bool isMet) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Icon(
             isMet ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isMet ? Colors.green : Colors.grey,
+            color: isMet ? colorScheme.tertiary : colorScheme.onSurfaceVariant,
             size: 20,
           ),
           const SizedBox(width: 8),
           Text(
             text,
-            style: TextStyle(
-              color: isMet ? Colors.green : Colors.grey.shade700,
+            style: textTheme.bodySmall?.copyWith(
+              color: isMet
+                  ? colorScheme.tertiary
+                  : colorScheme.onSurfaceVariant,
+              fontWeight: isMet ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
         ],

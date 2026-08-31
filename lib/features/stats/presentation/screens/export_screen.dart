@@ -75,9 +75,14 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
     final exportState = ref.watch(exportControllerProvider);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 1100;
 
     ref.listen(exportControllerProvider, (prev, next) {
       next.whenOrNull(
@@ -87,6 +92,9 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               content: Text(_mapExportError(err, l10n)),
               backgroundColor: colorScheme.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         },
@@ -95,8 +103,11 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.exportSuccess),
-                backgroundColor: Colors.green,
+                backgroundColor: colorScheme.tertiary,
                 behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             );
           }
@@ -108,160 +119,178 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
 
     String formatDate(DateTime d) => d.toIso8601String().split('T')[0];
 
+    final contentWidget = SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Icon(
+                Icons.analytics_outlined,
+                size: 80,
+                color: colorScheme.primary.withValues(alpha: 0.7),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.exportDescription,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isExporting ? null : _pickDateRange,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Ink(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.calendar_month,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.exportSelectDates,
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _dateRange != null
+                                    ? '${formatDate(_dateRange!.start)}  —  ${formatDate(_dateRange!.end)}'
+                                    : l10n.notSet,
+                                style: textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.edit_calendar,
+                          color: colorScheme.primary,
+                          size: 22,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              if (isExporting) ...[
+                const Center(child: CircularProgressIndicator()),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.exportLoading,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ] else
+                FilledButton.icon(
+                  onPressed: _dateRange == null
+                      ? null
+                      : () async {
+                          await ref
+                              .read(exportControllerProvider.notifier)
+                              .downloadExport(
+                                _dateRange!.start,
+                                _dateRange!.end,
+                              );
+                        },
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(Icons.download),
+                  label: Text(
+                    l10n.exportButton,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         leading: const BackButton(),
         title: Text(
           l10n.exportTitle,
-          style: TextStyle(
-            fontSize: 20,
+          style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.primary,
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Builder(
-              builder: (ctx) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-              ),
-            ),
-          ),
-        ],
+        actions: isDesktop
+            ? []
+            : [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => Scaffold.of(ctx).openEndDrawer(),
+                    ),
+                  ),
+                ),
+              ],
       ),
-      endDrawer: const AppDrawer(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Icon(
-              Icons.analytics_outlined,
-              size: 80,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.exportDescription,
-              style: TextStyle(
-                fontSize: 15,
-                color: colorScheme.onSurface.withValues(alpha: 0.8),
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: isExporting ? null : _pickDateRange,
-                borderRadius: BorderRadius.circular(16),
-                child: Ink(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.6),
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    color: colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.3,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.calendar_month,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.exportSelectDates,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _dateRange != null
-                                  ? '${formatDate(_dateRange!.start)}  —  ${formatDate(_dateRange!.end)}'
-                                  : l10n.notSet,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        Icons.edit_calendar,
-                        color: colorScheme.primary,
-                        size: 22,
-                      ),
-                    ],
-                  ),
-                ),
+      endDrawer: isDesktop ? null : const AppDrawer(),
+      body: Row(
+        children: [
+          Expanded(child: contentWidget),
+          if (isDesktop)
+            SizedBox(
+              width: 320,
+              child: Material(
+                color: colorScheme.surface,
+                child: const AppDrawerBody(isDrawer: false),
               ),
             ),
-
-            const SizedBox(height: 32),
-            if (isExporting) ...[
-              const Center(child: CircularProgressIndicator()),
-              const SizedBox(height: 16),
-              Text(
-                l10n.exportLoading,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ] else
-              FilledButton.icon(
-                onPressed: _dateRange == null
-                    ? null
-                    : () async {
-                        await ref
-                            .read(exportControllerProvider.notifier)
-                            .downloadExport(
-                              _dateRange!.start,
-                              _dateRange!.end,
-                            );
-                      },
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                icon: const Icon(Icons.download),
-                label: Text(
-                  l10n.exportButton,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

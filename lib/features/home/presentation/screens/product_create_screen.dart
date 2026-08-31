@@ -49,6 +49,9 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
   }
 
   Future<void> _submit(AppLocalizations l10n) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (_nameCtrl.text.trim().isEmpty ||
         _kcalCtrl.text.trim().isEmpty ||
         _carbsCtrl.text.trim().isEmpty ||
@@ -57,8 +60,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditValidationRequired),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -83,8 +89,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
               calculatedKcal.toStringAsFixed(0),
             ),
           ),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -97,8 +106,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditValidationSatFatExceedsFat),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -108,8 +120,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditValidationSugarsExceedCarbs),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -149,8 +164,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productCreateSuccess),
-          backgroundColor: Colors.green,
+          backgroundColor: colorScheme.tertiary,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
 
@@ -161,8 +179,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productCreateError),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -170,7 +191,9 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final isLoading = ref.watch(productCreateControllerProvider).isLoading;
 
@@ -179,224 +202,255 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
         centerTitle: true,
         title: Text(
           l10n.productCreateTitle,
-          style: TextStyle(
-            fontSize: 20,
+          style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.primary,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.productEditSectionIdentification,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.productEditSectionIdentification,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          _buildTextField(
+                            label: l10n.productEditNameLabel,
+                            controller: _nameCtrl,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildTextField(
+                            label: l10n.productEditBrandLabel,
+                            controller: _brandCtrl,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.productEditMainMacrosTitle,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  label: '${l10n.macroEnergy} *',
+                                  controller: _kcalCtrl,
+                                  isNumber: true,
+                                  suffix: 'kcal',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildTextField(
+                                  label:
+                                      '${l10n.macroGlycemicIndex} (${l10n.optional})',
+                                  controller: _giCtrl,
+                                  isNumber: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 24),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  label: '${l10n.macroCarbohydratesFull} *',
+                                  controller: _carbsCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildTextField(
+                                  label: '${l10n.macroProteinFull} *',
+                                  controller: _proteinCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  label: '${l10n.macroFatFull} *',
+                                  controller: _fatCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.productEditDetailsTitle,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  label: l10n.macroSugars,
+                                  controller: _sugarsCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildTextField(
+                                  label: l10n.macroSaturatedFat,
+                                  controller: _satFatCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  label: l10n.macroFiber,
+                                  controller: _fiberCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildTextField(
+                                  label: l10n.macroSalt,
+                                  controller: _saltCtrl,
+                                  isNumber: true,
+                                  suffix: 'g',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildTextField(
-                      label: l10n.productEditNameLabel,
-                      controller: _nameCtrl,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildTextField(
-                      label: l10n.productEditBrandLabel,
-                      controller: _brandCtrl,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.productEditMainMacrosTitle,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroEnergy} *',
-                            controller: _kcalCtrl,
-                            isNumber: true,
-                            suffix: 'kcal',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label:
-                                '${l10n.macroGlycemicIndex} (${l10n.optional})',
-                            controller: _giCtrl,
-                            isNumber: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroCarbohydratesFull} *',
-                            controller: _carbsCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroProteinFull} *',
-                            controller: _proteinCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroFatFull} *',
-                            controller: _fatCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: SizedBox.shrink(),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.productEditDetailsTitle,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSugars,
-                            controller: _sugarsCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSaturatedFat,
-                            controller: _satFatCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroFiber,
-                            controller: _fiberCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSalt,
-                            controller: _saltCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: FilledButton.icon(
-            onPressed: isLoading ? null : () => _submit(l10n),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
             ),
-            icon: isLoading
-                ? Container(
-                    width: 20,
-                    height: 20,
-                    padding: const EdgeInsets.all(2),
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: isLoading ? null : () => _submit(l10n),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: colorScheme.onPrimary,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.add),
+                        label: Text(
+                          isLoading ? l10n.saving : l10n.productCreateButton,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimary,
+                          ),
+                        ),
+                      ),
                     ),
-                  )
-                : const Icon(Icons.add),
-            label: Text(
-              isLoading ? l10n.saving : l10n.productCreateButton,
-              style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -410,10 +464,13 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
     bool isNumber = false,
     String? suffix,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return TextFormField(
       controller: controller,
+      style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       keyboardType: isNumber
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.text,
@@ -422,12 +479,11 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
           : null,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface.withValues(alpha: 0.6),
-          fontSize: 14,
         ),
         suffixText: suffix,
-        suffixStyle: TextStyle(
+        suffixStyle: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface.withValues(alpha: 0.5),
           fontWeight: FontWeight.bold,
         ),
@@ -439,23 +495,22 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
-      style: const TextStyle(fontWeight: FontWeight.w600),
     );
   }
 }

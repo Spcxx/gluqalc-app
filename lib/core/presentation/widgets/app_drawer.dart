@@ -17,8 +17,21 @@ Future<String> appVersion(Ref ref) async {
   return packageInfo.version;
 }
 
-class AppDrawer extends ConsumerWidget {
+class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Drawer(
+      child: AppDrawerBody(),
+    );
+  }
+}
+
+class AppDrawerBody extends ConsumerWidget {
+  const AppDrawerBody({this.isDrawer = true, super.key});
+
+  final bool isDrawer;
 
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     final l10n = AppLocalizations.of(context)!;
@@ -51,146 +64,166 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final emailAsync = ref.watch(currentUserEmailProvider);
-    final userEmail = emailAsync.asData?.value ?? 'Loading...';
+    final userEmail = emailAsync.asData?.value ?? l10n.loadingState;
     final versionAsync = ref.watch(appVersionProvider);
 
     final currentPath = GoRouterState.of(context).uri.path;
 
-    return Drawer(
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              color: Theme.of(context).colorScheme.primaryContainer
-                  .withValues(alpha: 0.4),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    child: Icon(Icons.person, size: 32),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    userEmail,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      await ref
-                          .read(authStateControllerProvider.notifier)
-                          .logout();
-                    },
-                    icon: const Icon(Icons.logout, size: 18),
-                    label: Text(l10n.drawerLogout),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.person_outline,
-              title: l10n.drawerProfile,
-              isSelected: currentPath == '/profile',
-              targetRoute: '/profile',
-            ),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.download_outlined,
-              title: l10n.drawerExport,
-              isSelected: currentPath == '/export',
-              targetRoute: '/export',
-            ),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.info_outline,
-              title: l10n.drawerAbout,
-              isSelected: currentPath == '/about',
-              targetRoute: '/about',
-            ),
-            const Spacer(),
-            const Divider(),
-            const SizedBox(height: 8),
-            versionAsync.when(
-              data: (version) => Text(
-                'v$version',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade400,
-                ),
-              ),
-              loading: () => const SizedBox.shrink(),
-              error: (_, _) => const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              l10n.madeByLabel,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
+            child: Column(
               children: [
-                Tooltip(
-                  message: l10n.tooltipApiRepo,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () => _launchUrl(context, AppConfig.githubApiUrl),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: Assets.icons.githubBlack.svg(
-                        height: 20,
-                        colorFilter: ColorFilter.mode(
-                          Colors.grey.shade400,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
+                  child: Icon(
+                    Icons.person,
+                    size: 32,
+                    color: colorScheme.primary,
                   ),
                 ),
-                const SizedBox(width: 4),
-                Tooltip(
-                  message: l10n.tooltipFrontendRepo,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () => _launchUrl(context, AppConfig.githubAppUrl),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Assets.icons.githubBlack.svg(
-                        height: 20,
-                        colorFilter: ColorFilter.mode(
-                          Colors.grey.shade400,
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                const SizedBox(height: 12),
+                Text(
+                  userEmail,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    if (isDrawer) {
+                      Navigator.of(context).pop();
+                    }
+                    await ref
+                        .read(authStateControllerProvider.notifier)
+                        .logout();
+                  },
+                  icon: const Icon(Icons.logout, size: 18),
+                  label: Text(l10n.drawerLogout),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colorScheme.error,
+                    side: BorderSide(color: colorScheme.error),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.person_outline,
+                  title: l10n.drawerProfile,
+                  isSelected: currentPath == '/profile',
+                  targetRoute: '/profile',
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.download_outlined,
+                  title: l10n.drawerExport,
+                  isSelected: currentPath == '/export',
+                  targetRoute: '/export',
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.info_outline,
+                  title: l10n.drawerAbout,
+                  isSelected: currentPath == '/about',
+                  targetRoute: '/about',
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(),
+          ),
+          const SizedBox(height: 8),
+          versionAsync.when(
+            data: (version) => Text(
+              'v$version',
+              textAlign: TextAlign.center,
+              style: textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              ),
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.madeByLabel,
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Tooltip(
+                message: l10n.tooltipApiRepo,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => _launchUrl(context, AppConfig.githubApiUrl),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Assets.icons.githubBlack.svg(
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Tooltip(
+                message: l10n.tooltipFrontendRepo,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => _launchUrl(context, AppConfig.githubAppUrl),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Assets.icons.githubBlack.svg(
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+        ],
       ),
     );
   }
@@ -204,6 +237,7 @@ class AppDrawer extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return ListTile(
       selected: isSelected,
@@ -213,17 +247,19 @@ class AppDrawer extends ConsumerWidget {
       ),
       leading: Icon(
         icon,
-        color: isSelected ? colorScheme.primary : Colors.grey.shade700,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: textTheme.bodyLarge?.copyWith(
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           color: isSelected ? colorScheme.primary : colorScheme.onSurface,
         ),
       ),
       onTap: () async {
-        Navigator.of(context).pop();
+        if (isDrawer) {
+          Navigator.of(context).pop();
+        }
         if (!isSelected) {
           Future.delayed(const Duration(milliseconds: 250), () async {
             if (context.mounted) {

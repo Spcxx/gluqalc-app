@@ -23,15 +23,17 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
+            color: colorScheme.shadow.withValues(alpha: 0.08),
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
@@ -40,81 +42,98 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            InkWell(
-              onTap: () => setState(() => _isExpanded = !_isExpanded),
-              child: SizedBox(
-                width: double.infinity,
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 650),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(2),
+                    InkWell(
+                      onTap: () => setState(() => _isExpanded = !_isExpanded),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 12),
+                            Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.4,
+                                ),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildKcalBar(
+                            context: context,
+                            label: widget.l10n.macroKcal,
+                            current: widget.consumed.energyKcal,
+                            limit: widget.target.energyKcal,
+                            color: colorScheme.primary,
+                            l10n: widget.l10n,
+                          ),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOutCubic,
+                            height: _isExpanded ? 110.0 : 0.0,
+                            child: SingleChildScrollView(
+                              physics: const NeverScrollableScrollPhysics(),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 24),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    _buildCircularMacro(
+                                      context: context,
+                                      label: widget.l10n.macroCarbs,
+                                      current: widget.consumed.carbohydrates,
+                                      limit: widget.target.carbohydrates,
+                                      color: colorScheme.primary,
+                                      unit: 'g',
+                                    ),
+                                    _buildCircularMacro(
+                                      context: context,
+                                      label: widget.l10n.macroProtein,
+                                      current: widget.consumed.protein,
+                                      limit: widget.target.protein,
+                                      color: colorScheme.error,
+                                      unit: 'g',
+                                    ),
+                                    _buildCircularMacro(
+                                      context: context,
+                                      label: widget.l10n.macroFat,
+                                      current: widget.consumed.fat,
+                                      limit: widget.target.fat,
+                                      color: colorScheme.tertiary,
+                                      unit: 'g',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildKcalBar(
-                    context: context,
-                    label: widget.l10n.macroKcal,
-                    current: widget.consumed.energyKcal,
-                    limit: widget.target.energyKcal,
-                    color: Colors.orange.shade600,
-                    l10n: widget.l10n,
-                  ),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOutCubic,
-                    alignment: Alignment.topCenter,
-                    child: _isExpanded
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 24),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                _buildCircularMacro(
-                                  context: context,
-                                  label: widget.l10n.macroCarbs,
-                                  current: widget.consumed.carbohydrates,
-                                  limit: widget.target.carbohydrates,
-                                  color: Colors.blue.shade500,
-                                  unit: 'g',
-                                ),
-                                _buildCircularMacro(
-                                  context: context,
-                                  label: widget.l10n.macroProtein,
-                                  current: widget.consumed.protein,
-                                  limit: widget.target.protein,
-                                  color: Colors.red.shade500,
-                                  unit: 'g',
-                                ),
-                                _buildCircularMacro(
-                                  context: context,
-                                  label: widget.l10n.macroFat,
-                                  current: widget.consumed.fat,
-                                  limit: widget.target.fat,
-                                  color: Colors.amber.shade600,
-                                  unit: 'g',
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox(width: double.infinity),
-                  ),
-                ],
               ),
             ),
           ],
@@ -131,7 +150,9 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
     required Color color,
     required AppLocalizations l10n,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     final rawProgress = limit > 0 ? (current / limit) : 0.0;
     final progress = rawProgress.clamp(0.0, 1.0);
@@ -151,20 +172,18 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
               ),
               Text(
                 l10n.kcalRemaining(remaining),
-                style: TextStyle(
-                  fontSize: 13,
+                style: textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: isExceeded
                       ? colorScheme.error
-                      : colorScheme.onSurface.withValues(alpha: 0.7),
+                      : colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -176,9 +195,7 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
               value: progress,
               minHeight: 10,
               backgroundColor: color.withValues(alpha: 0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                color,
-              ),
+              valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
         ],
@@ -194,13 +211,16 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
     required Color color,
     required String unit,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     final rawProgress = limit > 0 ? (current / limit) : 0.0;
     final progress = rawProgress.clamp(0.0, 1.0);
     final isExceeded = rawProgress > 1.0;
 
-    return Expanded(
+    return SizedBox(
+      width: 90,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -223,8 +243,7 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                     children: [
                       Text(
                         '${current.toInt()}',
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isExceeded
                               ? colorScheme.error
@@ -234,10 +253,10 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                       ),
                       Text(
                         '/${limit.toInt()}$unit',
-                        style: TextStyle(
+                        style: textTheme.bodySmall?.copyWith(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                       ),
@@ -250,13 +269,13 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
         ],
       ),

@@ -88,6 +88,10 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
     ProductPortionResponse? portionToEdit,
   }) async {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final nameController = TextEditingController(
       text: portionToEdit?.name ?? '',
     );
@@ -101,10 +105,10 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           portionToEdit == null ? l10n.addPortionTitle : l10n.editPortionTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         content: Form(
           key: formKey,
@@ -114,9 +118,12 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
               children: [
                 TextFormField(
                   controller: nameController,
+                  style: textTheme.bodyMedium,
                   decoration: InputDecoration(
                     labelText: l10n.portionNameLabel,
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   validator: (v) => v == null || v.trim().isEmpty
                       ? l10n.errorFieldRequired
@@ -125,6 +132,7 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: weightController,
+                  style: textTheme.bodyMedium,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -134,7 +142,9 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.portionWeightGramsLabel,
                     suffixText: 'g',
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
@@ -154,6 +164,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           ),
           FilledButton(
@@ -194,11 +209,19 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
               messenger.showSnackBar(
                 SnackBar(
                   content: Text(l10n.productEditSuccess),
-                  backgroundColor: Colors.green,
+                  backgroundColor: colorScheme.tertiary,
                   behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               );
             },
+            style: FilledButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: Text(MaterialLocalizations.of(context).okButtonLabel),
           ),
         ],
@@ -207,6 +230,8 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
   }
 
   Future<void> _deletePortion(String portionId, AppLocalizations l10n) async {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final success = await ref
         .read(productPortionsControllerProvider.notifier)
         .deletePortion(portionId);
@@ -222,22 +247,30 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.portionDeletedSuccess),
-          backgroundColor: Colors.green,
+          backgroundColor: colorScheme.tertiary,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.errorConflict),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
   }
 
   Future<void> _submit(AppLocalizations l10n) async {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (_nameCtrl.text.trim().isEmpty ||
         _kcalCtrl.text.trim().isEmpty ||
         _carbsCtrl.text.trim().isEmpty ||
@@ -246,8 +279,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditValidationRequired),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -272,8 +308,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
               calculatedKcal.toStringAsFixed(0),
             ),
           ),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -328,8 +367,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditSuccess),
-          backgroundColor: Colors.green,
+          backgroundColor: colorScheme.tertiary,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
 
@@ -339,8 +381,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.productEditError),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -348,8 +393,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     final isProductLoading = ref.watch(productEditControllerProvider).isLoading;
     final isPortionsLoading = ref
         .watch(productPortionsControllerProvider)
@@ -366,8 +414,7 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
         centerTitle: true,
         title: Text(
           l10n.productEditTitle,
-          style: TextStyle(
-            fontSize: 20,
+          style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.primary,
           ),
@@ -375,294 +422,322 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.productEditSectionIdentification,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildTextField(
-                      label: l10n.productEditNameLabel,
-                      controller: _nameCtrl,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildTextField(
-                      label: l10n.productEditBrandLabel,
-                      controller: _brandCtrl,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  l10n.portionsTitle,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  l10n.productEditSectionIdentification,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: () => setState(
-                    () => _isPortionsEditable = !_isPortionsEditable,
+                const SizedBox(height: 8),
+                Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  icon: Icon(
-                    _isPortionsEditable ? Icons.lock_open : Icons.lock_outline,
-                    size: 16,
-                  ),
-                  label: Text(
-                    _isPortionsEditable ? l10n.lockButton : l10n.unlockButton,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          label: l10n.productEditNameLabel,
+                          controller: _nameCtrl,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildTextField(
+                          label: l10n.productEditBrandLabel,
+                          controller: _brandCtrl,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Opacity(
-                opacity: _isPortionsEditable ? 1.0 : 0.6,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (customPortions.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            l10n.noCustomProducts,
-                            style: TextStyle(
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.5,
-                              ),
-                              fontSize: 13,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      else
-                        ...customPortions.asMap().entries.map((mapEntry) {
-                          final index = mapEntry.key;
-                          final portion = mapEntry.value;
-                          final isLast = index == customPortions.length - 1;
-
-                          return Column(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  portion.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.portionsTitle,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => setState(
+                        () => _isPortionsEditable = !_isPortionsEditable,
+                      ),
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      icon: Icon(
+                        _isPortionsEditable
+                            ? Icons.lock_open
+                            : Icons.lock_outline,
+                        size: 16,
+                      ),
+                      label: Text(
+                        _isPortionsEditable
+                            ? l10n.lockButton
+                            : l10n.unlockButton,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Opacity(
+                    opacity: _isPortionsEditable ? 1.0 : 0.6,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (customPortions.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                l10n.noCustomProducts,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.5,
                                   ),
                                 ),
-                                subtitle: Text('${portion.weightInGrams} g'),
-                                trailing: _isPortionsEditable
-                                    ? Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.edit,
-                                              size: 20,
-                                            ),
-                                            onPressed: () => _showPortionDialog(
-                                              portionToEdit: portion,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            icon: Icon(
-                                              Icons.delete,
-                                              size: 20,
-                                              color: colorScheme.error,
-                                            ),
-                                            onPressed: () => _deletePortion(
-                                              portion.id,
-                                              l10n,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
+                                textAlign: TextAlign.center,
                               ),
-                              if (!isLast) const Divider(height: 1),
-                            ],
-                          );
-                        }),
-                      if (_isPortionsEditable) ...[
-                        if (customPortions.isNotEmpty)
-                          const Divider(height: 24),
-                        OutlinedButton.icon(
-                          onPressed: _showPortionDialog,
-                          icon: const Icon(Icons.add),
-                          label: Text(l10n.addPortionButton),
-                        ),
-                      ],
-                    ],
+                            )
+                          else
+                            ...customPortions.asMap().entries.map((mapEntry) {
+                              final index = mapEntry.key;
+                              final portion = mapEntry.value;
+                              final isLast = index == customPortions.length - 1;
+
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(
+                                      portion.name,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      '${portion.weightInGrams} g',
+                                      style: textTheme.bodyMedium,
+                                    ),
+                                    trailing: _isPortionsEditable
+                                        ? Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.edit,
+                                                  size: 20,
+                                                ),
+                                                onPressed: () =>
+                                                    _showPortionDialog(
+                                                      portionToEdit: portion,
+                                                    ),
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.delete,
+                                                  size: 20,
+                                                  color: colorScheme.error,
+                                                ),
+                                                onPressed: () => _deletePortion(
+                                                  portion.id,
+                                                  l10n,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : null,
+                                  ),
+                                  if (!isLast) const Divider(height: 1),
+                                ],
+                              );
+                            }),
+                          if (_isPortionsEditable) ...[
+                            if (customPortions.isNotEmpty)
+                              const Divider(height: 24),
+                            OutlinedButton.icon(
+                              onPressed: _showPortionDialog,
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                              icon: const Icon(Icons.add),
+                              label: Text(l10n.addPortionButton),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            Text(
-              l10n.productEditMainMacrosTitle,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroEnergy} *',
-                            controller: _kcalCtrl,
-                            isNumber: true,
-                            suffix: 'kcal',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label:
-                                '${l10n.macroGlycemicIndex} (${l10n.optional})',
-                            controller: _giCtrl,
-                            isNumber: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroCarbohydratesFull} *',
-                            controller: _carbsCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroProteinFull} *',
-                            controller: _proteinCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: '${l10n.macroFatFull} *',
-                            controller: _fatCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(child: SizedBox.shrink()),
-                      ],
-                    ),
-                  ],
+                const SizedBox(height: 24),
+                Text(
+                  l10n.productEditMainMacrosTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.productEditDetailsTitle,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
+                const SizedBox(height: 8),
+                Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSugars,
-                            controller: _sugarsCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: '${l10n.macroEnergy} *',
+                                controller: _kcalCtrl,
+                                isNumber: true,
+                                suffix: 'kcal',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildTextField(
+                                label:
+                                    '${l10n.macroGlycemicIndex} (${l10n.optional})',
+                                controller: _giCtrl,
+                                isNumber: true,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSaturatedFat,
-                            controller: _satFatCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
+                        const Divider(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: '${l10n.macroCarbohydratesFull} *',
+                                controller: _carbsCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildTextField(
+                                label: '${l10n.macroProteinFull} *',
+                                controller: _proteinCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: '${l10n.macroFatFull} *',
+                                controller: _fatCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(child: SizedBox.shrink()),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroFiber,
-                            controller: _fiberCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            label: l10n.macroSalt,
-                            controller: _saltCtrl,
-                            isNumber: true,
-                            suffix: 'g',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.productEditDetailsTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: l10n.macroSugars,
+                                controller: _sugarsCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildTextField(
+                                label: l10n.macroSaturatedFat,
+                                controller: _satFatCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: l10n.macroFiber,
+                                controller: _fiberCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildTextField(
+                                label: l10n.macroSalt,
+                                controller: _saltCtrl,
+                                isNumber: true,
+                                suffix: 'g',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -677,19 +752,21 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
               ),
             ),
             icon: isLoading
-                ? Container(
+                ? SizedBox(
                     width: 20,
                     height: 20,
-                    padding: const EdgeInsets.all(2),
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
+                    child: CircularProgressIndicator(
+                      color: colorScheme.onPrimary,
                       strokeWidth: 2,
                     ),
                   )
                 : const Icon(Icons.save),
             label: Text(
               isLoading ? l10n.saving : l10n.productEditSaveChanges,
-              style: const TextStyle(fontSize: 16),
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
             ),
           ),
         ),
@@ -703,10 +780,13 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
     bool isNumber = false,
     String? suffix,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return TextFormField(
       controller: controller,
+      style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       keyboardType: isNumber
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.text,
@@ -715,12 +795,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
           : null,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface.withValues(alpha: 0.6),
-          fontSize: 14,
         ),
         suffixText: suffix,
-        suffixStyle: TextStyle(
+        suffixStyle: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface.withValues(alpha: 0.5),
           fontWeight: FontWeight.bold,
         ),
@@ -732,23 +811,22 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
-      style: const TextStyle(fontWeight: FontWeight.w600),
     );
   }
 }

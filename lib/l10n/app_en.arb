@@ -44,12 +44,19 @@
   "errorTooManyRequests": "Too many attempts. Please wait and try again.",
   "errorServerError": "Server problem. Try again later.",
   "errorPasswordLength": "Password must be between 8 and 255 characters.",
-  "errorUnknown": "An unknown error occurred (Code: {code}).",
+  "errorUnknown": "An unknown error occurred (code: {code}).",
+  "@errorUnknown": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
   "errorInvalidVerificationCode": "Invalid or expired verification code.",
   "errorEmailAlreadyTaken": "This email address is already taken.",
   "errorEmailSameAsCurrent": "The new email must be different from the current one.",
   "changeEmailButton": "Wrong email?",
-  "changeEmailDialogTitle": "Change Email Address",
+  "changeEmailDialogTitle": "Change email address",
   "changeEmailDialogSubtitle": "Enter your current email, password, and the correct email address.",
   "newEmailLabel": "New email address",
   "currentPasswordLabel": "Current password",
@@ -67,8 +74,18 @@
   "acceptButton": "Accept",
   "declineButton": "Decline",
   "errorLoadingConsents": "Error loading consents",
-  "profileSetupTitle": "Profile Setup",
+  "profileSetupTitle": "Profile setup",
   "profileStepIndicator": "Step {current} of {total}",
+  "@profileStepIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "nextButton": "Next",
   "backButton": "Back",
   "finishButton": "Finish",
@@ -77,72 +94,93 @@
   "genderFemale": "Female",
   "genderMale": "Male",
   "genderOther": "Other",
-  "birthDateLabel": "Date of Birth",
+  "birthDateLabel": "Date of birth",
   "selectDate": "Select date",
   "heightLabel": "Height",
   "weightLabel": "Weight",
   "bodyFatCheckbox": "I know my body fat percentage",
-  "bodyFatLabel": "Body Fat",
-  "bmrMethodTitle": "BMR Calculation Method",
+  "bodyFatLabel": "Body fat",
+  "bmrMethodTitle": "BMR calculation method",
   "bmrMethodSubtitle": "Choose the formula for your basal metabolic rate.",
   "recommendedForYou": "Recommended for you",
-  "palTitle": "Lifestyle & Activity (PAL)",
+  "palTitle": "Lifestyle & activity (PAL)",
   "palSubtitle": "Answer the questions to estimate your physical activity level, or adjust it manually.",
   "manualPalSwitch": "I know my PAL - enter manually",
   "quizPalSwitch": "Back to questionnaire",
-  "goalTitle": "Silhouette Goal",
+  "goalTitle": "Silhouette goal",
   "goalSubtitle": "Calculations based on Dr. Kevin Hall's modern metabolic model.",
   "goalLose": "Lose weight",
   "goalMaintain": "Maintain weight",
   "goalGain": "Gain weight",
   "goalLoseGainQuestion": "How many kilograms do you want to {action} in a year?",
+  "@goalLoseGainQuestion": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "goalActionLose": "lose",
   "goalActionGain": "gain",
   "goalMaintainDesc": "Maintaining weight means zero caloric deficit/surplus.",
-  "weeklyDistributionTitle": "Flexible Weekly Schedule",
+  "weeklyDistributionTitle": "Flexible weekly schedule",
   "weeklyDistributionSubtitle": "Adjust calories for specific days. The weekly sum must equal 0 kcal.",
   "weeklyDistributionSwitch": "Customize specific days",
   "weeklySumValid": "Weekly sum is 0 kcal (perfect!)",
   "weeklySumInvalid": "Sum is {sum} kcal. Must equal exactly 0.",
-  "macroTitle": "Macronutrient Strategy",
+  "@weeklySumInvalid": {
+    "placeholders": {
+      "sum": {
+        "type": "int"
+      }
+    }
+  },
+  "macroTitle": "Macronutrient strategy",
   "macroSubtitle": "Choose a preset or adjust ratios manually (sum must equal 100%).",
   "macroBalanced": "Balanced",
-  "macroHighProtein": "High Protein",
-  "macroLowCarb": "Low Carb",
+  "macroHighProtein": "High protein",
+  "macroLowCarb": "Low carb",
   "macroKeto": "Keto",
   "macroCustom": "Custom",
   "macroProtein": "Protein",
   "macroFat": "Fat",
   "macroCarbs": "Carbohydrates",
-  "macroWarningText": "Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-20%, Fat 20-35%). Make sure you know what you are doing.",
+  "macroWarningText": "Warning: Some values exceed standard nutritional recommendations (Carbs 45-65%, Protein 10-35%, Fat 20-35%). Make sure you know what you are doing.",
   "macroSumValid": "Total macros equal 100%",
-  "macroSumInvalid": "Total is {total}% (Must equal 100%)",
-  "insulinSettingsTitle": "Insulin Parameters",
+  "macroSumInvalid": "Total is {total}% (must equal 100%)",
+  "@macroSumInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "insulinSettingsTitle": "Insulin parameters",
   "insulinSettingsSubtitle": "Key parameters for calculating insulin doses and corrections.",
-  "insulinDeliveryMethodLabel": "Insulin Delivery Method",
+  "insulinDeliveryMethodLabel": "Insulin delivery method",
   "insulinPen": "Pen",
   "insulinPump": "Pump",
-  "icrTitle": "Insulin to Carb Ratio (ICR)",
+  "icrTitle": "Insulin to carb ratio (ICR)",
   "icrSubtitle": "Configure ICR for hours of the day (0-23). Hour 0 is mandatory.",
   "addHourButton": "Add another hour",
   "icrValid": "Hourly configuration is fully valid.",
-  "fpuMethodTitle": "FPU Calculation Method",
+  "fpuMethodTitle": "FPU calculation method",
   "fpuMethodSubtitle": "Choose how insulin for protein and fat is calculated.",
   "summaryTitle": "Summary",
   "summarySubtitle": "Review your data. You can go back and edit any step.",
   "summaryGender": "Gender",
   "summaryBirthDate": "Date of birth",
-  "summaryHeightWeight": "Height & Weight",
-  "summaryBodyFat": "Body Fat",
-  "summaryBmrMethod": "BMR Method",
-  "summaryPal": "PAL Value",
-  "summaryGoal": "Caloric Goal",
-  "summaryWeekly": "Weekly Schedule",
+  "summaryHeightWeight": "Height & weight",
+  "summaryBodyFat": "Body fat",
+  "summaryBmrMethod": "BMR method",
+  "summaryPal": "PAL value",
+  "summaryGoal": "Caloric goal",
+  "summaryWeekly": "Weekly schedule",
   "summaryMacros": "Macronutrients",
   "summaryInsulinParams": "ISF / IFP",
-  "summaryInsulinDelivery": "Delivery Method",
-  "summaryIcrHours": "ICR Hours",
-  "summaryFpuMethod": "FPU Method",
+  "summaryInsulinDelivery": "Delivery method",
+  "summaryIcrHours": "ICR hours",
+  "summaryFpuMethod": "FPU method",
   "errorHeightRange": "Height must be between 50 and 300 cm",
   "errorWeightRange": "Weight must be between 20 and 500 kg",
   "errorBodyFatRange": "Body fat must be between 1 and 80%",
@@ -150,9 +188,16 @@
   "errorIcrRange": "Hour must be between 0 and 23.",
   "errorIcrValue": "ICR value must be greater than 0.",
   "errorIcrDuplicate": "Hour {hour}:00 is duplicated. Each hour can only appear once.",
+  "@errorIcrDuplicate": {
+    "placeholders": {
+      "hour": {
+        "type": "int"
+      }
+    }
+  },
   "errorIcrBaseRequired": "Hour 0 (0:00) is required as a base.",
   "icrConfigValid": "Hourly configuration is fully valid.",
-  "deliveryMethodInfoTitle": "Insulin Delivery Method",
+  "deliveryMethodInfoTitle": "Insulin delivery method",
   "deliveryMethodInfoDesc": "Choose whether you use multiple daily injections (MDI with insulin pens) or a continuous subcutaneous insulin infusion pump (CSII).",
   "katchMcArdleDisabledReason": "Requires body fat percentage to be provided.",
   "pankowskaDesc": "Based on Protein-Fat Units (1 PFU = 100 kcal from protein/fat). Reduces the dose by 25–40% and uses an extended bolus over 2–4 hours to prevent late hypoglycemia.",
@@ -165,7 +210,6 @@
   "bmrKatchDesc": "Unlike the previously described equations, the Katch-McArdle formula does not account for gender, height, or age. It is the best calculation method for athletes, muscular individuals, and physically active people.",
   "bmrOwenTitle": "Owen",
   "bmrOwenDesc": "The Owen equation shows the highest accuracy for obese Europeans, while being much less accurate for individuals with normal body weight. For US residents, the Mifflin-St Jeor formula remains the most precise.",
-
   "palQ1Title": "1. Occupational activity and daily routine profile",
   "palQ1Opt0Title": "Sedentary restriction",
   "palQ1Opt0Desc": "Bedridden or extremely limited physical mobility.",
@@ -177,7 +221,6 @@
   "palQ1Opt3Desc": "Hospitality, warehousing, light manual labor.",
   "palQ1Opt4Title": "Heavy physical labor",
   "palQ1Opt4Desc": "Construction, heavy agriculture, intensive manual labor.",
-
   "palQ2Title": "2. Non-exercise daily movement and home activity",
   "palQ2Opt0Title": "Minimal movement",
   "palQ2Opt0Desc": "Passive resting, no household duties.",
@@ -187,7 +230,6 @@
   "palQ2Opt2Desc": "Daily dog walking, family care, regular errands.",
   "palQ2Opt3Title": "High movement",
   "palQ2Opt3Desc": "Intensive home maintenance, long daily walks.",
-
   "palQ3Title": "3. Frequency of planned physical workouts",
   "palQ3Opt0Title": "No structured workouts",
   "palQ3Opt0Desc": "No planned physical training routines.",
@@ -197,7 +239,6 @@
   "palQ3Opt2Desc": "3 to 4 structured sessions per week.",
   "palQ3Opt3Title": "Frequent training",
   "palQ3Opt3Desc": "5 or more training sessions per week.",
-
   "palQ4Title": "4. Average intensity of structured training",
   "palQ4Opt0Title": "Low intensity",
   "palQ4Opt0Desc": "Mobility, stretching, gentle yoga, leisurely walks.",
@@ -205,7 +246,6 @@
   "palQ4Opt1Desc": "Standard aerobic training, moderate gym workouts.",
   "palQ4Opt2Title": "High intensity",
   "palQ4Opt2Desc": "Crossfit, heavy weightlifting, intense interval training.",
-
   "caloricTargetLabel": "Caloric target:",
   "caloricTargetMaintain": "Maintain (0 kcal)",
   "caloricTargetValue": "{value} kcal / day",
@@ -235,20 +275,20 @@
       }
     }
   },
-  "isfLabel": "Insulin Sensitivity Factor (ISF)",
+  "isfLabel": "Insulin sensitivity factor (ISF)",
   "isfSuffix": "mg/dL / U",
-  "isfInfoTitle": "ISF (Insulin Sensitivity Factor)",
+  "isfInfoTitle": "ISF (Insulin sensitivity factor)",
   "isfInfoDesc": "Specifies how many mg/dL your blood glucose drops after taking 1 unit of rapid-acting insulin.",
-  "ifpLabel": "Insulin Fat-Protein Ratio (IFP)",
+  "ifpLabel": "Insulin fat-protein ratio (IFP)",
   "ifpSuffix": "U / FPU",
-  "ifpInfoTitle": "IFP / FPU Ratio",
+  "ifpInfoTitle": "IFP / FPU ratio",
   "ifpInfoDesc": "Specifies how many units of insulin are needed for 1 FPU (Fat-Protein Unit), which corresponds to every 100 kcal coming from dietary fats and proteins.",
-  "icrInfoTitle": "ICR (Insulin to Carb Ratio)",
+  "icrInfoTitle": "ICR (Insulin to carb ratio)",
   "icrInfoDesc": "Defines how many grams of carbohydrates are covered by 1 unit of insulin for a given hour. Hour 0 (0:00) is mandatory as base.",
   "hourLabel": "Hour",
   "icrValueLabel": "ICR (g/U)",
-  "pankowskaTitle": "Pańkowska Method (Warsaw Method)",
-  "sieradzkiTitle": "Sieradzki Method (Percentage Method)",
+  "pankowskaTitle": "Pańkowska method (Warsaw method)",
+  "sieradzkiTitle": "Sieradzki method (Percentage method)",
   "notSet": "Not set",
   "notProvided": "Not provided",
   "summaryGoalLose": "Lose weight ({diff} kcal deficit)",
@@ -279,10 +319,10 @@
     }
   },
   "readyToProceed": "Ready to proceed.",
-  "palMultiplierLabel": "PAL Multiplier",
+  "palMultiplierLabel": "PAL multiplier",
   "errorTitle": "Error",
   "logoutTooltip": "Logout",
-  "tryAgainButton": "Try Again",
+  "tryAgainButton": "Try again",
   "okButton": "OK",
   "errorGeneric": "Error: {error}",
   "@errorGeneric": {
@@ -348,13 +388,13 @@
   "accountDeletedSuccessfully": "Your account has been successfully deleted.",
   "requestDeleteButton": "Request deletion",
   "confirmDeleteButton": "Permanently delete",
-  "deviceWeb": "Web Browser",
-  "deviceAndroid": "Android Device",
-  "deviceIos": "iOS Device",
+  "deviceWeb": "Web browser",
+  "deviceAndroid": "Android device",
+  "deviceIos": "iOS device",
   "deviceWindows": "Windows PC",
-  "deviceLinux": "Linux Native App",
+  "deviceLinux": "Linux native app",
   "deviceMac": "Mac / MacBook",
-  "deviceUnknown": "Unknown Device",
+  "deviceUnknown": "Unknown device",
   "lastActive": "Last active",
   "errorSessionRevoke": "Failed to revoke session",
   "warningHighDeficitYellow": "This is a fast reduction pace. Ensure you get enough nutrients.",
@@ -365,11 +405,11 @@
   "aboutDescription": "GluQalc is an application supporting the monitoring of diet, macronutrients, as well as glycemic and insulin parameters.",
   "aboutAuthor": "Author",
   "aboutContact": "Contact",
-  "aboutFrontendRepo": "Frontend Repository",
-  "aboutBackendRepo": "API Repository",
-  "aboutTos": "Terms of Service (ToS)",
-  "aboutPrivacy": "Privacy Policy",
-  "aboutDisclaimer": "Medical Disclaimer",
+  "aboutFrontendRepo": "Frontend repository",
+  "aboutBackendRepo": "API repository",
+  "aboutTos": "Terms of service (ToS)",
+  "aboutPrivacy": "Privacy policy",
+  "aboutDisclaimer": "Medical disclaimer",
   "errorOpenUrl": "Could not open URL",
   "exportTitle": "Export data",
   "exportDescription": "Generate a detailed CSV report with your entries, macronutrients, and insulin doses for the selected period.",
@@ -404,7 +444,7 @@
   "insulinDoseDetailsTitle": "Insulin dose details",
   "insulinTotalDose": "Total dose:",
   "insulinCarbDose": "Carb dose:",
-  "insulinFatProteinDose": "Fat & Protein dose:",
+  "insulinFatProteinDose": "Fat & protein dose:",
   "insulinBolusDuration": "Bolus duration:",
   "insulinDescription": "Description:",
   "closeButton": "Close",
@@ -422,7 +462,7 @@
   "mealDetailsCalculationsInfo": "Calculations below apply to the saved portion:",
   "insulinDoseTitle": "Insulin dose",
   "insulinCarbs": "Carbs",
-  "insulinFatProtein": "Fat & Protein",
+  "insulinFatProtein": "Fat & protein",
   "dailyMacroShareTitle": "Daily macro share",
   "macroEnergy": "Energy",
   "macroCarbohydratesFull": "Carbohydrates",
@@ -456,7 +496,7 @@
   "productEditMainMacrosTitle": "Main macros per 100g",
   "productEditDetailsTitle": "Optional nutrients per 100g",
   "productEditSaveChanges": "Save changes",
-  "productEditValidationRequired": "Product name and main macros (Kcal, Carbs, Protein, Fat) are required.",
+  "productEditValidationRequired": "Product name and main macros (kcal, carbs, protein, fat) are required.",
   "productEditValidationCaloricMismatch": "Entered calories ({kcal} kcal) differ too much from calculated macros (~{calculated} kcal). Please check your data.",
   "@productEditValidationCaloricMismatch": {
     "placeholders": {
@@ -484,5 +524,6 @@
   "portionNameLabel": "Portion name (e.g. slice)",
   "portionWeightGramsLabel": "Weight in grams",
   "portionDeletedSuccess": "Portion deleted successfully",
-  "errorInvalidNumber": "Please enter a valid number"
+  "errorInvalidNumber": "Please enter a valid number",
+  "loadingState": "..."
 }

@@ -31,13 +31,14 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
     String label,
     double value,
     ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: textTheme.bodySmall?.copyWith(
             fontSize: 9,
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface.withValues(alpha: 0.4),
@@ -46,7 +47,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
         const SizedBox(height: 2),
         Text(
           '${value.toStringAsFixed(1)}g',
-          style: TextStyle(
+          style: textTheme.bodySmall?.copyWith(
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -65,6 +66,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
     required double fat,
     required AppLocalizations l10n,
     required ColorScheme colorScheme,
+    required TextTheme textTheme,
   }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -84,16 +86,19 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                           l10n.unitCarbShort,
                           carbs,
                           colorScheme,
+                          textTheme,
                         ),
                         _buildSingleMacroColumn(
                           l10n.unitProteinShort,
                           protein,
                           colorScheme,
+                          textTheme,
                         ),
                         _buildSingleMacroColumn(
                           l10n.unitFatShort,
                           fat,
                           colorScheme,
+                          textTheme,
                         ),
                       ],
                     ),
@@ -134,7 +139,10 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final category = widget.category;
     final l10n = widget.l10n;
     final profile = ref.watch(profileControllerProvider).value;
@@ -153,46 +161,51 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
             children: [
               Expanded(
                 child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     setState(() {
                       _isExpanded = !_isExpanded;
                     });
                   },
-                  child: Row(
-                    children: [
-                      Icon(
-                        _isExpanded
-                            ? Icons.keyboard_arrow_up
-                            : Icons.keyboard_arrow_down,
-                        size: 20,
-                        color: colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '$kcal kcal',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                          ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          size: 20,
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                category.name,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '$kcal kcal',
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -209,6 +222,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                     fat: fat,
                     l10n: l10n,
                     colorScheme: colorScheme,
+                    textTheme: textTheme,
                   ),
                   const SizedBox(width: 4),
                   SizedBox(
@@ -250,6 +264,9 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                 content: Text(message),
                                 backgroundColor: colorScheme.error,
                                 behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             );
                           }
@@ -269,7 +286,9 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                             const SizedBox(width: 8),
                             Text(
                               l10n.deleteCategory,
-                              style: TextStyle(color: colorScheme.error),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.error,
+                              ),
                             ),
                           ],
                         ),
@@ -308,17 +327,16 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
             child: category.entries.isEmpty
                 ? Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerHighest.withValues(
                         alpha: 0.2,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       l10n.placeholderMeal,
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: textTheme.bodyMedium?.copyWith(
                         fontStyle: FontStyle.italic,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
@@ -345,12 +363,12 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                           : '$qtyStr x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)';
 
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 6),
+                        margin: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHighest.withValues(
                             alpha: 0.3,
                           ),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: colorScheme.outlineVariant.withValues(
                               alpha: 0.2,
@@ -358,14 +376,14 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                           ),
                         ),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                           onTap: () => context.push(
                             '/meal-entry-details/${entry.id}?categoryId=${widget.category.id}',
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 8,
+                              vertical: 10,
+                              horizontal: 12,
                             ),
                             child: Row(
                               children: [
@@ -379,10 +397,10 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                           Flexible(
                                             child: Text(
                                               entry.productName,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                              ),
+                                              style: textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -396,7 +414,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                               child: Icon(
                                                 Icons.public,
                                                 size: 14,
-                                                color: Colors.blue.shade600,
+                                                color: colorScheme.primary,
                                               ),
                                             ),
                                           ],
@@ -405,17 +423,15 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                       const SizedBox(height: 2),
                                       Text(
                                         portionLabel,
-                                        style: TextStyle(
-                                          fontSize: 11,
+                                        style: textTheme.bodySmall?.copyWith(
                                           color: colorScheme.onSurface
                                               .withValues(alpha: 0.6),
                                         ),
                                       ),
-                                      const SizedBox(height: 1),
+                                      const SizedBox(height: 2),
                                       Text(
                                         '$entryKcal kcal',
-                                        style: TextStyle(
-                                          fontSize: 11,
+                                        style: textTheme.bodySmall?.copyWith(
                                           fontWeight: FontWeight.w500,
                                           color: colorScheme.primary,
                                         ),
@@ -444,6 +460,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                       fat: entryFat,
                                       l10n: l10n,
                                       colorScheme: colorScheme,
+                                      textTheme: textTheme,
                                     ),
                                     const SizedBox(width: 4),
                                     SizedBox(

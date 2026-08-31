@@ -26,13 +26,17 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
+
     final diff = widget.parent.kcalGoalDifference;
     final currentGoal = widget.parent.goalType;
 
     final textColor = diff < 0
-        ? Colors.red.shade700
-        : (diff > 0 ? Colors.green.shade700 : Colors.blue.shade700);
+        ? colorScheme.error
+        : (diff > 0 ? colorScheme.tertiary : colorScheme.primary);
 
     final isChangingWeight =
         currentGoal == GoalTypeEnum.lose || currentGoal == GoalTypeEnum.gain;
@@ -51,12 +55,16 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
       children: [
         Text(
           l10n.goalTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.goalSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 24),
         SegmentedButton<GoalTypeEnum>(
@@ -98,8 +106,7 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                               ? l10n.goalActionLose
                               : l10n.goalActionGain,
                         ),
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -107,10 +114,9 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                       const SizedBox(height: 12),
                       Text(
                         '${widget.parent.weightChangeTargetKg.toStringAsFixed(1)} kg',
-                        style: TextStyle(
-                          fontSize: 48,
+                        style: textTheme.displayLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                       Slider(
@@ -127,20 +133,23 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                           });
                         },
                       ),
-
                       if (isHighLoss || isExtremeLoss) ...[
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isExtremeLoss
-                                ? Colors.red.shade50
-                                : Colors.amber.shade50,
+                                ? colorScheme.errorContainer.withValues(
+                                    alpha: 0.5,
+                                  )
+                                : colorScheme.tertiaryContainer.withValues(
+                                    alpha: 0.3,
+                                  ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isExtremeLoss
-                                  ? Colors.red.shade300
-                                  : Colors.amber.shade400,
+                                  ? colorScheme.error.withValues(alpha: 0.5)
+                                  : colorScheme.tertiary.withValues(alpha: 0.5),
                             ),
                           ),
                           child: Row(
@@ -150,8 +159,8 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                                     ? Icons.warning_rounded
                                     : Icons.info_outline,
                                 color: isExtremeLoss
-                                    ? Colors.red.shade700
-                                    : Colors.amber.shade800,
+                                    ? colorScheme.error
+                                    : colorScheme.tertiary,
                                 size: 24,
                               ),
                               const SizedBox(width: 12),
@@ -160,12 +169,11 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                                   isExtremeLoss
                                       ? l10n.warningExtremeDeficitRed
                                       : l10n.warningHighDeficitYellow,
-                                  style: TextStyle(
-                                    fontSize: 12,
+                                  style: textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: isExtremeLoss
-                                        ? Colors.red.shade900
-                                        : Colors.amber.shade900,
+                                        ? colorScheme.onErrorContainer
+                                        : colorScheme.onTertiaryContainer,
                                   ),
                                 ),
                               ),
@@ -180,9 +188,8 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                     child: Text(
                       l10n.goalMaintainDesc,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 15,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   )
@@ -199,9 +206,13 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(
+                        color: colorScheme.outline.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -221,9 +232,8 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                             children: [
                               Text(
                                 l10n.caloricTargetLabel,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               Text(
@@ -232,8 +242,7 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                                     : l10n.caloricTargetValue(
                                         diff > 0 ? '+$diff' : '$diff',
                                       ),
-                                style: TextStyle(
-                                  fontSize: 20,
+                                style: textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: textColor,
                                 ),
@@ -256,10 +265,18 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -268,10 +285,16 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                 onPressed: currentGoal != null ? widget.parent.nextPage : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

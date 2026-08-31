@@ -51,6 +51,9 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final canFinish = widget.parent.isManualPal || _isQuizComplete();
 
@@ -59,12 +62,16 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
       children: [
         Text(
           l10n.palTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.palSubtitle,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -82,12 +89,12 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary
-                          .withValues(alpha: 0.1),
+                      color: colorScheme.primaryContainer.withValues(
+                        alpha: 0.3,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary
-                            .withValues(alpha: 0.3),
+                        color: colorScheme.primary.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -95,7 +102,7 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                         Icon(
                           Icons.check_circle,
                           size: 32,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -104,18 +111,16 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                             children: [
                               Text(
                                 'PAL: ${widget.parent.palValue.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  fontSize: 15,
+                                style: textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 l10n.readyToProceed,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -134,6 +139,11 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
               if (!widget.parent.isManualPal) _recalculatePal();
             });
           },
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           icon: Icon(widget.parent.isManualPal ? Icons.quiz : Icons.tune),
           label: Text(
             widget.parent.isManualPal
@@ -152,10 +162,18 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                   vertical: 16,
                   horizontal: 24,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.5),
+                ),
               ),
               child: Text(
                 l10n.backButton,
-                style: const TextStyle(fontSize: 16),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -164,10 +182,16 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                 onPressed: canFinish ? widget.parent.nextPage : null,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
                   l10n.nextButton,
-                  style: const TextStyle(fontSize: 16),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),
@@ -340,12 +364,17 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
     required ValueChanged<int?> onChanged,
     required List<Map<String, dynamic>> options,
   }) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 12),
         RadioGroup<int>(
@@ -366,6 +395,10 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
     int? groupValue,
     ValueChanged<int?> onChanged,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final optValue = opt['value'] as int;
     final isSelected = groupValue == optValue;
     return Padding(
@@ -377,13 +410,13 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
           decoration: BoxDecoration(
             border: Border.all(
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey.shade300,
+                  ? colorScheme.primary
+                  : colorScheme.outline.withValues(alpha: 0.5),
               width: isSelected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.05)
+                ? colorScheme.primary.withValues(alpha: 0.05)
                 : Colors.transparent,
           ),
           padding: const EdgeInsets.symmetric(
@@ -406,17 +439,15 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
                     children: [
                       Text(
                         opt['title'] as String,
-                        style: const TextStyle(
+                        style: textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         opt['desc'] as String,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                           height: 1.3,
                         ),
                       ),
@@ -432,20 +463,23 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
   }
 
   Widget _buildManualPalEditor(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           widget.parent.palValue.toStringAsFixed(2),
-          style: TextStyle(
-            fontSize: 64,
+          style: textTheme.displayLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+            color: colorScheme.primary,
           ),
         ),
         Text(
           l10n.palMultiplierLabel,
-          style: const TextStyle(fontSize: 18),
+          style: textTheme.titleMedium,
         ),
         const SizedBox(height: 32),
         Slider(
