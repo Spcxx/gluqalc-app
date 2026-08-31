@@ -1332,4 +1332,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get productEditValidationSugarsExceedCarbs =>
       'Sugars cannot be greater than total carbohydrates.';
+
+  @override
+  String get portionsTitle => 'Portions';
+
+  @override
+  String get unlockButton => 'Unlock';
+
+  @override
+  String get lockButton => 'Lock';
+
+  @override
+  String get addPortionButton => 'Add portion';
+
+  @override
+  String get addPortionTitle => 'Add portion';
+
+  @override
+  String get portionNameLabel => 'Portion name (e.g. slice)';
+
+  @override
+  String get portionWeightGramsLabel => 'Weight in grams';
+
+  @override
+  String get portionDeletedSuccess => 'Portion deleted successfully';
+
+  @override
+  String get errorInvalidNumber => 'Please enter a valid number';
 }

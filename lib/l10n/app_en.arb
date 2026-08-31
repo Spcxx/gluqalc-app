@@ -475,5 +475,14 @@
   "productCreateError": "An error occurred while creating the product.",
   "productCreateButton": "Create product",
   "productEditValidationSatFatExceedsFat": "Saturated fat cannot be greater than total fat.",
-  "productEditValidationSugarsExceedCarbs": "Sugars cannot be greater than total carbohydrates."
+  "productEditValidationSugarsExceedCarbs": "Sugars cannot be greater than total carbohydrates.",
+  "portionsTitle": "Portions",
+  "unlockButton": "Unlock",
+  "lockButton": "Lock",
+  "addPortionButton": "Add portion",
+  "addPortionTitle": "Add portion",
+  "portionNameLabel": "Portion name (e.g. slice)",
+  "portionWeightGramsLabel": "Weight in grams",
+  "portionDeletedSuccess": "Portion deleted successfully",
+  "errorInvalidNumber": "Please enter a valid number"
 }

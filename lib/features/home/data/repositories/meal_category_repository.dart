@@ -166,4 +166,39 @@ class MealCategoryRepository {
     );
     return ProductResponse.fromJson(response.data!);
   }
+
+  Future<ProductResponse> addPortion({
+    required String productId,
+    required String name,
+    required double weightInGrams,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/api/v1/products/$productId/portions',
+      data: {'name': name, 'weightInGrams': weightInGrams},
+    );
+    if (response.data == null || response.data!.isEmpty) {
+      return getProductDetails(productId);
+    }
+    return ProductResponse.fromJson(response.data!);
+  }
+
+  Future<ProductResponse> updatePortion({
+    required String portionId,
+    required String productId,
+    required String name,
+    required double weightInGrams,
+  }) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/api/v1/products/portions/$portionId',
+      data: {'name': name, 'weightInGrams': weightInGrams},
+    );
+    if (response.data == null || response.data!.isEmpty) {
+      return getProductDetails(productId);
+    }
+    return ProductResponse.fromJson(response.data!);
+  }
+
+  Future<void> deletePortion(String portionId) async {
+    await _dio.delete<void>('/api/v1/products/portions/$portionId');
+  }
 }

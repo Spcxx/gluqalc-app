@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/product_edit_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/product_portions_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,6 +17,9 @@ class ProductEditScreen extends ConsumerStatefulWidget {
 }
 
 class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
+  late ProductResponse _currentProduct;
+  bool _isPortionsEditable = false;
+
   late final TextEditingController _nameCtrl;
   late final TextEditingController _brandCtrl;
   late final TextEditingController _kcalCtrl;
@@ -31,11 +35,14 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
   @override
   void initState() {
     super.initState();
-    final p = widget.product;
-    final n = p.nutrition;
+    _currentProduct = widget.product;
+    _initControllers();
+  }
 
-    _nameCtrl = TextEditingController(text: p.name);
-    _brandCtrl = TextEditingController(text: p.brand ?? '');
+  void _initControllers() {
+    final n = _currentProduct.nutrition;
+    _nameCtrl = TextEditingController(text: _currentProduct.name);
+    _brandCtrl = TextEditingController(text: _currentProduct.brand ?? '');
 
     _kcalCtrl = TextEditingController(text: _formatNum(n.energyKcal));
     _carbsCtrl = TextEditingController(text: _formatNum(n.carbohydrates));
@@ -75,6 +82,159 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
   double? _parse(String text) {
     if (text.trim().isEmpty) return null;
     return double.tryParse(text.replaceAll(',', '.'));
+  }
+
+  Future<void> _showPortionDialog({
+    ProductPortionResponse? portionToEdit,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController(
+      text: portionToEdit?.name ?? '',
+    );
+    final weightController = TextEditingController(
+      text: portionToEdit != null
+          ? _formatNum(portionToEdit.weightInGrams)
+          : '',
+    );
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          portionToEdit == null ? l10n.addPortionTitle : l10n.editPortionTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.portionNameLabel,
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? l10n.errorFieldRequired
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: weightController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*')),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: l10n.portionWeightGramsLabel,
+                    suffixText: 'g',
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return l10n.errorFieldRequired;
+                    }
+                    final weight = double.tryParse(v.replaceAll(',', '.'));
+                    if (weight == null || weight <= 0) {
+                      return l10n.errorInvalidNumber;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: () async {
+              if (!formKey.currentState!.validate()) return;
+              final name = nameController.text.trim();
+              final weight = double.parse(
+                weightController.text.replaceAll(',', '.'),
+              );
+
+              Navigator.pop(context);
+
+              final messenger = ScaffoldMessenger.of(context);
+
+              ProductResponse? updated;
+              if (portionToEdit == null) {
+                updated = await ref
+                    .read(productPortionsControllerProvider.notifier)
+                    .addPortion(
+                      productId: _currentProduct.id,
+                      name: name,
+                      weightInGrams: weight,
+                    );
+              } else {
+                updated = await ref
+                    .read(productPortionsControllerProvider.notifier)
+                    .updatePortion(
+                      portionId: portionToEdit.id,
+                      productId: _currentProduct.id,
+                      name: name,
+                      weightInGrams: weight,
+                    );
+              }
+
+              if (updated == null || !mounted) return;
+
+              setState(() => _currentProduct = updated!);
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(l10n.productEditSuccess),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: Text(MaterialLocalizations.of(context).okButtonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletePortion(String portionId, AppLocalizations l10n) async {
+    final success = await ref
+        .read(productPortionsControllerProvider.notifier)
+        .deletePortion(portionId);
+
+    if (success && mounted) {
+      setState(() {
+        _currentProduct = _currentProduct.copyWith(
+          portions: _currentProduct.portions
+              .where((p) => p.id != portionId)
+              .toList(),
+        );
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.portionDeletedSuccess),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorConflict),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Future<void> _submit(AppLocalizations l10n) async {
@@ -120,13 +280,11 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
     }
 
     final updatedFields = <String, dynamic>{};
-    final p = widget.product;
+    final p = _currentProduct;
     final n = p.nutrition;
 
     final newName = _nameCtrl.text.trim();
-    if (newName != p.name) {
-      updatedFields['name'] = newName;
-    }
+    if (newName != p.name) updatedFields['name'] = newName;
 
     final newBrand = _brandCtrl.text.trim();
     final originalBrand = p.brand ?? '';
@@ -148,29 +306,21 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
     }
 
     final newSugars = _parse(_sugarsCtrl.text);
-    if (newSugars != n.sugars) {
-      updatedFields['sugars'] = newSugars;
-    }
+    if (newSugars != n.sugars) updatedFields['sugars'] = newSugars;
 
     final newSatFat = _parse(_satFatCtrl.text);
-    if (newSatFat != n.saturatedFat) {
-      updatedFields['saturatedFat'] = newSatFat;
-    }
+    if (newSatFat != n.saturatedFat) updatedFields['saturatedFat'] = newSatFat;
 
     final newFiber = _parse(_fiberCtrl.text);
-    if (newFiber != n.fiber) {
-      updatedFields['fiber'] = newFiber;
-    }
+    if (newFiber != n.fiber) updatedFields['fiber'] = newFiber;
 
     final newSalt = _parse(_saltCtrl.text);
-    if (newSalt != n.salt) {
-      updatedFields['salt'] = newSalt;
-    }
+    if (newSalt != n.salt) updatedFields['salt'] = newSalt;
 
     final success = await ref
         .read(productEditControllerProvider.notifier)
         .updateProduct(
-          productId: widget.product.id,
+          productId: _currentProduct.id,
           updatedFields: updatedFields,
         );
 
@@ -200,7 +350,16 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    final isLoading = ref.watch(productEditControllerProvider).isLoading;
+    final isProductLoading = ref.watch(productEditControllerProvider).isLoading;
+    final isPortionsLoading = ref
+        .watch(productPortionsControllerProvider)
+        .isLoading;
+    final isLoading = isProductLoading || isPortionsLoading;
+
+    final customPortions = _currentProduct.portions.where((p) {
+      final nameLower = p.name.trim().toLowerCase();
+      return nameLower != '100g' && nameLower != '100 g';
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -221,10 +380,7 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
           children: [
             Text(
               l10n.productEditSectionIdentification,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Card(
@@ -250,12 +406,126 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.portionsTitle,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => setState(
+                    () => _isPortionsEditable = !_isPortionsEditable,
+                  ),
+                  icon: Icon(
+                    _isPortionsEditable ? Icons.lock_open : Icons.lock_outline,
+                    size: 16,
+                  ),
+                  label: Text(
+                    _isPortionsEditable ? l10n.lockButton : l10n.unlockButton,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Opacity(
+                opacity: _isPortionsEditable ? 1.0 : 0.6,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (customPortions.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            l10n.noCustomProducts,
+                            style: TextStyle(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                              fontSize: 13,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      else
+                        ...customPortions.asMap().entries.map((mapEntry) {
+                          final index = mapEntry.key;
+                          final portion = mapEntry.value;
+                          final isLast = index == customPortions.length - 1;
+
+                          return Column(
+                            children: [
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  portion.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text('${portion.weightInGrams} g'),
+                                trailing: _isPortionsEditable
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              size: 20,
+                                            ),
+                                            onPressed: () => _showPortionDialog(
+                                              portionToEdit: portion,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.delete,
+                                              size: 20,
+                                              color: colorScheme.error,
+                                            ),
+                                            onPressed: () => _deletePortion(
+                                              portion.id,
+                                              l10n,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : null,
+                              ),
+                              if (!isLast) const Divider(height: 1),
+                            ],
+                          );
+                        }),
+                      if (_isPortionsEditable) ...[
+                        if (customPortions.isNotEmpty)
+                          const Divider(height: 24),
+                        OutlinedButton.icon(
+                          onPressed: _showPortionDialog,
+                          icon: const Icon(Icons.add),
+                          label: Text(l10n.addPortionButton),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
             Text(
               l10n.productEditMainMacrosTitle,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Card(
@@ -322,9 +592,7 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
-                          child: SizedBox.shrink(),
-                        ),
+                        const Expanded(child: SizedBox.shrink()),
                       ],
                     ),
                   ],
@@ -334,10 +602,7 @@ class _ProductEditScreenState extends ConsumerState<ProductEditScreen> {
             const SizedBox(height: 24),
             Text(
               l10n.productEditDetailsTitle,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Card(

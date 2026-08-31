@@ -2529,6 +2529,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sugars cannot be greater than total carbohydrates.'**
   String get productEditValidationSugarsExceedCarbs;
+
+  /// No description provided for @portionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Portions'**
+  String get portionsTitle;
+
+  /// No description provided for @unlockButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlockButton;
+
+  /// No description provided for @lockButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock'**
+  String get lockButton;
+
+  /// No description provided for @addPortionButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add portion'**
+  String get addPortionButton;
+
+  /// No description provided for @addPortionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add portion'**
+  String get addPortionTitle;
+
+  /// No description provided for @portionNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Portion name (e.g. slice)'**
+  String get portionNameLabel;
+
+  /// No description provided for @portionWeightGramsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight in grams'**
+  String get portionWeightGramsLabel;
+
+  /// No description provided for @portionDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Portion deleted successfully'**
+  String get portionDeletedSuccess;
+
+  /// No description provided for @errorInvalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number'**
+  String get errorInvalidNumber;
 }
 
 class _AppLocalizationsDelegate
