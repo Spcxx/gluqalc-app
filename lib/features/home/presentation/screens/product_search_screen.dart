@@ -226,7 +226,11 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await context.push(
+                            '/product-create/${widget.categoryId}',
+                          );
+                        },
                         icon: const Icon(Icons.add),
                         label: Text(l10n.addNewProductButton),
                       ),

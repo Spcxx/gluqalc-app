@@ -156,4 +156,14 @@ class MealCategoryRepository {
 
     return ProductResponse.fromJson(response.data!);
   }
+
+  Future<ProductResponse> createProduct(
+    Map<String, dynamic> productData,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/api/v1/products',
+      data: productData,
+    );
+    return ProductResponse.fromJson(response.data!);
+  }
 }

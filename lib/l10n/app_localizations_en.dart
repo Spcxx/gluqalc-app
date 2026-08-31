@@ -1311,4 +1311,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productEditError => 'An error occurred while saving changes.';
+
+  @override
+  String get productCreateTitle => 'Create product';
+
+  @override
+  String get productCreateSuccess => 'Product created successfully';
+
+  @override
+  String get productCreateError =>
+      'An error occurred while creating the product.';
+
+  @override
+  String get productCreateButton => 'Create product';
+
+  @override
+  String get productEditValidationSatFatExceedsFat =>
+      'Saturated fat cannot be greater than total fat.';
+
+  @override
+  String get productEditValidationSugarsExceedCarbs =>
+      'Sugars cannot be greater than total carbohydrates.';
 }

@@ -469,5 +469,11 @@
     }
   },
   "productEditSuccess": "Changes saved successfully",
-  "productEditError": "An error occurred while saving changes."
+  "productEditError": "An error occurred while saving changes.",
+  "productCreateTitle": "Create product",
+  "productCreateSuccess": "Product created successfully",
+  "productCreateError": "An error occurred while creating the product.",
+  "productCreateButton": "Create product",
+  "productEditValidationSatFatExceedsFat": "Saturated fat cannot be greater than total fat.",
+  "productEditValidationSugarsExceedCarbs": "Sugars cannot be greater than total carbohydrates."
 }

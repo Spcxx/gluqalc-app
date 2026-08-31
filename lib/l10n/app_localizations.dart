@@ -2493,6 +2493,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred while saving changes.'**
   String get productEditError;
+
+  /// No description provided for @productCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create product'**
+  String get productCreateTitle;
+
+  /// No description provided for @productCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Product created successfully'**
+  String get productCreateSuccess;
+
+  /// No description provided for @productCreateError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while creating the product.'**
+  String get productCreateError;
+
+  /// No description provided for @productCreateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create product'**
+  String get productCreateButton;
+
+  /// No description provided for @productEditValidationSatFatExceedsFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated fat cannot be greater than total fat.'**
+  String get productEditValidationSatFatExceedsFat;
+
+  /// No description provided for @productEditValidationSugarsExceedCarbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sugars cannot be greater than total carbohydrates.'**
+  String get productEditValidationSugarsExceedCarbs;
 }
 
 class _AppLocalizationsDelegate
