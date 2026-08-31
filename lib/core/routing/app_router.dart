@@ -9,6 +9,7 @@ import 'package:gluqalc_app/features/auth/presentation/screens/consent_screen.da
 import 'package:gluqalc_app/features/auth/presentation/screens/verify_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/home_screen.dart';
 import 'package:gluqalc_app/features/home/presentation/screens/meal_entry_details_screen.dart';
+import 'package:gluqalc_app/features/home/presentation/screens/product_search_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
@@ -30,6 +31,7 @@ const _validRoutePatterns = [
   '/profile',
   '/export',
   '/meal-entry-details/:entryId',
+  '/product-search/:categoryId',
 ];
 
 final List<RegExp> _compiledRouteRegexes = _validRoutePatterns.map((pattern) {
@@ -153,10 +155,19 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) {
           final entryId = state.pathParameters['entryId']!;
           final categoryId = state.uri.queryParameters['categoryId'] ?? '';
+          final isCreation = state.uri.queryParameters['isCreation'] == 'true';
           return MealEntryDetailsScreen(
             entryId: entryId,
             categoryId: categoryId,
+            isCreation: isCreation,
           );
+        },
+      ),
+      GoRoute(
+        path: '/product-search/:categoryId',
+        builder: (context, state) {
+          final categoryId = state.pathParameters['categoryId']!;
+          return ProductSearchScreen(categoryId: categoryId);
         },
       ),
     ],

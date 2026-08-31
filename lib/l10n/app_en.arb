@@ -433,5 +433,18 @@
   "macroFiber": "Fiber",
   "macroSalt": "Salt",
   "macroGlycemicIndex": "Glycemic index",
-  "portionUpdatedSuccess": "Portion updated successfully"
+  "portionUpdatedSuccess": "Portion updated successfully",
+  "tabSearch": "Search",
+  "tabCustom": "Custom",
+  "searchProductsHint": "Search for a product...",
+  "recentProductsTitle": "Recent products",
+  "noRecentProducts": "No recent products yet",
+  "noProductsFound": "No products found",
+  "addNewProductButton": "Add new product",
+  "noCustomProducts": "No custom products created yet",
+  "searchQueryTooShortError": "Please enter at least 3 characters",
+  "mealAddedSuccessfully": "Meal added successfully",
+  "verifiedProductTooltip": "Verified product",
+  "externalDatabaseTooltip": "External database",
+  "productImportError": "Failed to import product"
 }

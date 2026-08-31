@@ -1230,4 +1230,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get portionUpdatedSuccess => 'Portion updated successfully';
+
+  @override
+  String get tabSearch => 'Search';
+
+  @override
+  String get tabCustom => 'Custom';
+
+  @override
+  String get searchProductsHint => 'Search for a product...';
+
+  @override
+  String get recentProductsTitle => 'Recent products';
+
+  @override
+  String get noRecentProducts => 'No recent products yet';
+
+  @override
+  String get noProductsFound => 'No products found';
+
+  @override
+  String get addNewProductButton => 'Add new product';
+
+  @override
+  String get noCustomProducts => 'No custom products created yet';
+
+  @override
+  String get searchQueryTooShortError => 'Please enter at least 3 characters';
+
+  @override
+  String get mealAddedSuccessfully => 'Meal added successfully';
+
+  @override
+  String get verifiedProductTooltip => 'Verified product';
+
+  @override
+  String get externalDatabaseTooltip => 'External database';
+
+  @override
+  String get productImportError => 'Failed to import product';
 }

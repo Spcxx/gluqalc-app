@@ -30,6 +30,7 @@ abstract class MealEntryResponse with _$MealEntryResponse {
     required String consumptionTime,
     String? brand,
     String? barcode,
+    String? provider,
     InsulinDoseInfo? insulinDose,
   }) = _MealEntryResponse;
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
-import 'package:gluqalc_app/features/home/data/models/product_response.dart';
+import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/widgets/insulin_details_dialog.dart';
@@ -15,10 +15,12 @@ class MealEntryDetailsScreen extends ConsumerStatefulWidget {
   const MealEntryDetailsScreen({
     required this.entryId,
     required this.categoryId,
+    this.isCreation = false,
     super.key,
   });
   final String entryId;
   final String categoryId;
+  final bool isCreation;
 
   @override
   ConsumerState<MealEntryDetailsScreen> createState() =>
@@ -32,7 +34,11 @@ class _MealEntryDetailsScreenState
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final stateAsync = ref.watch(
-      mealEntryDetailControllerProvider(widget.entryId),
+      mealEntryDetailControllerProvider(
+        widget.entryId,
+        isCreation: widget.isCreation,
+        categoryId: widget.categoryId,
+      ),
     );
     final summaryAsync = ref.watch(daySummaryControllerProvider);
     final profile = ref.watch(profileControllerProvider).value;
@@ -44,16 +50,25 @@ class _MealEntryDetailsScreenState
           loading: () => const SizedBox.shrink(),
           error: (_, _) => Text(l10n.mealDetailsTitle),
           data: (state) {
-            final dateParsed =
-                DateTime.tryParse(state.entry.consumptionDate) ??
-                DateTime.now();
-            final formattedDate = DateFormat.yMMMMd(l10n.localeName)
-                .format(dateParsed);
+            var formattedDateTime = '';
+            if (!widget.isCreation && state.entry != null) {
+              final dateParsed =
+                  DateTime.tryParse(state.entry!.consumptionDate) ??
+                  DateTime.now();
+              final formattedDate = DateFormat.yMMMMd(l10n.localeName)
+                  .format(dateParsed);
 
-            final timeParts = state.entry.consumptionTime.split(':');
-            final formattedTime = timeParts.length >= 2
-                ? '${timeParts[0]}:${timeParts[1]}'
-                : state.entry.consumptionTime;
+              final timeParts = state.entry!.consumptionTime.split(':');
+              final formattedTime = timeParts.length >= 2
+                  ? '${timeParts[0]}:${timeParts[1]}'
+                  : state.entry!.consumptionTime;
+              formattedDateTime = '$formattedDate, $formattedTime';
+            } else {
+              final formattedDate = DateFormat.yMMMMd(l10n.localeName)
+                  .format(DateTime.now());
+              final formattedTime = DateFormat.Hm().format(DateTime.now());
+              formattedDateTime = '$formattedDate, $formattedTime';
+            }
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -69,7 +84,7 @@ class _MealEntryDetailsScreenState
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '$formattedDate, $formattedTime',
+                  formattedDateTime,
                   style: TextStyle(
                     fontSize: 12,
                     color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -85,20 +100,31 @@ class _MealEntryDetailsScreenState
         error: (err, _) =>
             Center(child: Text(l10n.errorUnknown(err.toString()))),
         data: (state) {
-          final entry = state.entry;
           final product = state.product;
-          final nutrition = entry.nutrition;
+          final entry = state.entry;
+
+          final nutrition = entry?.nutrition ?? product.nutrition;
 
           final dailyTarget = summaryAsync.value?.target;
           final targetCarbs = dailyTarget?.carbohydrates ?? 250.0;
           final targetProtein = dailyTarget?.protein ?? 120.0;
           final targetFat = dailyTarget?.fat ?? 70.0;
 
-          final isCurrent100g =
-              entry.portion.name.trim().toLowerCase() == '100g';
-          final currentPortionLabel = isCurrent100g
-              ? '${entry.portion.totalWeight.toInt()} g'
-              : '${entry.portion.quantity.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)';
+          final defaultPortion = product.portions.isNotEmpty
+              ? product.portions.first
+              : null;
+
+          final isCurrent100g = entry != null
+              ? entry.portion.name.trim().toLowerCase() == '100g'
+              : (defaultPortion?.name.trim().toLowerCase() == '100g');
+
+          final currentPortionLabel = entry != null
+              ? (isCurrent100g
+                    ? '${entry.portion.totalWeight.toInt()} g'
+                    : '${entry.portion.quantity.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)')
+              : (defaultPortion != null
+                    ? '1 x ${defaultPortion.name} (${defaultPortion.weightInGrams.toInt()} g)'
+                    : '');
 
           final sortedPortions =
               List<ProductPortionResponse>.from(
@@ -116,18 +142,35 @@ class _MealEntryDetailsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  entry.productName,
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    height: 1.1,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          height: 1.1,
+                        ),
+                      ),
+                    ),
+                    if (product.provider?.toUpperCase() != 'LOCAL') ...[
+                      const SizedBox(width: 8),
+                      Tooltip(
+                        message: l10n.externalDatabaseTooltip,
+                        child: Icon(
+                          Icons.public,
+                          size: 22,
+                          color: Colors.blue.shade600,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                if (entry.brand != null && entry.brand!.isNotEmpty) ...[
+                if (product.brand != null && product.brand!.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Text(
-                    entry.brand!,
+                    product.brand!,
                     style: TextStyle(
                       fontSize: 16,
                       color: colorScheme.onSurface.withValues(alpha: 0.6),
@@ -156,7 +199,9 @@ class _MealEntryDetailsScreenState
                       final index = mapEntry.key;
                       final portion = mapEntry.value;
                       final isLast = index == sortedPortions.length - 1;
-                      final isSelected = portion.id == entry.portion.id;
+                      final isSelected = entry != null
+                          ? portion.id == entry.portion.id
+                          : portion.id == defaultPortion?.id;
 
                       return Column(
                         children: [
@@ -167,6 +212,7 @@ class _MealEntryDetailsScreenState
                             isSelected: isSelected,
                             categoryId: widget.categoryId,
                             entryId: widget.entryId,
+                            isCreation: widget.isCreation,
                           ),
                           if (!isLast) const Divider(height: 1),
                         ],
@@ -210,8 +256,8 @@ class _MealEntryDetailsScreenState
                 ),
                 const SizedBox(height: 16),
 
-                if (entry.insulinDose != null &&
-                    entry.insulinDose!.totalDose > 0)
+                if (entry?.insulinDose != null &&
+                    entry!.insulinDose!.totalDose > 0)
                   Card(
                     elevation: 1,
                     color: colorScheme.primaryContainer.withValues(alpha: 0.6),
@@ -547,14 +593,16 @@ class _PortionRow extends ConsumerStatefulWidget {
     required this.isSelected,
     required this.categoryId,
     required this.entryId,
+    required this.isCreation,
   });
 
   final ProductPortionResponse portion;
   final ProductResponse product;
-  final MealEntryResponse currentEntry;
+  final MealEntryResponse? currentEntry;
   final bool isSelected;
   final String categoryId;
   final String entryId;
+  final bool isCreation;
 
   @override
   ConsumerState<_PortionRow> createState() => _PortionRowState();
@@ -570,12 +618,14 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
     _is100g = widget.portion.name.trim().toLowerCase() == '100g';
 
     var initialValue = 1.0;
-    if (widget.currentEntry.portion.id == widget.portion.id) {
+    if (widget.currentEntry != null &&
+        widget.currentEntry!.portion.id == widget.portion.id) {
       if (_is100g) {
         initialValue =
-            widget.currentEntry.portion.quantity * widget.portion.weightInGrams;
+            widget.currentEntry!.portion.quantity *
+            widget.portion.weightInGrams;
       } else {
-        initialValue = widget.currentEntry.portion.quantity;
+        initialValue = widget.currentEntry!.portion.quantity;
       }
     } else if (_is100g) {
       initialValue = 100.0;
@@ -594,21 +644,39 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
 
   Future<void> _submitUpdate(double quantity) async {
     final l10n = AppLocalizations.of(context)!;
+
+    final actualProductId = widget.isCreation
+        ? widget.entryId
+        : widget.currentEntry!.productId;
+
     final success = await ref
-        .read(mealEntryDetailControllerProvider(widget.entryId).notifier)
-        .updatePortion(
-          entryId: widget.entryId,
+        .read(
+          mealEntryDetailControllerProvider(
+            widget.entryId,
+            isCreation: widget.isCreation,
+            categoryId: widget.categoryId,
+          ).notifier,
+        )
+        .saveOrUpdateEntry(
+          id: actualProductId,
           categoryId: widget.categoryId,
-          productId: widget.currentEntry.productId,
           quantity: quantity,
-          date: DateTime.parse(widget.currentEntry.consumptionDate),
+          date: widget.currentEntry != null
+              ? DateTime.parse(widget.currentEntry!.consumptionDate)
+              : DateTime.now(),
           portionId: widget.portion.id,
+          isCreation: widget.isCreation,
+          oldEntryId: widget.currentEntry?.id,
         );
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.portionUpdatedSuccess),
+          content: Text(
+            widget.isCreation
+                ? l10n.mealAddedSuccessfully
+                : l10n.portionUpdatedSuccess,
+          ),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),

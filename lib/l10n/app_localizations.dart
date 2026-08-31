@@ -2337,6 +2337,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Portion updated successfully'**
   String get portionUpdatedSuccess;
+
+  /// No description provided for @tabSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get tabSearch;
+
+  /// No description provided for @tabCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get tabCustom;
+
+  /// No description provided for @searchProductsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a product...'**
+  String get searchProductsHint;
+
+  /// No description provided for @recentProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent products'**
+  String get recentProductsTitle;
+
+  /// No description provided for @noRecentProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent products yet'**
+  String get noRecentProducts;
+
+  /// No description provided for @noProductsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No products found'**
+  String get noProductsFound;
+
+  /// No description provided for @addNewProductButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new product'**
+  String get addNewProductButton;
+
+  /// No description provided for @noCustomProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom products created yet'**
+  String get noCustomProducts;
+
+  /// No description provided for @searchQueryTooShortError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least 3 characters'**
+  String get searchQueryTooShortError;
+
+  /// No description provided for @mealAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal added successfully'**
+  String get mealAddedSuccessfully;
+
+  /// No description provided for @verifiedProductTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified product'**
+  String get verifiedProductTooltip;
+
+  /// No description provided for @externalDatabaseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'External database'**
+  String get externalDatabaseTooltip;
+
+  /// No description provided for @productImportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import product'**
+  String get productImportError;
 }
 
 class _AppLocalizationsDelegate

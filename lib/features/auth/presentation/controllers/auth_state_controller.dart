@@ -1,5 +1,6 @@
 import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/recent_products_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_state_controller.g.dart';
@@ -35,7 +36,9 @@ class AuthStateController extends _$AuthStateController {
 
     await ref.read(authLocalStorageProvider).clearTokens();
 
-    ref.invalidate(currentUserEmailProvider);
+    ref
+      ..invalidate(currentUserEmailProvider)
+      ..invalidate(recentProductsControllerProvider);
 
     state = const AsyncData(false);
   }

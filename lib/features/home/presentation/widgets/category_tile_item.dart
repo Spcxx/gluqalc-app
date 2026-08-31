@@ -292,9 +292,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: () async {
-                        await ref
-                            .read(mealCategoryControllerProvider.notifier)
-                            .addDummyEntry(category.id);
+                        await context.push('/product-search/${category.id}');
                       },
                     ),
                   ),
@@ -376,12 +374,33 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        entry.productName,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              entry.productName,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          if (entry.provider != null &&
+                                              entry.provider!.toUpperCase() !=
+                                                  'LOCAL') ...[
+                                            const SizedBox(width: 4),
+                                            Tooltip(
+                                              message:
+                                                  l10n.externalDatabaseTooltip,
+                                              child: Icon(
+                                                Icons.public,
+                                                size: 14,
+                                                color: Colors.blue.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
