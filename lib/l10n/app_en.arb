@@ -411,6 +411,10 @@
   "aboutPrivacy": "Privacy policy",
   "aboutDisclaimer": "Medical disclaimer",
   "aboutLicenses": "Licenses",
+  "aboutAcknowledgements": "Acknowledgements",
+  "productAttributionTitle": "Data attribution",
+  "productSourceLabel": "Source",
+  "productLicenseLabel": "License",
   "errorOpenUrl": "Could not open URL",
   "exportTitle": "Export data",
   "exportDescription": "Generate a detailed CSV report with your entries, macronutrients, and insulin doses for the selected period.",
@@ -538,5 +542,6 @@
       }
     }
   },
-  "continueButton": "Continue"
+  "continueButton": "Continue",
+  "errorAcknowledgementsLoad": "Could not load acknowledgements"
 }

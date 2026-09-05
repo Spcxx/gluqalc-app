@@ -10,6 +10,7 @@ import 'package:gluqalc_app/features/home/presentation/controllers/recent_produc
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({required this.categoryId, super.key});
@@ -57,6 +58,196 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
     await ref
         .read(productSearchControllerProvider.notifier)
         .searchProducts(query);
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  String _formatAttributionTitle(String input) {
+    if (input.trim().isEmpty) return input;
+    return input
+        .split(RegExp(r'[_\s]+'))
+        .where((word) => word.isNotEmpty)
+        .map(
+          (word) =>
+              '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}',
+        )
+        .join(' ');
+  }
+
+  void _showAttributionDialog(
+    BuildContext context,
+    ProductMetadataResponse metadata,
+    AppLocalizations l10n,
+  ) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.public, color: colorScheme.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.productAttributionTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (metadata.source != null) ...[
+                    _buildAttributionRow(
+                      context: context,
+                      label: l10n.productSourceLabel,
+                      value: _formatAttributionTitle(metadata.source!),
+                      url: metadata.sourceUrl,
+                    ),
+                  ],
+                  if (metadata.license != null) ...[
+                    if (metadata.source != null) const SizedBox(height: 12),
+                    _buildAttributionRow(
+                      context: context,
+                      label: l10n.productLicenseLabel,
+                      value: metadata.license!,
+                      url: metadata.licenseUrl,
+                    ),
+                  ],
+                  if (metadata.disclaimer != null) ...[
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.35,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              metadata.disclaimer!,
+                              style: textTheme.bodySmall?.copyWith(
+                                fontStyle: FontStyle.italic,
+                                color: colorScheme.onSurfaceVariant,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(l10n.okButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttributionRow({
+    required BuildContext context,
+    required String label,
+    required String value,
+    String? url,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          InkWell(
+            onTap: url != null ? () => _launchUrl(url) : null,
+            borderRadius: BorderRadius.circular(6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    value,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: url != null ? colorScheme.primary : null,
+                      decoration: url != null ? TextDecoration.underline : null,
+                    ),
+                  ),
+                ),
+                if (url != null) ...[
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.open_in_new,
+                    size: 14,
+                    color: colorScheme.primary,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -389,63 +580,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(
-                product.name,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (isExternal) ...[
-              const SizedBox(width: 6),
-              Tooltip(
-                message: l10n.externalDatabaseTooltip,
-                child: Icon(
-                  Icons.public,
-                  size: 16,
-                  color: colorScheme.primary,
-                ),
-              ),
-            ],
-          ],
-        ),
-        subtitle: product.brand != null && product.brand!.isNotEmpty
-            ? Text(
-                product.brand!,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              )
-            : null,
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '${product.nutrition.energyKcal.toInt()} kcal / 100g',
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              '${l10n.unitCarbShort}:${carbs}g • ${l10n.unitProteinShort}:${protein}g • ${l10n.unitFatShort}:${fat}g',
-              style: textTheme.bodySmall?.copyWith(
-                fontSize: 10,
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: () async {
           var productToCache = product;
           String? targetProductId = product.id;
@@ -511,6 +647,95 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
             );
           }
         },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            product.name,
+                            style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isExternal) ...[
+                          const SizedBox(width: 8),
+                          InkResponse(
+                            radius: 20,
+                            onTap: product.metadata != null
+                                ? () => _showAttributionDialog(
+                                    context,
+                                    product.metadata!,
+                                    l10n,
+                                  )
+                                : null,
+                            child: Tooltip(
+                              message:
+                                  product.metadata?.source != null &&
+                                      product.metadata!.source!
+                                          .trim()
+                                          .isNotEmpty
+                                  ? _formatAttributionTitle(
+                                      product.metadata!.source!,
+                                    )
+                                  : l10n.externalDatabaseTooltip,
+                              child: Icon(
+                                Icons.public,
+                                size: 18,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (product.brand != null && product.brand!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        product.brand!,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${product.nutrition.energyKcal.toInt()} kcal / 100g',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${l10n.unitCarbShort}:${carbs}g • ${l10n.unitProteinShort}:${protein}g • ${l10n.unitFatShort}:${fat}g',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontSize: 10,
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

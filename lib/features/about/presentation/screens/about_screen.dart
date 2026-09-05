@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/config/app_config.dart';
 import 'package:gluqalc_app/core/gen/assets.gen.dart';
@@ -40,6 +41,49 @@ class AboutScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showAcknowledgements(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final textTheme = Theme.of(context).textTheme;
+
+    try {
+      final text = await rootBundle.loadString('assets/acknowledgements.txt');
+      if (!context.mounted) return;
+
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(
+            l10n.aboutAcknowledgements,
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              text,
+              style: textTheme.bodyMedium?.copyWith(height: 1.5),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.closeButton),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      );
+    } on Object catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorAcknowledgementsLoad)),
+        );
+      }
+    }
   }
 
   @override
@@ -209,11 +253,6 @@ class AboutScreen extends ConsumerWidget {
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(16),
-                        ),
-                      ),
                       leading: const Icon(Icons.gavel_outlined),
                       title: Text(l10n.aboutLicenses),
                       trailing: const Icon(Icons.chevron_right),
@@ -223,13 +262,25 @@ class AboutScreen extends ConsumerWidget {
                         applicationVersion: versionAsync.when(
                           data: (v) => 'v$v',
                           loading: () => '',
-                          error: (_, __) => '',
+                          error: (_, _) => '',
                         ),
                         applicationIcon: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Assets.images.appLogo.image(height: 64),
                         ),
                       ),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(16),
+                        ),
+                      ),
+                      leading: const Icon(Icons.volunteer_activism_outlined),
+                      title: Text(l10n.aboutAcknowledgements),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showAcknowledgements(context, l10n),
                     ),
                   ],
                 ),
