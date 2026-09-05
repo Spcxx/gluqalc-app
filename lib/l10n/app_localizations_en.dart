@@ -1034,6 +1034,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutDisclaimer => 'Medical disclaimer';
 
   @override
+  String get aboutLicenses => 'Licenses';
+
+  @override
   String get errorOpenUrl => 'Could not open URL';
 
   @override
@@ -1367,4 +1370,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorRange(int min, int max) {
     return 'Value must be between $min and $max';
   }
+
+  @override
+  String get continueButton => 'Continue';
 }

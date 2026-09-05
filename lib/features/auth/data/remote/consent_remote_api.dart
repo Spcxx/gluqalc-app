@@ -15,6 +15,13 @@ class ConsentRemoteApi {
   ConsentRemoteApi(this._dio);
   final Dio _dio;
 
+  Future<List<ConsentResponse>> getConsents() async {
+    final response = await _dio.get<List<dynamic>>('/api/v1/consents');
+    return response.data!
+        .map((e) => ConsentResponse.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<ConsentResponse>> getPendingConsents() async {
     final response = await _dio.get<List<dynamic>>('/api/v1/consents/pending');
     return response.data!

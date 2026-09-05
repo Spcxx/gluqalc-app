@@ -1954,6 +1954,12 @@ abstract class AppLocalizations {
   /// **'Medical disclaimer'**
   String get aboutDisclaimer;
 
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get aboutLicenses;
+
   /// No description provided for @errorOpenUrl.
   ///
   /// In en, this message translates to:
@@ -2595,6 +2601,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value must be between {min} and {max}'**
   String errorRange(int min, int max);
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
 }
 
 class _AppLocalizationsDelegate

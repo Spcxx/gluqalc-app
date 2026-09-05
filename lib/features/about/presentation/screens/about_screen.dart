@@ -202,15 +202,34 @@ class AboutScreen extends ConsumerWidget {
                     ),
                     const Divider(height: 1),
                     ListTile(
+                      leading: const Icon(Icons.medical_information_outlined),
+                      title: Text(l10n.aboutDisclaimer),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _launchUrl(context, AppConfig.disclaimerUrl),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(16),
                         ),
                       ),
-                      leading: const Icon(Icons.medical_information_outlined),
-                      title: Text(l10n.aboutDisclaimer),
+                      leading: const Icon(Icons.gavel_outlined),
+                      title: Text(l10n.aboutLicenses),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _launchUrl(context, AppConfig.disclaimerUrl),
+                      onTap: () => showLicensePage(
+                        context: context,
+                        applicationName: l10n.appTitle,
+                        applicationVersion: versionAsync.when(
+                          data: (v) => 'v$v',
+                          loading: () => '',
+                          error: (_, __) => '',
+                        ),
+                        applicationIcon: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Assets.images.appLogo.image(height: 64),
+                        ),
+                      ),
                     ),
                   ],
                 ),

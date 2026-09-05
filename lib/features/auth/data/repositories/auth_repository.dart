@@ -22,8 +22,13 @@ class AuthRepository {
   Future<AuthUserModel> register({
     required String email,
     required String password,
+    required List<String> acceptedConsents,
   }) async {
-    return _remoteApi.register(email: email, password: password);
+    return _remoteApi.register(
+      email: email,
+      password: password,
+      acceptedConsents: acceptedConsents,
+    );
   }
 
   Future<void> verify({required String code}) async {

@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/gen/assets.gen.dart';
 import 'package:gluqalc_app/core/networking/connectivity_service.dart';
+import 'package:gluqalc_app/features/auth/data/models/consent_response.dart';
 import 'package:gluqalc_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:gluqalc_app/features/auth/presentation/controllers/consent_controller.dart';
 import 'package:gluqalc_app/features/auth/presentation/widgets/password_rules_widget.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -101,11 +103,41 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isPasswordVisible = false;
   String _currentPassword = '';
 
+  bool _isFetchingConsents = false;
+  List<ConsentResponse>? _registrationConsents;
+  final Set<String> _acceptedConsentIds = {};
+  bool _consentsAccepted = false;
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchConsents() async {
+    setState(() => _isFetchingConsents = true);
+    try {
+      final consents = await ref
+          .read(consentControllerProvider.notifier)
+          .getAllConsents();
+      if (mounted) {
+        setState(() {
+          _registrationConsents = consents;
+          _isFetchingConsents = false;
+        });
+      }
+    } on Object catch (e) {
+      if (mounted) {
+        setState(() => _isFetchingConsents = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 
   void _submit(AppLocalizations l10n) {
@@ -120,6 +152,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             password: _passwordController.text,
             isLogin: _isLogin,
             l10n: l10n,
+            acceptedConsents: _acceptedConsentIds.toList(),
           ),
     );
   }
@@ -193,7 +226,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     final netState = ref.watch(connectivityServiceProvider);
     if (netState == AppConnectionState.loading ||
-        netState == AppConnectionState.offlineStartup) {
+        netState == AppConnectionState.offlineStartup ||
+        _isFetchingConsents) {
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
@@ -210,6 +244,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final trimmedEmail = _emailController.text.trim();
     final isValidEmail = _emailRegex.hasMatch(trimmedEmail);
     final isFormValid = isValidEmail && (_isLogin || rulesWidget.isValid);
+
+    if (!_isLogin && !_consentsAccepted && _registrationConsents != null) {
+      return _buildConsentList(context, l10n);
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -437,13 +475,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       TextButton(
                         onPressed: isLoading
                             ? null
-                            : () {
-                                setState(() {
-                                  _isLogin = !_isLogin;
-                                  _currentPassword = '';
-                                  _passwordController.clear();
-                                  _formKey.currentState?.reset();
-                                });
+                            : () async {
+                                if (_isLogin) {
+                                  await _fetchConsents();
+                                  if (mounted) {
+                                    setState(() {
+                                      _isLogin = false;
+                                      _consentsAccepted = false;
+                                      _currentPassword = '';
+                                      _passwordController.clear();
+                                      _formKey.currentState?.reset();
+                                    });
+                                  }
+                                } else {
+                                  setState(() {
+                                    _isLogin = true;
+                                    _consentsAccepted = false;
+                                    _currentPassword = '';
+                                    _passwordController.clear();
+                                    _formKey.currentState?.reset();
+                                  });
+                                }
                               },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -460,6 +512,152 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConsentList(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final allRequiredAccepted = _registrationConsents!
+        .where((c) => c.required)
+        .every((c) => _acceptedConsentIds.contains(c.id));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.consentTitle),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            setState(() {
+              _isLogin = true;
+              _registrationConsents = null;
+            });
+          },
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(24),
+                    itemCount: _registrationConsents!.length,
+                    itemBuilder: (context, index) {
+                      final consent = _registrationConsents![index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      consent.code.replaceAll('_', ' '),
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  if (consent.required)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.errorContainer,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        l10n.consentRequiredLabel,
+                                        style: textTheme.labelSmall?.copyWith(
+                                          color: colorScheme.onErrorContainer,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                consent.description,
+                                style: textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 12),
+                              CheckboxListTile(
+                                value: _acceptedConsentIds.contains(consent.id),
+                                onChanged: (val) {
+                                  setState(() {
+                                    if (val == true) {
+                                      _acceptedConsentIds.add(consent.id);
+                                    } else {
+                                      _acceptedConsentIds.remove(consent.id);
+                                    }
+                                  });
+                                },
+                                title: Text(l10n.acceptButton),
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                contentPadding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: FilledButton(
+                    onPressed: allRequiredAccepted
+                        ? () {
+                            setState(() {
+                              _consentsAccepted = true;
+                            });
+                          }
+                        : null,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.continueButton,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

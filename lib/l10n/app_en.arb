@@ -410,6 +410,7 @@
   "aboutTos": "Terms of service (ToS)",
   "aboutPrivacy": "Privacy policy",
   "aboutDisclaimer": "Medical disclaimer",
+  "aboutLicenses": "Licenses",
   "errorOpenUrl": "Could not open URL",
   "exportTitle": "Export data",
   "exportDescription": "Generate a detailed CSV report with your entries, macronutrients, and insulin doses for the selected period.",
@@ -536,5 +537,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "continueButton": "Continue"
 }

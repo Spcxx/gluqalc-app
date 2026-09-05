@@ -19,6 +19,7 @@ class AuthController extends _$AuthController {
     required String password,
     required bool isLogin,
     required AppLocalizations l10n,
+    List<String>? acceptedConsents,
   }) async {
     state = const AsyncLoading();
 
@@ -44,7 +45,11 @@ class AuthController extends _$AuthController {
         }
       } else {
         try {
-          await repository.register(email: email, password: password);
+          await repository.register(
+            email: email,
+            password: password,
+            acceptedConsents: acceptedConsents ?? [],
+          );
         } on DioException catch (e) {
           throw _mapDioError(e, l10n);
         }
