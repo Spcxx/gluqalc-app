@@ -4,6 +4,27 @@ import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
 part 'product_response_model.freezed.dart';
 
 @freezed
+abstract class ProductMetadataResponse with _$ProductMetadataResponse {
+  const factory ProductMetadataResponse({
+    String? source,
+    String? license,
+    String? licenseUrl,
+    String? sourceUrl,
+    String? disclaimer,
+  }) = _ProductMetadataResponse;
+
+  factory ProductMetadataResponse.fromJson(Map<String, dynamic> json) {
+    return ProductMetadataResponse(
+      source: json['source']?.toString(),
+      license: json['license']?.toString(),
+      licenseUrl: json['license_url']?.toString(),
+      sourceUrl: json['source_url']?.toString(),
+      disclaimer: json['disclaimer']?.toString(),
+    );
+  }
+}
+
+@freezed
 abstract class ProductResponse with _$ProductResponse {
   const factory ProductResponse({
     required String id,
@@ -12,6 +33,7 @@ abstract class ProductResponse with _$ProductResponse {
     String? brand,
     String? barcode,
     String? provider,
+    ProductMetadataResponse? metadata,
     @Default([]) List<ProductPortionResponse> portions,
   }) = _ProductResponse;
 
@@ -32,6 +54,11 @@ abstract class ProductResponse with _$ProductResponse {
       brand: json['brand']?.toString(),
       barcode: json['barcode']?.toString(),
       provider: json['provider']?.toString(),
+      metadata: json['_metadata'] != null
+          ? ProductMetadataResponse.fromJson(
+              json['_metadata'] as Map<String, dynamic>,
+            )
+          : null,
       portions:
           (json['portions'] as List<dynamic>?)
               ?.whereType<Map<String, dynamic>>()

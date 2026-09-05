@@ -1960,6 +1960,30 @@ abstract class AppLocalizations {
   /// **'Licenses'**
   String get aboutLicenses;
 
+  /// No description provided for @aboutAcknowledgements.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledgements'**
+  String get aboutAcknowledgements;
+
+  /// No description provided for @productAttributionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data attribution'**
+  String get productAttributionTitle;
+
+  /// No description provided for @productSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get productSourceLabel;
+
+  /// No description provided for @productLicenseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get productLicenseLabel;
+
   /// No description provided for @errorOpenUrl.
   ///
   /// In en, this message translates to:
@@ -2607,6 +2631,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueButton;
+
+  /// No description provided for @errorAcknowledgementsLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load acknowledgements'**
+  String get errorAcknowledgementsLoad;
 }
 
 class _AppLocalizationsDelegate

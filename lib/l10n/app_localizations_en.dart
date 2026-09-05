@@ -1037,6 +1037,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutLicenses => 'Licenses';
 
   @override
+  String get aboutAcknowledgements => 'Acknowledgements';
+
+  @override
+  String get productAttributionTitle => 'Data attribution';
+
+  @override
+  String get productSourceLabel => 'Source';
+
+  @override
+  String get productLicenseLabel => 'License';
+
+  @override
   String get errorOpenUrl => 'Could not open URL';
 
   @override
@@ -1373,4 +1385,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueButton => 'Continue';
+
+  @override
+  String get errorAcknowledgementsLoad => 'Could not load acknowledgements';
 }
