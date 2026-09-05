@@ -17,12 +17,14 @@ class AuthRemoteApi {
   Future<AuthUserModel> register({
     required String email,
     required String password,
+    required List<String> acceptedConsents,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/api/v1/auth/register',
       data: {
         'email': email,
         'password': password,
+        'acceptedConsents': acceptedConsents,
       },
     );
 

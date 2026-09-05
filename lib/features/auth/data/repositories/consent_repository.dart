@@ -19,6 +19,10 @@ class ConsentRepository {
   final ConsentRemoteApi _remoteApi;
   final AuthLocalStorage _localStorage;
 
+  Future<List<ConsentResponse>> getConsents() {
+    return _remoteApi.getConsents();
+  }
+
   Future<List<ConsentResponse>> getPendingConsents() {
     return _remoteApi.getPendingConsents();
   }

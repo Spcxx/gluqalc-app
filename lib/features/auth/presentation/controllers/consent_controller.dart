@@ -15,6 +15,10 @@ class ConsentController extends _$ConsentController {
     return ref.read(consentRepositoryProvider).getPendingConsents();
   }
 
+  Future<List<ConsentResponse>> getAllConsents() async {
+    return ref.read(consentRepositoryProvider).getConsents();
+  }
+
   Future<void> acceptConsents(List<String> consentIds) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {

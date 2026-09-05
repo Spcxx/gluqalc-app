@@ -536,5 +536,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "continueButton": "Continue"
 }

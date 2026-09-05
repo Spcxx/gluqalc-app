@@ -2595,6 +2595,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value must be between {min} and {max}'**
   String errorRange(int min, int max);
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
 }
 
 class _AppLocalizationsDelegate
