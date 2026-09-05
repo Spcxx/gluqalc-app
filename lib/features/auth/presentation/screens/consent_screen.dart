@@ -14,9 +14,7 @@ class ConsentScreen extends ConsumerStatefulWidget {
 }
 
 class _ConsentScreenState extends ConsumerState<ConsentScreen> {
-  int _currentIndex = 0;
-  final List<String> _collectedAcceptedIds = [];
-
+  final Set<String> _acceptedIds = {};
   bool _isSubmitting = false;
 
   void _showError(String message) {
@@ -33,71 +31,29 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
     );
   }
 
-  Future<void> _handleAccept(
-    List<ConsentResponse> consents,
-    AppLocalizations l10n,
-  ) async {
-    final currentConsent = consents[_currentIndex];
-    _collectedAcceptedIds.add(currentConsent.id);
+  Future<void> _handleAccept(List<ConsentResponse> consents) async {
+    final allRequiredAccepted = consents
+        .where((c) => c.required)
+        .every((c) => _acceptedIds.contains(c.id));
 
-    if (_currentIndex < consents.length - 1) {
-      setState(() {
-        _currentIndex++;
-      });
-    } else {
-      setState(() => _isSubmitting = true);
-      try {
-        await ref
-            .read(consentControllerProvider.notifier)
-            .acceptConsents(_collectedAcceptedIds);
-
-        if (mounted) {
-          context.go('/home');
-        }
-      } on Object catch (e) {
-        if (mounted) {
-          _showError(e.toString());
-          setState(() => _isSubmitting = false);
-        }
-      }
+    if (!allRequiredAccepted) {
+      _showError(AppLocalizations.of(context)!.errorRequiredConsent);
+      return;
     }
-  }
 
-  Future<void> _handleDecline(
-    List<ConsentResponse> consents,
-    AppLocalizations l10n,
-  ) async {
-    final currentConsent = consents[_currentIndex];
+    setState(() => _isSubmitting = true);
+    try {
+      await ref
+          .read(consentControllerProvider.notifier)
+          .acceptConsents(_acceptedIds.toList());
 
-    if (currentConsent.required) {
-      _showError(l10n.errorRequiredConsent);
-
-      setState(() => _isSubmitting = true);
-      await ref.read(authStateControllerProvider.notifier).logout();
       if (mounted) {
-        context.go('/auth');
+        context.go('/home');
       }
-    } else {
-      if (_currentIndex < consents.length - 1) {
-        setState(() {
-          _currentIndex++;
-        });
-      } else {
-        setState(() => _isSubmitting = true);
-        try {
-          await ref
-              .read(consentControllerProvider.notifier)
-              .acceptConsents(_collectedAcceptedIds);
-
-          if (mounted) {
-            context.go('/home');
-          }
-        } on Object catch (e) {
-          if (mounted) {
-            _showError(e.toString());
-            setState(() => _isSubmitting = false);
-          }
-        }
+    } on Object catch (e) {
+      if (mounted) {
+        _showError(e.toString());
+        setState(() => _isSubmitting = false);
       }
     }
   }
@@ -123,101 +79,134 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
           );
         }
 
-        if (_currentIndex >= consents.length) {
-          _currentIndex = consents.length - 1;
-        }
-
-        final consent = consents[_currentIndex];
+        final allRequiredAccepted = consents
+            .where((c) => c.required)
+            .every((c) => _acceptedIds.contains(c.id));
 
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-              '${l10n.consentTitle} ${_currentIndex + 1} / ${consents.length}',
+              l10n.consentTitle,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.primary,
               ),
             ),
             automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  await ref.read(authStateControllerProvider.notifier).logout();
+                  if (context.mounted) context.go('/auth');
+                },
+              ),
+            ],
           ),
           body: SafeArea(
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 700),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: (_currentIndex + 1) / consents.length,
-                          minHeight: 6,
-                          backgroundColor: colorScheme.primary.withValues(
-                            alpha: 0.15,
-                          ),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '${l10n.consentVersionLabel}: ${consent.version}',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest
-                                .withValues(alpha: 0.2),
-                            border: Border.all(
-                              color: colorScheme.outlineVariant.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Scrollbar(
-                            child: SingleChildScrollView(
-                              child: Text(
-                                consent.description,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  height: 1.5,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: consents.length,
+                        itemBuilder: (context, index) {
+                          final consent = consents[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (consent.required)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            l10n.consentRequiredLabel,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.error,
-                              fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          consent.code.replaceAll('_', ' '),
+                                          style: textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                      ),
+                                      if (consent.required)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.errorContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            l10n.consentRequiredLabel,
+                                            style: textTheme.labelSmall
+                                                ?.copyWith(
+                                                  color: colorScheme
+                                                      .onErrorContainer,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    consent.description,
+                                    style: textTheme.bodyMedium,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  CheckboxListTile(
+                                    value: _acceptedIds.contains(consent.id),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        if (val == true) {
+                                          _acceptedIds.add(consent.id);
+                                        } else {
+                                          _acceptedIds.remove(consent.id);
+                                        }
+                                      });
+                                    },
+                                    title: Text(l10n.acceptButton),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    contentPadding: EdgeInsets.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        onPressed: _isSubmitting
+                          );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: FilledButton(
+                        onPressed: _isSubmitting || !allRequiredAccepted
                             ? null
-                            : () => _handleAccept(consents, l10n),
+                            : () => _handleAccept(consents),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
+                          minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -239,29 +228,8 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
                                 ),
                               ),
                       ),
-                      const SizedBox(height: 12),
-                      OutlinedButton(
-                        onPressed: _isSubmitting
-                            ? null
-                            : () => _handleDecline(consents, l10n),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: BorderSide(
-                            color: colorScheme.outline.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        child: Text(
-                          l10n.declineButton,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -276,78 +244,19 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
       error: (error, _) => Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(
-            l10n.errorTitle,
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: l10n.logoutTooltip,
-              onPressed: () async {
-                await ref.read(authStateControllerProvider.notifier).logout();
-              },
-            ),
-          ],
+          title: Text(l10n.errorTitle),
         ),
         body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.error,
-                    size: 48,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.errorLoadingConsents,
-                    style: textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    error.toString(),
-                    textAlign: TextAlign.center,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () {
-                      ref.invalidate(consentControllerProvider);
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.refresh),
-                    label: Text(
-                      l10n.tryAgainButton,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimary,
-                      ),
-                    ),
-                  ),
-                ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(l10n.errorLoadingConsents),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => ref.invalidate(consentControllerProvider),
+                child: Text(l10n.tryAgainButton),
               ),
-            ),
+            ],
           ),
         ),
       ),

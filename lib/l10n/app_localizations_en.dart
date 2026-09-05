@@ -1367,4 +1367,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorRange(int min, int max) {
     return 'Value must be between $min and $max';
   }
+
+  @override
+  String get continueButton => 'Continue';
 }
