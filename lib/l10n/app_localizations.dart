@@ -1954,6 +1954,12 @@ abstract class AppLocalizations {
   /// **'Medical disclaimer'**
   String get aboutDisclaimer;
 
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get aboutLicenses;
+
   /// No description provided for @errorOpenUrl.
   ///
   /// In en, this message translates to:

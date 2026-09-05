@@ -1034,6 +1034,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutDisclaimer => 'Medical disclaimer';
 
   @override
+  String get aboutLicenses => 'Licenses';
+
+  @override
   String get errorOpenUrl => 'Could not open URL';
 
   @override
