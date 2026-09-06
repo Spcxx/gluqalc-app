@@ -39,6 +39,7 @@ Dio dio(Ref ref) {
 
 class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._dio, this._ref);
+
   final Dio _dio;
   final Ref _ref;
 
@@ -68,21 +69,11 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode == 401 && !shouldIgnore401) {
       final storage = _ref.read(authLocalStorageProvider);
 
-      if (_refreshTokenFuture != null) {
-        try {
-          await _refreshTokenFuture;
-
-          final newJwt = await storage.getJwt();
-          err.requestOptions.headers['Authorization'] = 'Bearer $newJwt';
-          final retryResponse = await _dio.fetch<dynamic>(err.requestOptions);
-
-          return handler.resolve(retryResponse);
-        } on Object catch (_) {
-          return handler.next(err);
-        }
+      var newRefresh = false;
+      if (_refreshTokenFuture == null) {
+        newRefresh = true;
+        _refreshTokenFuture = _performRefresh(storage);
       }
-
-      _refreshTokenFuture = _performRefresh(storage);
 
       try {
         await _refreshTokenFuture;
@@ -93,10 +84,14 @@ class AuthInterceptor extends Interceptor {
 
         return handler.resolve(retryResponse);
       } on Object catch (_) {
-        await _ref.read(authStateControllerProvider.notifier).logout();
+        if (newRefresh) {
+          await _ref.read(authStateControllerProvider.notifier).logout();
+        }
         return handler.next(err);
       } finally {
-        _refreshTokenFuture = null;
+        if (newRefresh) {
+          _refreshTokenFuture = null;
+        }
       }
     }
 

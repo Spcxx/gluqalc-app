@@ -42,13 +42,10 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
         currentGoal == GoalTypeEnum.lose || currentGoal == GoalTypeEnum.gain;
     final isMaintaining = currentGoal == GoalTypeEnum.maintain;
 
-    final isExtremeLoss =
-        currentGoal == GoalTypeEnum.lose &&
-        widget.parent.weightChangeTargetKg > 11.0;
+    final absDiff = diff.abs();
+    final isExtremeLoss = currentGoal == GoalTypeEnum.lose && absDiff > 1000;
     final isHighLoss =
-        currentGoal == GoalTypeEnum.lose &&
-        widget.parent.weightChangeTargetKg > 7.0 &&
-        !isExtremeLoss;
+        currentGoal == GoalTypeEnum.lose && absDiff > 750 && !isExtremeLoss;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -140,8 +137,8 @@ class _Step4GoalWidgetState extends State<Step4GoalWidget> {
                       Slider(
                         value: widget.parent.weightChangeTargetKg,
                         min: 0.5,
-                        max: 15,
-                        divisions: 29,
+                        max: 25,
+                        divisions: 49,
                         label:
                             '${widget.parent.weightChangeTargetKg.toStringAsFixed(1)} kg',
                         onChanged: (val) {
