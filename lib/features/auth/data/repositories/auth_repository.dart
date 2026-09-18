@@ -1,6 +1,8 @@
+import 'package:gluqalc_app/core/logging/logger_provider.dart';
 import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/data/models/auth_user_model.dart';
 import 'package:gluqalc_app/features/auth/data/remote/auth_remote_api.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_repository.g.dart';
@@ -10,14 +12,16 @@ AuthRepository authRepository(Ref ref) {
   return AuthRepository(
     ref.watch(authRemoteApiProvider),
     ref.watch(authLocalStorageProvider),
+    ref.watch(loggerProvider),
   );
 }
 
 class AuthRepository {
-  AuthRepository(this._remoteApi, this._localStorage);
+  AuthRepository(this._remoteApi, this._localStorage, this._logger);
 
   final AuthRemoteApi _remoteApi;
   final AuthLocalStorage _localStorage;
+  final Logger _logger;
 
   Future<AuthUserModel> register({
     required String email,
@@ -50,6 +54,7 @@ class AuthRepository {
     final refresh = data['refreshToken'] as String?;
 
     if (jwt == null || refresh == null) {
+      _logger.e('Login failed: Tokens are missing in response');
       throw Exception('Invalid login response: missing tokens');
     }
 
@@ -62,7 +67,12 @@ class AuthRepository {
       if (refreshToken != null) {
         await _remoteApi.logout(refreshToken: refreshToken);
       }
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      _logger.w(
+        'Remote logout failed, clearing local tokens anyway',
+        error: e,
+        stackTrace: st,
+      );
     } finally {
       await _localStorage.clearTokens();
     }

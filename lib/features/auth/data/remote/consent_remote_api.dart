@@ -17,14 +17,20 @@ class ConsentRemoteApi {
 
   Future<List<ConsentResponse>> getConsents() async {
     final response = await _dio.get<List<dynamic>>('/api/v1/consents');
-    return response.data!
+    final data = response.data;
+    if (data == null) return [];
+
+    return data
         .map((e) => ConsentResponse.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   Future<List<ConsentResponse>> getPendingConsents() async {
     final response = await _dio.get<List<dynamic>>('/api/v1/consents/pending');
-    return response.data!
+    final data = response.data;
+    if (data == null) return [];
+
+    return data
         .map((e) => ConsentResponse.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -40,6 +46,13 @@ class ConsentRemoteApi {
         'refreshToken': refreshToken,
       },
     );
-    return TokenResponse.fromJson(response.data!);
+
+    final data = response.data;
+    if (data == null) {
+      throw Exception(
+        'Server returned an empty response during consent acceptance',
+      );
+    }
+    return TokenResponse.fromJson(data);
   }
 }

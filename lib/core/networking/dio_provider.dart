@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:gluqalc_app/core/config/app_config.dart';
+import 'package:gluqalc_app/core/logging/logger_provider.dart';
 import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -83,7 +84,14 @@ class AuthInterceptor extends Interceptor {
         final retryResponse = await _dio.fetch<dynamic>(err.requestOptions);
 
         return handler.resolve(retryResponse);
-      } on Object catch (_) {
+      } on Object catch (e, st) {
+        _ref
+            .read(loggerProvider)
+            .e(
+              'Token refresh loop failed, forcing logout',
+              error: e,
+              stackTrace: st,
+            );
         if (newRefresh) {
           await _ref.read(authStateControllerProvider.notifier).logout();
         }
