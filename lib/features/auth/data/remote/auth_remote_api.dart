@@ -28,7 +28,11 @@ class AuthRemoteApi {
       },
     );
 
-    return AuthUserModel.fromJson(response.data!);
+    final data = response.data;
+    if (data == null) {
+      throw Exception('Server returned an empty response during registration');
+    }
+    return AuthUserModel.fromJson(data);
   }
 
   Future<void> verify({required String code}) async {
@@ -55,7 +59,12 @@ class AuthRemoteApi {
       },
       options: Options(extra: {'ignore401': true}),
     );
-    return response.data!;
+
+    final data = response.data;
+    if (data == null) {
+      throw Exception('Server returned an empty response during login');
+    }
+    return data;
   }
 
   Future<void> logout({required String refreshToken}) async {

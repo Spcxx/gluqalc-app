@@ -5,6 +5,8 @@ import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:gluqalc_app/core/logging/logger_provider.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,12 +15,13 @@ part 'auth_local_storage.g.dart';
 @Riverpod(keepAlive: true)
 AuthLocalStorage authLocalStorage(Ref ref) {
   const storage = FlutterSecureStorage();
-  return AuthLocalStorage(storage);
+  return AuthLocalStorage(storage, ref.watch(loggerProvider));
 }
 
 class AuthLocalStorage {
-  AuthLocalStorage(this._storage);
+  AuthLocalStorage(this._storage, this._logger);
   final FlutterSecureStorage _storage;
+  final Logger _logger;
 
   static const _keyJwt = 'jwt_token';
   static const _keyRefresh = 'refresh_token';
@@ -32,19 +35,36 @@ class AuthLocalStorage {
     try {
       await _storage.write(key: _keyJwt, value: jwt);
       await _storage.write(key: _keyRefresh, value: refresh);
-    } on Object catch (_) {}
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to save auth tokens to secure storage',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   Future<void> saveEmail(String email) async {
     try {
       await _storage.write(key: _keyEmail, value: email);
-    } on Object catch (_) {}
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to save email to secure storage',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   Future<String?> getEmail() async {
     try {
       return await _storage.read(key: _keyEmail);
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to read email from secure storage',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -52,7 +72,12 @@ class AuthLocalStorage {
   Future<String?> getJwt() async {
     try {
       return await _storage.read(key: _keyJwt);
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to read JWT from secure storage',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -60,7 +85,12 @@ class AuthLocalStorage {
   Future<String?> getRefresh() async {
     try {
       return await _storage.read(key: _keyRefresh);
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to read refresh token from secure storage',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -72,7 +102,13 @@ class AuthLocalStorage {
       await _storage.delete(
         key: _keyEmail,
       );
-    } on Object catch (_) {}
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to clear tokens from secure storage',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   Future<String> getDeviceId() async {
@@ -116,7 +152,12 @@ class AuthLocalStorage {
 
       await _storage.write(key: _keyDeviceId, value: deviceId);
       return deviceId;
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      _logger.w(
+        'Failed to resolve default device id, trying fallback',
+        error: e,
+        stackTrace: st,
+      );
       try {
         var fallbackId = await _storage.read(key: _keyDeviceId);
         if (fallbackId != null) return fallbackId;
@@ -124,7 +165,12 @@ class AuthLocalStorage {
         fallbackId = 'fallback-${const Uuid().v4()}';
         await _storage.write(key: _keyDeviceId, value: fallbackId);
         return fallbackId;
-      } on Object catch (_) {
+      } on Object catch (e2, st2) {
+        _logger.e(
+          'Critical failure inside storage fallback execution',
+          error: e2,
+          stackTrace: st2,
+        );
         return 'critical-fallback-${const Uuid().v4()}';
       }
     }
