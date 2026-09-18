@@ -10,6 +10,7 @@ abstract class DaySummaryResponse with _$DaySummaryResponse {
     required NutrientValues target,
     required NutrientValues consumed,
     required NutrientValues remaining,
+    DailyInsulinSummary? insulinSummary,
   }) = _DaySummaryResponse;
 
   factory DaySummaryResponse.fromJson(Map<String, dynamic> json) =>
@@ -29,7 +30,33 @@ abstract class NutrientValues with _$NutrientValues {
       _$NutrientValuesFromJson(json);
 }
 
+@freezed
+abstract class DailyInsulinSummary with _$DailyInsulinSummary {
+  const factory DailyInsulinSummary({
+    @JsonKey(fromJson: _toDouble) required double totalCarbUnits,
+    @JsonKey(fromJson: _toDouble) required double totalFatProteinUnits,
+    @JsonKey(name: 'totalCarbDose', fromJson: _toDouble)
+    required double consumedCarbDose,
+    @JsonKey(name: 'totalFatProteinDose', fromJson: _toDouble)
+    required double consumedFatProteinDose,
+    @JsonKey(name: 'totalBolusDose', fromJson: _toDouble)
+    required double consumedBolusDose,
+    @JsonKey(fromJson: _toDoubleNullable) double? estimatedTotalDailyDose,
+    @JsonKey(fromJson: _toDoubleNullable) double? dailyBasalInsulin,
+    @JsonKey(fromJson: _toDoubleNullable) double? estimatedBolusTarget,
+    @JsonKey(fromJson: _toDoubleNullable) double? remainingBolusTarget,
+  }) = _DailyInsulinSummary;
+
+  factory DailyInsulinSummary.fromJson(Map<String, dynamic> json) =>
+      _$DailyInsulinSummaryFromJson(json);
+}
+
 double _toDouble(dynamic value) {
   if (value == null) return 0;
+  return (value as num).toDouble();
+}
+
+double? _toDoubleNullable(dynamic value) {
+  if (value == null) return null;
   return (value as num).toDouble();
 }

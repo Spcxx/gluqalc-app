@@ -277,6 +277,11 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       _buildDataRow(
                         context,
+                        l10n.summaryTddAndBasal,
+                        '${profile.tddMultiplier ?? '-'} U/kg | ${profile.dailyBasalInsulin ?? '-'} U',
+                      ),
+                      _buildDataRow(
+                        context,
                         l10n.summaryInsulinDelivery,
                         _formatDeliveryMethod(
                           profile.insulinDeliveryMethod,

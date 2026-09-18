@@ -23,6 +23,8 @@ abstract class ProfileResponse with _$ProfileResponse {
     String? combinedInsulinCalculationMethod,
     Map<String, double>? hourlyCarbRatio,
     ProfileTargets? targets,
+    double? tddMultiplier,
+    double? dailyBasalInsulin,
   }) = _ProfileResponse;
 
   factory ProfileResponse.fromJson(Map<String, dynamic> json) =>
@@ -67,6 +69,8 @@ abstract class ProfileRequest with _$ProfileRequest {
     String? insulinDeliveryMethod,
     String? combinedInsulinCalculationMethod,
     Map<String, double>? hourlyCarbRatio,
+    double? tddMultiplier,
+    double? dailyBasalInsulin,
   }) = _ProfileRequest;
 
   factory ProfileRequest.fromJson(Map<String, dynamic> json) =>

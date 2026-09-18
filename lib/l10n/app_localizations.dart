@@ -2637,6 +2637,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load acknowledgements'**
   String get errorAcknowledgementsLoad;
+
+  /// No description provided for @summaryTddAndBasal.
+  ///
+  /// In en, this message translates to:
+  /// **'TDD & Basal'**
+  String get summaryTddAndBasal;
+
+  /// No description provided for @tddLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total daily dose (TDD) multiplier'**
+  String get tddLabel;
+
+  /// No description provided for @tddInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TDD multiplier'**
+  String get tddInfoTitle;
+
+  /// No description provided for @tddInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Determines total daily insulin requirement per kilogram of body weight (typically between 0.4 and 1.0).'**
+  String get tddInfoDesc;
+
+  /// No description provided for @basalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily basal'**
+  String get basalLabel;
+
+  /// No description provided for @basalInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basal insulin'**
+  String get basalInfoTitle;
+
+  /// No description provided for @basalInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Total basal insulin per day from pump basal profile or long-acting injections.'**
+  String get basalInfoDesc;
 }
 
 class _AppLocalizationsDelegate

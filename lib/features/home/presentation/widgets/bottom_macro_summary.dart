@@ -7,12 +7,14 @@ class BottomMacroSummary extends StatefulWidget {
     required this.consumed,
     required this.target,
     required this.l10n,
+    this.insulinSummary,
     super.key,
   });
 
   final NutrientValues consumed;
   final NutrientValues target;
   final AppLocalizations l10n;
+  final DailyInsulinSummary? insulinSummary;
 
   @override
   State<BottomMacroSummary> createState() => _BottomMacroSummaryState();
@@ -25,6 +27,9 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final hasInsulinData =
+        widget.insulinSummary != null &&
+        widget.insulinSummary!.estimatedBolusTarget != null;
 
     return Container(
       decoration: BoxDecoration(
@@ -76,59 +81,95 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          _buildKcalBar(
-                            context: context,
-                            label: widget.l10n.macroKcal,
-                            current: widget.consumed.energyKcal,
-                            limit: widget.target.energyKcal,
-                            color: colorScheme.primary,
-                            l10n: widget.l10n,
-                          ),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOutCubic,
-                            height: _isExpanded ? 115.0 : 0.0,
-                            child: SingleChildScrollView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 24),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    _buildCircularMacro(
-                                      context: context,
-                                      label: widget.l10n.macroCarbs,
-                                      current: widget.consumed.carbohydrates,
-                                      limit: widget.target.carbohydrates,
-                                      color: colorScheme.primary,
-                                      unit: 'g',
-                                    ),
-                                    _buildCircularMacro(
-                                      context: context,
-                                      label: widget.l10n.macroProtein,
-                                      current: widget.consumed.protein,
-                                      limit: widget.target.protein,
-                                      color: colorScheme.error,
-                                      unit: 'g',
-                                    ),
-                                    _buildCircularMacro(
-                                      context: context,
-                                      label: widget.l10n.macroFat,
-                                      current: widget.consumed.fat,
-                                      limit: widget.target.fat,
-                                      color: colorScheme.tertiary,
-                                      unit: 'g',
-                                    ),
-                                  ],
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildKcalBar(
+                                  context: context,
+                                  label: widget.l10n.macroKcal,
+                                  current: widget.consumed.energyKcal,
+                                  limit: widget.target.energyKcal,
+                                  color: colorScheme.primary,
+                                  l10n: widget.l10n,
                                 ),
-                              ),
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOutCubic,
+                                  height: _isExpanded ? 115.0 : 0.0,
+                                  child: SingleChildScrollView(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 24),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Flexible(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: _buildCircularMacro(
+                                                context: context,
+                                                label: widget.l10n.macroCarbs,
+                                                current: widget
+                                                    .consumed
+                                                    .carbohydrates,
+                                                limit:
+                                                    widget.target.carbohydrates,
+                                                color: colorScheme.primary,
+                                                unit: 'g',
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: _buildCircularMacro(
+                                                context: context,
+                                                label: widget.l10n.macroProtein,
+                                                current:
+                                                    widget.consumed.protein,
+                                                limit: widget.target.protein,
+                                                color: colorScheme.error,
+                                                unit: 'g',
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: _buildCircularMacro(
+                                                context: context,
+                                                label: widget.l10n.macroFat,
+                                                current: widget.consumed.fat,
+                                                limit: widget.target.fat,
+                                                color: colorScheme.tertiary,
+                                                unit: 'g',
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                          if (hasInsulinData) ...[
+                            const SizedBox(width: 12),
+                            _buildInsulinBar(
+                              context: context,
+                              summary: widget.insulinSummary!,
+                              isExpanded: _isExpanded,
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -199,6 +240,81 @@ class _BottomMacroSummaryState extends State<BottomMacroSummary> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInsulinBar({
+    required BuildContext context,
+    required DailyInsulinSummary summary,
+    required bool isExpanded,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final limit = summary.estimatedBolusTarget ?? 0;
+
+    final current = summary.consumedBolusDose;
+
+    final rawProgress = limit > 0 ? (current / limit) : 0.0;
+    final progress = rawProgress.clamp(0.0, 1.0);
+    final isExceeded = (limit - current) < 0;
+    final primaryColor = colorScheme.secondary;
+
+    final totalHeight = isExpanded ? (38.0 + 115.0) : 48.0;
+
+    return Tooltip(
+      message: '${current.toStringAsFixed(1)} / ${limit.toStringAsFixed(1)} u',
+      triggerMode: TooltipTriggerMode.tap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
+        height: totalHeight,
+        width: 32,
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Container(
+                    width: 10,
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    heightFactor: progress,
+                    child: Container(
+                      width: 10,
+                      decoration: BoxDecoration(
+                        color: isExceeded ? colorScheme.error : primaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${current.toStringAsFixed(0)}u',
+              style: textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: isExceeded ? colorScheme.error : primaryColor,
+              ),
+            ),
+            if (isExpanded)
+              Text(
+                '/${limit.toStringAsFixed(0)}u',
+                style: textTheme.labelSmall?.copyWith(
+                  fontSize: 9,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

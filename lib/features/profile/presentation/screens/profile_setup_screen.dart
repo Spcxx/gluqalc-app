@@ -95,6 +95,8 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   final TextEditingController isfController = TextEditingController();
   final TextEditingController ifpController = TextEditingController();
+  final TextEditingController tddController = TextEditingController();
+  final TextEditingController basalController = TextEditingController();
   InsulinDeliveryEnum insulinDeliveryMethod = InsulinDeliveryEnum.pen;
 
   final List<HourIcrItem> hourIcrItems = [
@@ -186,6 +188,8 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
       isfController.text = profile.insulinSensitivityFactor?.toString() ?? '';
       ifpController.text = profile.insulinFatProteinRatio?.toString() ?? '';
+      tddController.text = profile.tddMultiplier?.toString() ?? '';
+      basalController.text = profile.dailyBasalInsulin?.toString() ?? '';
 
       if (profile.insulinDeliveryMethod == 'PUMP') {
         insulinDeliveryMethod = InsulinDeliveryEnum.pump;
@@ -220,6 +224,8 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     bodyFatController.dispose();
     isfController.dispose();
     ifpController.dispose();
+    tddController.dispose();
+    basalController.dispose();
     for (final controller in dayControllers.values) {
       controller
         ..removeListener(_onWeeklyDistributionChanged)
@@ -405,6 +411,10 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       ),
       insulinFatProteinRatio: double.tryParse(
         ifpController.text.replaceAll(',', '.'),
+      ),
+      tddMultiplier: double.tryParse(tddController.text.replaceAll(',', '.')),
+      dailyBasalInsulin: double.tryParse(
+        basalController.text.replaceAll(',', '.'),
       ),
       insulinDeliveryMethod: insulinDeliveryMethod.name.toUpperCase(),
       combinedInsulinCalculationMethod: combinedInsulinMethod.name

@@ -100,6 +100,7 @@ class HomeScreen extends ConsumerWidget {
             carbohydrates: 200,
           ),
       l10n: l10n,
+      insulinSummary: summary?.insulinSummary,
     );
 
     return Scaffold(

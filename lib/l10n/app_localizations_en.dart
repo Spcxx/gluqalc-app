@@ -1388,4 +1388,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAcknowledgementsLoad => 'Could not load acknowledgements';
+
+  @override
+  String get summaryTddAndBasal => 'TDD & Basal';
+
+  @override
+  String get tddLabel => 'Total daily dose (TDD) multiplier';
+
+  @override
+  String get tddInfoTitle => 'TDD multiplier';
+
+  @override
+  String get tddInfoDesc =>
+      'Determines total daily insulin requirement per kilogram of body weight (typically between 0.4 and 1.0).';
+
+  @override
+  String get basalLabel => 'Daily basal';
+
+  @override
+  String get basalInfoTitle => 'Basal insulin';
+
+  @override
+  String get basalInfoDesc =>
+      'Total basal insulin per day from pump basal profile or long-acting injections.';
 }
