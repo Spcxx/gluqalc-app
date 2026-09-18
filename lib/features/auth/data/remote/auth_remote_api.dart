@@ -73,7 +73,7 @@ class AuthRemoteApi {
     required String newEmail,
   }) async {
     await _dio.post<dynamic>(
-      '/api/v1/auth/change-email',
+      '/api/v1/auth/email-change',
       data: {
         'oldEmail': oldEmail,
         'password': password,
@@ -88,7 +88,7 @@ class AuthRemoteApi {
     required String password,
   }) async {
     await _dio.post<dynamic>(
-      '/api/v1/change-email/request',
+      '/api/v1/users/me/email-change/request',
       data: {
         'newEmail': newEmail,
         'password': password,
@@ -102,7 +102,7 @@ class AuthRemoteApi {
     required String code,
   }) async {
     await _dio.post<dynamic>(
-      '/api/v1/change-email/confirm',
+      '/api/v1/users/me/email-change/confirm',
       data: {
         'newEmail': newEmail,
         'code': code,
