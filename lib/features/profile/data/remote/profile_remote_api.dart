@@ -36,4 +36,28 @@ class ProfileRemoteApi {
 
     return ProfileResponse.fromJson(response.data!);
   }
+
+  Future<List<BiometricsHistoryResponse>> getProfileHistory() async {
+    final response = await _dio.get<List<dynamic>>('/api/v1/profile/history');
+
+    if (response.data == null) return [];
+
+    return response.data!
+        .whereType<Map<String, dynamic>>()
+        .map(BiometricsHistoryResponse.fromJson)
+        .toList();
+  }
+
+  Future<ProfileResponse> updateBiometrics(UpdateBiometricsRequest req) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/api/v1/profile/biometrics',
+      data: req.toJson(),
+    );
+
+    if (response.data == null) {
+      throw Exception('Server returned empty response on biometrics update');
+    }
+
+    return ProfileResponse.fromJson(response.data!);
+  }
 }

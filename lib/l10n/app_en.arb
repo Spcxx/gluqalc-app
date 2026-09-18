@@ -543,5 +543,19 @@
     }
   },
   "continueButton": "Continue",
-  "errorAcknowledgementsLoad": "Could not load acknowledgements"
+  "errorAcknowledgementsLoad": "Could not load acknowledgements",
+  "summaryTddAndBasal": "TDD & basal",
+  "tddLabel": "Total daily dose (TDD) multiplier",
+  "tddInfoTitle": "TDD multiplier",
+  "tddInfoDesc": "Determines total daily insulin requirement per kilogram of body weight (typically between 0.4 and 1.0).",
+  "basalLabel": "Daily basal",
+  "basalInfoTitle": "Basal insulin",
+  "basalInfoDesc": "Total basal insulin per day from pump basal profile or long-acting injections.",
+  "profileUpdated": "Profile updated successfully",
+  "updateWeightTitle": "Update weight",
+  "updateWeightInfo": "Updating your weight will automatically recalculate your BMR and TDEE targets.",
+  "currentWeightLabel": "Current weight",
+  "updateButton": "Update",
+  "historyError": "Error loading history",
+  "historyEmpty": "No history available"
 }

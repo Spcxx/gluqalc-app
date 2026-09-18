@@ -65,6 +65,28 @@ class _Step7DiabeticWidgetState extends State<Step7DiabeticWidget> {
                       maxValue: 10,
                       l10n: l10n,
                     ),
+                    const SizedBox(height: 20),
+                    _buildParameterField(
+                      controller: widget.parent.tddController,
+                      labelText: l10n.tddLabel,
+                      suffixText: 'U / kg',
+                      infoTitle: l10n.tddInfoTitle,
+                      infoDesc: l10n.tddInfoDesc,
+                      minValue: 0.1,
+                      maxValue: 3.0,
+                      l10n: l10n,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildParameterField(
+                      controller: widget.parent.basalController,
+                      labelText: l10n.basalLabel,
+                      suffixText: 'U',
+                      infoTitle: l10n.basalInfoTitle,
+                      infoDesc: l10n.basalInfoDesc,
+                      minValue: 0.0,
+                      maxValue: 200.0,
+                      l10n: l10n,
+                    ),
                     const SizedBox(height: 24),
                     Row(
                       children: [

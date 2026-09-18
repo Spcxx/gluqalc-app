@@ -2637,6 +2637,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load acknowledgements'**
   String get errorAcknowledgementsLoad;
+
+  /// No description provided for @summaryTddAndBasal.
+  ///
+  /// In en, this message translates to:
+  /// **'TDD & basal'**
+  String get summaryTddAndBasal;
+
+  /// No description provided for @tddLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total daily dose (TDD) multiplier'**
+  String get tddLabel;
+
+  /// No description provided for @tddInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TDD multiplier'**
+  String get tddInfoTitle;
+
+  /// No description provided for @tddInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Determines total daily insulin requirement per kilogram of body weight (typically between 0.4 and 1.0).'**
+  String get tddInfoDesc;
+
+  /// No description provided for @basalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily basal'**
+  String get basalLabel;
+
+  /// No description provided for @basalInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basal insulin'**
+  String get basalInfoTitle;
+
+  /// No description provided for @basalInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Total basal insulin per day from pump basal profile or long-acting injections.'**
+  String get basalInfoDesc;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdated;
+
+  /// No description provided for @updateWeightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update weight'**
+  String get updateWeightTitle;
+
+  /// No description provided for @updateWeightInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating your weight will automatically recalculate your BMR and TDEE targets.'**
+  String get updateWeightInfo;
+
+  /// No description provided for @currentWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight'**
+  String get currentWeightLabel;
+
+  /// No description provided for @updateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateButton;
+
+  /// No description provided for @historyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading history'**
+  String get historyError;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No history available'**
+  String get historyEmpty;
 }
 
 class _AppLocalizationsDelegate

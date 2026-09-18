@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +8,10 @@ import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/features/auth/presentation/widgets/password_rules_widget.dart';
+import 'package:gluqalc_app/features/profile/presentation/controllers/biometrics_history_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/sessions_controller.dart';
+import 'package:gluqalc_app/features/profile/presentation/widgets/update_weight_dialog.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -114,9 +117,14 @@ String _mapDioError(
   return (icon: Icons.computer, name: l10n.deviceUnknown);
 }
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String _formatGender(String? g, AppLocalizations l10n) {
     if (g == 'FEMALE') return l10n.genderFemale;
     if (g == 'MALE') return l10n.genderMale;
@@ -159,8 +167,12 @@ class ProfileScreen extends ConsumerWidget {
     return 'P: $p%, F: $f%, C: $c%';
   }
 
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
@@ -174,6 +186,14 @@ class ProfileScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= 1100;
 
+    ref.listen(profileControllerProvider, (prev, next) {
+      if (next is AsyncData &&
+          prev is AsyncData &&
+          prev?.value?.weightInKg != next.value?.weightInKg) {
+        ref.invalidate(biometricsHistoryControllerProvider);
+      }
+    });
+
     if (profile == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -186,6 +206,335 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.currentWeightLabel,
+                                style: textTheme.labelLarge?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    '${profile.weightInKg ?? '-'}',
+                                    style: textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'kg',
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          TextButton.icon(
+                            onPressed: profile.weightInKg != null
+                                ? () => showDialog<void>(
+                                    context: context,
+                                    builder: (ctx) => UpdateWeightDialog(
+                                      currentWeight: profile.weightInKg!,
+                                    ),
+                                  )
+                                : null,
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            icon: const Icon(Icons.edit, size: 18),
+                            label: Text(l10n.updateButton),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 160,
+                        child: ref
+                            .watch(biometricsHistoryControllerProvider)
+                            .when(
+                              loading: () => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              error: (e, _) => Center(
+                                child: Text(l10n.historyError),
+                              ),
+                              data: (history) {
+                                final dailyMap = <String, _ChartPoint>{};
+
+                                for (final h in history.reversed) {
+                                  if (h.weightInKg != null) {
+                                    final dayKey = _formatDate(h.createdAt);
+                                    dailyMap[dayKey] = _ChartPoint(
+                                      weight: h.weightInKg!,
+                                      date: h.createdAt,
+                                    );
+                                  }
+                                }
+
+                                if (profile.weightInKg != null) {
+                                  final todayKey = _formatDate(DateTime.now());
+                                  dailyMap[todayKey] = _ChartPoint(
+                                    weight: profile.weightInKg!,
+                                    date: DateTime.now(),
+                                  );
+                                }
+
+                                var combinedList = dailyMap.values.toList()
+                                  ..sort((a, b) => a.date.compareTo(b.date));
+
+                                if (combinedList.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      l10n.historyEmpty,
+                                      style: textTheme.bodySmall,
+                                    ),
+                                  );
+                                }
+
+                                if (combinedList.length > 14) {
+                                  combinedList = combinedList.sublist(
+                                    combinedList.length - 14,
+                                  );
+                                }
+
+                                if (combinedList.length > 2) {
+                                  final newestDate = combinedList.last.date;
+                                  final cutoffDate = newestDate.subtract(
+                                    const Duration(days: 180),
+                                  );
+
+                                  final filtered = combinedList
+                                      .where(
+                                        (pt) => pt.date.isAfter(cutoffDate),
+                                      )
+                                      .toList();
+
+                                  if (filtered.length >= 2) {
+                                    combinedList = filtered;
+                                  } else if (combinedList.length > 3) {
+                                    combinedList = combinedList.sublist(
+                                      combinedList.length - 3,
+                                    );
+                                  }
+                                }
+
+                                final startDate = DateTime(
+                                  combinedList.first.date.year,
+                                  combinedList.first.date.month,
+                                  combinedList.first.date.day,
+                                );
+
+                                final spots = combinedList.map((pt) {
+                                  final daysDiff = pt.date
+                                      .difference(startDate)
+                                      .inDays;
+                                  return FlSpot(
+                                    daysDiff.toDouble(),
+                                    pt.weight,
+                                  );
+                                }).toList();
+
+                                var minX = spots.first.x;
+                                var maxX = spots.last.x;
+                                if (minX == maxX) {
+                                  minX -= 1;
+                                  maxX += 1;
+                                }
+
+                                var minW = combinedList.first.weight;
+                                var maxW = minW;
+                                for (final pt in combinedList) {
+                                  if (pt.weight < minW) minW = pt.weight;
+                                  if (pt.weight > maxW) maxW = pt.weight;
+                                }
+
+                                final range = (maxW - minW).abs();
+                                if (range < 0.5) {
+                                  minW -= 2.0;
+                                  maxW += 2.0;
+                                } else {
+                                  final pad = range * 0.25;
+                                  minW -= pad;
+                                  maxW += pad;
+                                }
+
+                                return LineChart(
+                                  LineChartData(
+                                    minX: minX,
+                                    maxX: maxX,
+                                    minY: minW,
+                                    maxY: maxW,
+                                    lineTouchData: LineTouchData(
+                                      touchTooltipData: LineTouchTooltipData(
+                                        getTooltipColor: (_) =>
+                                            colorScheme.inverseSurface,
+                                        getTooltipItems: (touchedSpots) {
+                                          return touchedSpots.map((spot) {
+                                            final idx = spots.indexWhere(
+                                              (s) => s.x == spot.x,
+                                            );
+                                            if (idx == -1) return null;
+
+                                            final pt = combinedList[idx];
+                                            return LineTooltipItem(
+                                              '${pt.weight.toStringAsFixed(1)} kg\n',
+                                              textTheme.bodyMedium!.copyWith(
+                                                color: colorScheme
+                                                    .onInverseSurface,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: _formatDate(pt.date),
+                                                  style: textTheme.labelSmall
+                                                      ?.copyWith(
+                                                        color: colorScheme
+                                                            .onInverseSurface
+                                                            .withValues(
+                                                              alpha: 0.7,
+                                                            ),
+                                                      ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList();
+                                        },
+                                      ),
+                                    ),
+                                    gridData: FlGridData(
+                                      drawVerticalLine: false,
+                                      getDrawingHorizontalLine: (value) =>
+                                          FlLine(
+                                            color: colorScheme.outlineVariant
+                                                .withValues(alpha: 0.3),
+                                            strokeWidth: 1,
+                                          ),
+                                    ),
+                                    titlesData: FlTitlesData(
+                                      rightTitles: const AxisTitles(),
+                                      topTitles: const AxisTitles(),
+                                      bottomTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          reservedSize: 28,
+                                          getTitlesWidget: (val, meta) {
+                                            final matchIdx = spots.indexWhere(
+                                              (s) => s.x == val,
+                                            );
+                                            if (matchIdx == -1) {
+                                              return const SizedBox.shrink();
+                                            }
+
+                                            final total = spots.length;
+                                            final step = total > 5
+                                                ? (total ~/ 3)
+                                                : 1;
+
+                                            if (matchIdx == 0 ||
+                                                matchIdx == total - 1 ||
+                                                matchIdx % step == 0) {
+                                              final dt =
+                                                  combinedList[matchIdx].date;
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                  top: 6,
+                                                ),
+                                                child: Text(
+                                                  '${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}',
+                                                  style: textTheme.labelSmall
+                                                      ?.copyWith(
+                                                        color: colorScheme
+                                                            .onSurfaceVariant,
+                                                        fontSize: 10,
+                                                      ),
+                                                ),
+                                              );
+                                            }
+                                            return const SizedBox.shrink();
+                                          },
+                                        ),
+                                      ),
+                                      leftTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          reservedSize: 34,
+                                          getTitlesWidget: (val, meta) {
+                                            return Text(
+                                              val.toInt().toString(),
+                                              style: textTheme.labelSmall
+                                                  ?.copyWith(
+                                                    color: colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    borderData: FlBorderData(show: false),
+                                    lineBarsData: [
+                                      LineChartBarData(
+                                        spots: spots,
+                                        color: colorScheme.primary,
+                                        barWidth: 2.5,
+                                        isStrokeCapRound: true,
+                                        dotData: FlDotData(
+                                          getDotPainter:
+                                              (
+                                                spot,
+                                                percent,
+                                                barData,
+                                                index,
+                                              ) => FlDotCirclePainter(
+                                                radius: 3.5,
+                                                color: colorScheme.surface,
+                                                strokeWidth: 2,
+                                                strokeColor:
+                                                    colorScheme.primary,
+                                              ),
+                                        ),
+                                        belowBarData: BarAreaData(
+                                          show: true,
+                                          color: colorScheme.primary.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               Card(
                 elevation: 1,
                 shape: RoundedRectangleBorder(
@@ -232,11 +581,6 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       _buildDataRow(
                         context,
-                        l10n.summaryHeightWeight,
-                        '${profile.heightInCm ?? '-'} cm, ${profile.weightInKg ?? '-'} kg',
-                      ),
-                      _buildDataRow(
-                        context,
                         l10n.summaryBodyFat,
                         profile.bodyFatPercentage != null
                             ? '${profile.bodyFatPercentage}%'
@@ -274,6 +618,11 @@ class ProfileScreen extends ConsumerWidget {
                         context,
                         l10n.summaryInsulinParams,
                         '${profile.insulinSensitivityFactor ?? '-'} mg/dL/U | ${profile.insulinFatProteinRatio ?? '-'} U/FPU',
+                      ),
+                      _buildDataRow(
+                        context,
+                        l10n.summaryTddAndBasal,
+                        '${profile.tddMultiplier ?? '-'} U/kg | ${profile.dailyBasalInsulin ?? '-'} U',
                       ),
                       _buildDataRow(
                         context,
@@ -1367,4 +1716,10 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
       ],
     );
   }
+}
+
+class _ChartPoint {
+  _ChartPoint({required this.weight, required this.date});
+  final double weight;
+  final DateTime date;
 }

@@ -199,6 +199,11 @@ class Step10SummaryWidget extends StatelessWidget {
                   ),
                   _buildSummaryItem(
                     context,
+                    l10n.summaryTddAndBasal,
+                    '${parent.tddController.text.isEmpty ? "-" : parent.tddController.text} U/kg | ${parent.basalController.text.isEmpty ? "-" : parent.basalController.text} U',
+                  ),
+                  _buildSummaryItem(
+                    context,
                     l10n.summaryInsulinDelivery,
                     _formatDeliveryMethod(parent.insulinDeliveryMethod, l10n),
                   ),
