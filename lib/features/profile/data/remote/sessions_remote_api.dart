@@ -3,15 +3,15 @@ import 'package:gluqalc_app/core/networking/dio_provider.dart';
 import 'package:gluqalc_app/features/profile/data/models/device_session_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'sessions_api.g.dart';
+part 'sessions_remote_api.g.dart';
 
 @Riverpod(keepAlive: true)
-SessionsApi sessionsApi(Ref ref) {
-  return SessionsApi(ref.watch(dioProvider));
+SessionsRemoteApi sessionsRemoteApi(Ref ref) {
+  return SessionsRemoteApi(ref.watch(dioProvider));
 }
 
-class SessionsApi {
-  SessionsApi(this._dio);
+class SessionsRemoteApi {
+  SessionsRemoteApi(this._dio);
   final Dio _dio;
 
   Future<List<DeviceSessionModel>> getMySessions() async {
@@ -21,7 +21,7 @@ class SessionsApi {
 
     return data
         .map(
-          (dynamic e) => DeviceSessionModel.fromJson(e as Map<String, dynamic>),
+          (e) => DeviceSessionModel.fromJson(e as Map<String, dynamic>),
         )
         .toList();
   }

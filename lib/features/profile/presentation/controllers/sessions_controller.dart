@@ -1,7 +1,7 @@
 import 'package:gluqalc_app/features/auth/data/local/auth_local_storage.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/features/profile/data/models/device_session_model.dart';
-import 'package:gluqalc_app/features/profile/data/remote/sessions_api.dart';
+import 'package:gluqalc_app/features/profile/data/remote/sessions_remote_api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sessions_controller.g.dart';
@@ -10,12 +10,12 @@ part 'sessions_controller.g.dart';
 class SessionsController extends _$SessionsController {
   @override
   Future<List<DeviceSessionModel>> build() async {
-    final api = ref.watch(sessionsApiProvider);
+    final api = ref.watch(sessionsRemoteApiProvider);
     return api.getMySessions();
   }
 
   Future<void> revokeSession(String deviceId) async {
-    final api = ref.read(sessionsApiProvider);
+    final api = ref.read(sessionsRemoteApiProvider);
     final storage = ref.read(authLocalStorageProvider);
 
     final currentDeviceId = await storage.getDeviceId();
