@@ -20,4 +20,14 @@ class ProfileRepository {
   Future<ProfileResponse> updateProfile(ProfileRequest request) async {
     return _remoteApi.updateProfile(request);
   }
+
+  Future<List<BiometricsHistoryResponse>> getProfileHistory() async {
+    return _remoteApi.getProfileHistory();
+  }
+
+  Future<ProfileResponse> updateBiometrics(
+    UpdateBiometricsRequest request,
+  ) async {
+    return _remoteApi.updateBiometrics(request);
+  }
 }

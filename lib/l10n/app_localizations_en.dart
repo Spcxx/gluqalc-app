@@ -1390,7 +1390,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorAcknowledgementsLoad => 'Could not load acknowledgements';
 
   @override
-  String get summaryTddAndBasal => 'TDD & Basal';
+  String get summaryTddAndBasal => 'TDD & basal';
 
   @override
   String get tddLabel => 'Total daily dose (TDD) multiplier';
@@ -1411,4 +1411,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get basalInfoDesc =>
       'Total basal insulin per day from pump basal profile or long-acting injections.';
+
+  @override
+  String get profileUpdated => 'Profile updated successfully';
+
+  @override
+  String get updateWeightTitle => 'Update weight';
+
+  @override
+  String get updateWeightInfo =>
+      'Updating your weight will automatically recalculate your BMR and TDEE targets.';
+
+  @override
+  String get currentWeightLabel => 'Current weight';
+
+  @override
+  String get updateButton => 'Update';
+
+  @override
+  String get historyError => 'Error loading history';
+
+  @override
+  String get historyEmpty => 'No history available';
 }

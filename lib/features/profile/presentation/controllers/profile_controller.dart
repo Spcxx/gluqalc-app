@@ -33,4 +33,17 @@ class ProfileController extends _$ProfileController {
       rethrow;
     }
   }
+
+  Future<void> updateBiometrics(UpdateBiometricsRequest request) async {
+    state = const AsyncLoading();
+    try {
+      final updatedProfile = await ref
+          .read(profileRepositoryProvider)
+          .updateBiometrics(request);
+      state = AsyncData(updatedProfile);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
 }

@@ -2641,7 +2641,7 @@ abstract class AppLocalizations {
   /// No description provided for @summaryTddAndBasal.
   ///
   /// In en, this message translates to:
-  /// **'TDD & Basal'**
+  /// **'TDD & basal'**
   String get summaryTddAndBasal;
 
   /// No description provided for @tddLabel.
@@ -2679,6 +2679,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total basal insulin per day from pump basal profile or long-acting injections.'**
   String get basalInfoDesc;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdated;
+
+  /// No description provided for @updateWeightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update weight'**
+  String get updateWeightTitle;
+
+  /// No description provided for @updateWeightInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating your weight will automatically recalculate your BMR and TDEE targets.'**
+  String get updateWeightInfo;
+
+  /// No description provided for @currentWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight'**
+  String get currentWeightLabel;
+
+  /// No description provided for @updateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateButton;
+
+  /// No description provided for @historyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading history'**
+  String get historyError;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No history available'**
+  String get historyEmpty;
 }
 
 class _AppLocalizationsDelegate

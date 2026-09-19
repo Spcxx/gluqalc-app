@@ -76,3 +76,30 @@ abstract class ProfileRequest with _$ProfileRequest {
   factory ProfileRequest.fromJson(Map<String, dynamic> json) =>
       _$ProfileRequestFromJson(json);
 }
+
+@freezed
+abstract class BiometricsHistoryResponse with _$BiometricsHistoryResponse {
+  const factory BiometricsHistoryResponse({
+    required String id,
+    required DateTime createdAt,
+    double? weightInKg,
+    double? heightInCm,
+    double? bodyFatPercentage,
+    double? bmi,
+  }) = _BiometricsHistoryResponse;
+
+  factory BiometricsHistoryResponse.fromJson(Map<String, dynamic> json) =>
+      _$BiometricsHistoryResponseFromJson(json);
+}
+
+@freezed
+abstract class UpdateBiometricsRequest with _$UpdateBiometricsRequest {
+  const factory UpdateBiometricsRequest({
+    double? weightInKg,
+    double? heightInCm,
+    double? bodyFatPercentage,
+  }) = _UpdateBiometricsRequest;
+
+  factory UpdateBiometricsRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateBiometricsRequestFromJson(json);
+}
