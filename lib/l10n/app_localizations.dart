@@ -2721,6 +2721,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No history available'**
   String get historyEmpty;
+
+  /// No description provided for @categoryForceDeleteWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?'**
+  String get categoryForceDeleteWarning;
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,17 +32,29 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
   Future<void> _deleteCategory(
     BuildContext context,
     AppLocalizations l10n,
-    ColorScheme colorScheme,
-  ) async {
+    ColorScheme colorScheme, {
+    bool force = false,
+  }) async {
     try {
       await ref
           .read(mealCategoryControllerProvider.notifier)
-          .deleteCategory(widget.category.id);
+          .deleteCategory(widget.category.id, force: force);
     } on Object catch (e) {
       if (context.mounted) {
-        final message = e is DioException && e.response?.statusCode == 409
-            ? l10n.categoryNotEmptyError
-            : l10n.errorUnknown(e.toString());
+        if (!force && e is DioException && e.response?.statusCode == 409) {
+          unawaited(_showForceDeleteDialog(context, l10n, colorScheme));
+          return;
+        }
+
+        var message = l10n.errorUnknown(e.toString());
+        if (e is DioException) {
+          final data = e.response?.data;
+          if (data is Map) {
+            message = data['message']?.toString() ?? e.message ?? message;
+          } else {
+            message = e.message ?? message;
+          }
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -54,6 +68,67 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
         );
       }
     }
+  }
+
+  Future<void> _showForceDeleteDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) async {
+    final textTheme = Theme.of(context).textTheme;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.deleteCategory,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.error,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          l10n.categoryForceDeleteWarning,
+          style: textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              unawaited(
+                _deleteCategory(context, l10n, colorScheme, force: true),
+              );
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(l10n.deleteCategory),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSingleMacroColumn(
