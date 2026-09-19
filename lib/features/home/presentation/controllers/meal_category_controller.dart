@@ -25,11 +25,11 @@ class MealCategoryController extends _$MealCategoryController {
     });
   }
 
-  Future<void> deleteCategory(String id) async {
+  Future<void> deleteCategory(String id, {bool force = false}) async {
     final repository = ref.read(mealCategoryRepositoryProvider);
 
     try {
-      await repository.deleteCategory(id);
+      await repository.deleteCategory(id, force: force);
       ref.invalidateSelf();
     } catch (e) {
       rethrow;

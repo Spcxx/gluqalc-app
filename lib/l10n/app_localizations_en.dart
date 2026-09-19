@@ -1433,4 +1433,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyEmpty => 'No history available';
+
+  @override
+  String get categoryForceDeleteWarning =>
+      'This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?';
 }

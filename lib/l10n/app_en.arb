@@ -557,5 +557,6 @@
   "currentWeightLabel": "Current weight",
   "updateButton": "Update",
   "historyError": "Error loading history",
-  "historyEmpty": "No history available"
+  "historyEmpty": "No history available",
+  "categoryForceDeleteWarning": "This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?"
 }

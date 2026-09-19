@@ -39,8 +39,13 @@ class MealCategoryRepository {
     return MealCategoryResponse.fromJson(response.data!);
   }
 
-  Future<void> deleteCategory(String id) async {
-    await _dio.delete<void>('/api/v1/log/categories/$id');
+  Future<void> deleteCategory(String id, {bool force = false}) async {
+    await _dio.delete<void>(
+      '/api/v1/log/categories/$id',
+      queryParameters: {
+        if (force) 'force': true,
+      },
+    );
   }
 
   Future<void> addMealEntry({
