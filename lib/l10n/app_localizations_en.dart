@@ -1437,4 +1437,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get categoryForceDeleteWarning =>
       'This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?';
+
+  @override
+  String get barcodeLabel => 'Barcode';
+
+  @override
+  String get scanBarcode => 'Scan barcode';
+
+  @override
+  String productBarcodeNotFound(String barcode) {
+    return 'Product not found. Fill the data (barcode: $barcode).';
+  }
+
+  @override
+  String get unsupportedPlatform => 'Platform not supported';
+
+  @override
+  String get unsupportedPlatformDesc =>
+      'Barcode scanning is available only on Android and Web browser.';
 }

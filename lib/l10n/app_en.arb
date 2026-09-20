@@ -558,5 +558,17 @@
   "updateButton": "Update",
   "historyError": "Error loading history",
   "historyEmpty": "No history available",
-  "categoryForceDeleteWarning": "This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?"
+  "categoryForceDeleteWarning": "This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?",
+  "barcodeLabel": "Barcode",
+  "scanBarcode": "Scan barcode",
+  "productBarcodeNotFound": "Product not found. Fill the data (barcode: {barcode}).",
+  "@productBarcodeNotFound": {
+    "placeholders": {
+      "barcode": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedPlatform": "Platform not supported",
+  "unsupportedPlatformDesc": "Barcode scanning is available only on Android and Web browser."
 }

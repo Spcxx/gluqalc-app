@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/data/repositories/meal_category_repository.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/recent_products_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'product_search_controller.g.dart';
@@ -35,6 +36,22 @@ class ProductSearchController extends _$ProductSearchController {
       debugPrint('Failed to fetch custom products: $e\n$stackTrace');
       return [];
     }
+  }
+
+  Future<String?> resolveOrImportBarcode(String barcode) async {
+    final repository = ref.read(mealCategoryRepositoryProvider);
+    try {
+      final imported = await repository.importExternalProduct(barcode);
+      if (imported.id.isNotEmpty) {
+        ref
+            .read(recentProductsControllerProvider.notifier)
+            .addProduct(imported);
+        return imported.id;
+      }
+    } on Object catch (_) {
+      return null;
+    }
+    return null;
   }
 
   void clearSearch() {
