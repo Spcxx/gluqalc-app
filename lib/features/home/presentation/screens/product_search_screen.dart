@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
@@ -7,6 +8,7 @@ import 'package:gluqalc_app/features/home/data/repositories/meal_category_reposi
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_category_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/product_search_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/recent_products_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/widgets/barcode_scan_modal.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -261,6 +263,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
     final searchNotifier = ref.read(productSearchControllerProvider.notifier);
     final recentProducts = ref.watch(recentProductsControllerProvider);
 
+    final canScanBarcode =
+        kIsWeb || defaultTargetPlatform == TargetPlatform.android;
+
     var categoryName = '';
     final categoriesAsync = ref.watch(mealCategoryControllerProvider);
     if (categoriesAsync.hasValue) {
@@ -339,6 +344,15 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                                   decoration: InputDecoration(
                                     hintText: l10n.searchProductsHint,
                                     prefixIcon: const Icon(Icons.search),
+                                    suffixIcon: canScanBarcode
+                                        ? IconButton(
+                                            icon: const Icon(
+                                              Icons.qr_code_scanner,
+                                            ),
+                                            onPressed: () => _openScanner(l10n),
+                                            tooltip: l10n.scanBarcode,
+                                          )
+                                        : null,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -738,5 +752,58 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
         ),
       ),
     );
+  }
+
+  Future<void> _openScanner(AppLocalizations l10n) async {
+    final scannedCode = await showDialog<String>(
+      context: context,
+      builder: (_) => const BarcodeScanDialog(),
+    );
+
+    if (scannedCode != null && scannedCode.isNotEmpty && mounted) {
+      await _handleScannedBarcode(scannedCode, l10n);
+    }
+  }
+
+  Future<void> _handleScannedBarcode(
+    String barcode,
+    AppLocalizations l10n,
+  ) async {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      ),
+    );
+
+    final controller = ref.read(productSearchControllerProvider.notifier);
+    final targetProductId = await controller.resolveOrImportBarcode(barcode);
+
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    if (!mounted) return;
+
+    if (targetProductId != null) {
+      await context.push(
+        '/meal-entry-details/$targetProductId?categoryId=${widget.categoryId}&isCreation=true',
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.productBarcodeNotFound(barcode)),
+          backgroundColor: colorScheme.secondary,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      await context.push(
+        '/product-create/${widget.categoryId}?barcode=$barcode',
+      );
+    }
   }
 }

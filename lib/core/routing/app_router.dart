@@ -186,7 +186,8 @@ GoRouter appRouter(Ref ref) {
         path: '/product-create/:categoryId',
         builder: (context, state) {
           final categoryId = state.pathParameters['categoryId']!;
-          return ProductCreateScreen(categoryId: categoryId);
+          final barcode = state.uri.queryParameters['barcode'];
+          return ProductCreateScreen(categoryId: categoryId, barcode: barcode);
         },
       ),
     ],

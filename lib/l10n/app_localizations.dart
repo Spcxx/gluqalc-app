@@ -2727,6 +2727,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This category contains meal entries. Deleting it will permanently remove all associated meals from all days. Are you sure you want to proceed?'**
   String get categoryForceDeleteWarning;
+
+  /// No description provided for @barcodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get barcodeLabel;
+
+  /// No description provided for @scanBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan barcode'**
+  String get scanBarcode;
+
+  /// No description provided for @productBarcodeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Product not found. Fill the data (barcode: {barcode}).'**
+  String productBarcodeNotFound(String barcode);
+
+  /// No description provided for @unsupportedPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform not supported'**
+  String get unsupportedPlatform;
+
+  /// No description provided for @unsupportedPlatformDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode scanning is available only on Android and Web browser.'**
+  String get unsupportedPlatformDesc;
 }
 
 class _AppLocalizationsDelegate
