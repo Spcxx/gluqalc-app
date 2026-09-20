@@ -27,7 +27,6 @@ class CategoryTileItem extends ConsumerStatefulWidget {
 class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
   bool _isExpanded = true;
   bool _showCategoryMacros = false;
-  final Set<String> _showEntryMacrosIds = {};
 
   Future<void> _deleteCategory(
     BuildContext context,
@@ -207,9 +206,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                 colorScheme,
                                 textTheme,
                               ),
-                              const SizedBox(
-                                width: 14,
-                              ),
+                              const SizedBox(width: 14),
                               _buildSingleMacroColumn(
                                 l10n.unitProteinShort,
                                 protein,
@@ -292,7 +289,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 2),
               child: Row(
                 children: [
                   Expanded(
@@ -503,6 +500,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                 child: category.entries.isEmpty
                     ? Container(
                         width: double.infinity,
+                        margin: const EdgeInsets.only(top: 8),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHighest.withValues(
@@ -525,10 +523,6 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                           final entryCarbs = entry.nutrition.carbohydrates;
                           final entryProtein = entry.nutrition.protein;
                           final entryFat = entry.nutrition.fat;
-                          final isEntryMacrosShown = _showEntryMacrosIds
-                              .contains(
-                                entry.id,
-                              );
 
                           final isDefault100g =
                               entry.portion.name.trim().toLowerCase() == '100g';
@@ -540,7 +534,7 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                               : '$qtyStr x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)';
 
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 8),
+                            margin: const EdgeInsets.only(top: 8),
                             decoration: BoxDecoration(
                               color: colorScheme.surfaceContainerHighest
                                   .withValues(
@@ -559,9 +553,11 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                 '/meal-entry-details/${entry.id}?categoryId=${widget.category.id}',
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                  horizontal: 12,
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  10,
+                                  0,
+                                  10,
                                 ),
                                 child: Row(
                                   children: [
@@ -573,15 +569,21 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                           Row(
                                             children: [
                                               Flexible(
-                                                child: Text(
-                                                  entry.productName,
-                                                  style: textTheme.bodyLarge
-                                                      ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                child: Tooltip(
+                                                  message: entry.productName,
+                                                  triggerMode:
+                                                      TooltipTriggerMode
+                                                          .longPress,
+                                                  child: Text(
+                                                    entry.productName,
+                                                    style: textTheme.bodySmall
+                                                        ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
                                                 ),
                                               ),
                                               if (entry.provider != null &&
@@ -611,13 +613,50 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                                 ),
                                           ),
                                           const SizedBox(height: 2),
-                                          Text(
-                                            '$entryKcal kcal',
-                                            style: textTheme.bodySmall
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w500,
-                                                  color: colorScheme.primary,
+                                          Text.rich(
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: '$entryKcal kcal',
+                                                  style: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color:
+                                                            colorScheme.primary,
+                                                      ),
                                                 ),
+                                                TextSpan(
+                                                  text: ' • ',
+                                                  style: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                        color: colorScheme
+                                                            .onSurface
+                                                            .withValues(
+                                                              alpha: 0.4,
+                                                            ),
+                                                      ),
+                                                ),
+                                                TextSpan(
+                                                  text:
+                                                      '${l10n.unitCarbShort}: ${entryCarbs.toStringAsFixed(1)} '
+                                                      '${l10n.unitProteinShort}: ${entryProtein.toStringAsFixed(1)} '
+                                                      '${l10n.unitFatShort}: ${entryFat.toStringAsFixed(1)}',
+                                                  style: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                        fontSize: 10,
+                                                        color: colorScheme
+                                                            .onSurface
+                                                            .withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),
@@ -625,29 +664,6 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        _buildMacrosExpandableSection(
-                                          isExpanded: isEntryMacrosShown,
-                                          onTap: () {
-                                            setState(() {
-                                              if (isEntryMacrosShown) {
-                                                _showEntryMacrosIds.remove(
-                                                  entry.id,
-                                                );
-                                              } else {
-                                                _showEntryMacrosIds.add(
-                                                  entry.id,
-                                                );
-                                              }
-                                            });
-                                          },
-                                          carbs: entryCarbs,
-                                          protein: entryProtein,
-                                          fat: entryFat,
-                                          l10n: l10n,
-                                          colorScheme: colorScheme,
-                                          textTheme: textTheme,
-                                        ),
-                                        const SizedBox(width: 2),
                                         SizedBox(
                                           width: isNarrow ? 70 : 85,
                                           child: buildInsulinComponent(
@@ -666,8 +682,6 @@ class _CategoryTileItemState extends ConsumerState<CategoryTileItem> {
                                           color: colorScheme.error.withValues(
                                             alpha: 0.7,
                                           ),
-                                          constraints: const BoxConstraints(),
-                                          padding: const EdgeInsets.all(4),
                                           onPressed: () async {
                                             await ref
                                                 .read(

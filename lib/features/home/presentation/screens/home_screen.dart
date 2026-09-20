@@ -275,12 +275,12 @@ class HomeScreen extends ConsumerWidget {
     final textTheme = theme.textTheme;
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       itemCount: categories.length + 1,
       itemBuilder: (context, index) {
         if (index == categories.length) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Center(
               child: TextButton.icon(
                 onPressed: () => _showAddCategoryModal(context, l10n),

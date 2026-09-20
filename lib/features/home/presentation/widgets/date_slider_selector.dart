@@ -109,7 +109,7 @@ class _DateSliderSelectorState extends ConsumerState<DateSliderSelector> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                  padding: const EdgeInsets.fromLTRB(20, 2, 20, 4),
                   child: SizedBox(
                     height: 32,
                     child: Row(
@@ -157,7 +157,7 @@ class _DateSliderSelectorState extends ConsumerState<DateSliderSelector> {
                   ),
                 ),
                 SizedBox(
-                  height: 70,
+                  height: 60,
                   child: ListView.builder(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
