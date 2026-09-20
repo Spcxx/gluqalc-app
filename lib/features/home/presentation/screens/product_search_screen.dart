@@ -674,16 +674,20 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Flexible(
-                          child: Text(
-                            product.name,
-                            style: textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          child: Tooltip(
+                            message: product.name,
+                            triggerMode: TooltipTriggerMode.longPress,
+                            child: Text(
+                              product.name,
+                              style: textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (isExternal) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           InkResponse(
                             radius: 20,
                             onTap: product.metadata != null
@@ -705,7 +709,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                                   : l10n.externalDatabaseTooltip,
                               child: Icon(
                                 Icons.public,
-                                size: 18,
+                                size: 16,
                                 color: colorScheme.primary,
                               ),
                             ),
@@ -738,7 +742,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${l10n.unitCarbShort}:${carbs}g • ${l10n.unitProteinShort}:${protein}g • ${l10n.unitFatShort}:${fat}g',
+                    '${l10n.unitCarbShort}: $carbs '
+                    '${l10n.unitProteinShort}: $protein '
+                    '${l10n.unitFatShort}: $fat',
                     style: textTheme.bodySmall?.copyWith(
                       fontSize: 10,
                       color: colorScheme.onSurface.withValues(alpha: 0.6),
