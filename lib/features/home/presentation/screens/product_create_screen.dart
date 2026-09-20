@@ -6,8 +6,13 @@ import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 class ProductCreateScreen extends ConsumerStatefulWidget {
-  const ProductCreateScreen({required this.categoryId, super.key});
+  const ProductCreateScreen({
+    required this.categoryId,
+    this.barcode,
+    super.key,
+  });
   final String categoryId;
+  final String? barcode;
 
   @override
   ConsumerState<ProductCreateScreen> createState() =>
@@ -138,6 +143,10 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
       'fat': parsedFat,
     };
 
+    if (widget.barcode != null && widget.barcode!.isNotEmpty) {
+      productData['barcode'] = widget.barcode;
+    }
+
     final brand = _brandCtrl.text.trim();
     if (brand.isNotEmpty) productData['brand'] = brand;
 
@@ -247,6 +256,60 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                       ),
                     ),
                   ),
+                  if (widget.barcode != null && widget.barcode!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      initialValue: widget.barcode,
+                      readOnly: true,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface.withValues(alpha: 0.8),
+                      ),
+                      decoration: InputDecoration(
+                        labelText: l10n.barcodeLabel,
+                        labelStyle: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.qr_code,
+                          size: 20,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.2),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   Text(
                     l10n.productEditMainMacrosTitle,
