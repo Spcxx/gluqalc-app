@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/gen/assets.gen.dart';
 import 'package:gluqalc_app/core/networking/connectivity_service.dart';
+import 'package:gluqalc_app/core/networking/server_health_service.dart';
 import 'package:gluqalc_app/core/presentation/widgets/app_drawer.dart';
 import 'package:gluqalc_app/features/home/data/models/day_summary_model.dart';
 import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
@@ -53,34 +54,34 @@ class HomeScreen extends ConsumerWidget {
     ref.listen<AppConnectionState>(connectivityServiceProvider, (prev, next) {
       if (next == AppConnectionState.offlineStartup) {
         context.go('/offline');
-      } else if (next == AppConnectionState.offlineRuntime) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.snackbarOffline),
-            backgroundColor: colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      } else if (next == AppConnectionState.online &&
-          prev == AppConnectionState.offlineRuntime) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.snackbarOnline),
-            backgroundColor: colorScheme.tertiary,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
       }
     });
+    final serverHealthState = ref.watch(serverHealthServiceProvider);
 
-    final connectionState = ref.watch(connectivityServiceProvider);
-    final isOnline = connectionState == AppConnectionState.online;
+    Color getDotColor() {
+      switch (serverHealthState) {
+        case ServerHealthState.online:
+          return colorScheme.tertiary;
+        case ServerHealthState.warning:
+          return Colors.orange;
+        case ServerHealthState.offline:
+          return colorScheme.error;
+        case ServerHealthState.loading:
+          return Colors.grey;
+      }
+    }
+
+    String getTooltipMessage() {
+      switch (serverHealthState) {
+        case ServerHealthState.online:
+          return l10n.tooltipOnline;
+        case ServerHealthState.warning:
+          return l10n.tooltipReconnecting;
+        case ServerHealthState.offline:
+        case ServerHealthState.loading:
+          return l10n.tooltipOffline;
+      }
+    }
 
     final macroSummaryWidget = BottomMacroSummary(
       consumed:
@@ -108,13 +109,13 @@ class HomeScreen extends ConsumerWidget {
         centerTitle: true,
         leading: Center(
           child: Tooltip(
-            message: isOnline ? l10n.tooltipOnline : l10n.tooltipOffline,
+            message: getTooltipMessage(),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: isOnline ? colorScheme.tertiary : colorScheme.error,
+                color: getDotColor(),
                 shape: BoxShape.circle,
               ),
             ),

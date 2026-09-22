@@ -1642,6 +1642,12 @@ abstract class AppLocalizations {
   /// **'Offline'**
   String get tooltipOffline;
 
+  /// No description provided for @tooltipReconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting'**
+  String get tooltipReconnecting;
+
   /// No description provided for @madeByLabel.
   ///
   /// In en, this message translates to:

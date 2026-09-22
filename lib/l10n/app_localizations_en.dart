@@ -865,6 +865,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipOffline => 'Offline';
 
   @override
+  String get tooltipReconnecting => 'Reconnecting';
+
+  @override
   String get madeByLabel => 'Made by Szymon Rózga';
 
   @override

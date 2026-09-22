@@ -358,6 +358,7 @@
   "errorLoadingProfile": "Failed to load profile.",
   "tooltipOnline": "Online",
   "tooltipOffline": "Offline",
+  "tooltipReconnecting": "Reconnecting",
   "madeByLabel": "Made by Szymon Rózga",
   "tooltipApiRepo": "API",
   "tooltipFrontendRepo": "Frontend",
