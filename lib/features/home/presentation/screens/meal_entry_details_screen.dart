@@ -306,6 +306,36 @@ class _MealEntryDetailsScreenState
                         ),
                       ),
                     ],
+                    if (product.barcode != null &&
+                        product.barcode!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.qr_code,
+                              size: 18,
+                              color: colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              product.barcode!,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.9,
+                                ),
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Row(
                       children: [

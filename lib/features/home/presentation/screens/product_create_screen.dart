@@ -280,25 +280,29 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                   ),
                   if (widget.barcode != null && widget.barcode!.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    TextFormField(
-                      initialValue: widget.barcode,
-                      readOnly: true,
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface.withValues(alpha: 0.8),
-                      ),
-                      decoration: InputDecoration(
-                        labelText: l10n.barcodeLabel,
-                        prefixIcon: Icon(
-                          Icons.qr_code,
-                          size: 20,
-                          color: colorScheme.onSurfaceVariant,
+                    IgnorePointer(
+                      child: TextFormField(
+                        initialValue: widget.barcode,
+                        readOnly: true,
+                        enableInteractiveSelection: false,
+                        canRequestFocus: false,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
-                        filled: true,
-                        fillColor: colorScheme.surfaceContainerHighest
-                            .withValues(alpha: 0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        decoration: InputDecoration(
+                          labelText: l10n.barcodeLabel,
+                          prefixIcon: Icon(
+                            Icons.qr_code,
+                            size: 20,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
