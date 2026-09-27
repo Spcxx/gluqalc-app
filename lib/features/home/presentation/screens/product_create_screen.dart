@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/product_create_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/widgets/macro_table_form_widget.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -243,14 +243,36 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          _buildTextField(
-                            label: l10n.productEditNameLabel,
+                          TextFormField(
                             controller: _nameCtrl,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: l10n.productEditNameLabel,
+                              filled: true,
+                              fillColor: colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 12),
-                          _buildTextField(
-                            label: l10n.productEditBrandLabel,
+                          TextFormField(
                             controller: _brandCtrl,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: l10n.productEditBrandLabel,
+                              filled: true,
+                              fillColor: colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -267,9 +289,6 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.barcodeLabel,
-                        labelStyle: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
                         prefixIcon: Icon(
                           Icons.qr_code,
                           size: 20,
@@ -278,34 +297,8 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                         filled: true,
                         fillColor: colorScheme.surfaceContainerHighest
                             .withValues(alpha: 0.2),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
                         ),
                       ),
                     ),
@@ -318,142 +311,16 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Card(
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  label: '${l10n.macroEnergy} *',
-                                  controller: _kcalCtrl,
-                                  isNumber: true,
-                                  suffix: 'kcal',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildTextField(
-                                  label:
-                                      '${l10n.macroGlycemicIndex} (${l10n.optional})',
-                                  controller: _giCtrl,
-                                  isNumber: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(height: 24),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  label: '${l10n.macroCarbohydratesFull} *',
-                                  controller: _carbsCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildTextField(
-                                  label: '${l10n.macroProteinFull} *',
-                                  controller: _proteinCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  label: '${l10n.macroFatFull} *',
-                                  controller: _fatCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              const Expanded(
-                                child: SizedBox.shrink(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.productEditDetailsTitle,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  label: l10n.macroSugars,
-                                  controller: _sugarsCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildTextField(
-                                  label: l10n.macroSaturatedFat,
-                                  controller: _satFatCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  label: l10n.macroFiber,
-                                  controller: _fiberCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildTextField(
-                                  label: l10n.macroSalt,
-                                  controller: _saltCtrl,
-                                  isNumber: true,
-                                  suffix: 'g',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  MacroTableFormWidget(
+                    kcalCtrl: _kcalCtrl,
+                    giCtrl: _giCtrl,
+                    fatCtrl: _fatCtrl,
+                    satFatCtrl: _satFatCtrl,
+                    carbsCtrl: _carbsCtrl,
+                    sugarsCtrl: _sugarsCtrl,
+                    fiberCtrl: _fiberCtrl,
+                    proteinCtrl: _proteinCtrl,
+                    saltCtrl: _saltCtrl,
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -516,62 +383,6 @@ class _ProductCreateScreenState extends ConsumerState<ProductCreateScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    bool isNumber = false,
-    String? suffix,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return TextFormField(
-      controller: controller,
-      style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-      keyboardType: isNumber
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.text,
-      inputFormatters: isNumber
-          ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*'))]
-          : null,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface.withValues(alpha: 0.6),
-        ),
-        suffixText: suffix,
-        suffixStyle: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface.withValues(alpha: 0.5),
-          fontWeight: FontWeight.bold,
-        ),
-        filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
     );
