@@ -5,6 +5,7 @@ import 'package:gluqalc_app/core/config/app_config.dart';
 import 'package:gluqalc_app/core/gen/assets.gen.dart';
 import 'package:gluqalc_app/core/presentation/widgets/app_drawer.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends ConsumerWidget {
@@ -286,7 +287,10 @@ class AboutScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: const BackButton(),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+        ),
         title: Text(
           l10n.drawerAbout,
           style: textTheme.titleLarge?.copyWith(

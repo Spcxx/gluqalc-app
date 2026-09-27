@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/presentation/widgets/app_drawer.dart';
 import 'package:gluqalc_app/features/stats/presentation/controllers/export_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ExportScreen extends ConsumerStatefulWidget {
@@ -257,7 +258,10 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: const BackButton(),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+        ),
         title: Text(
           l10n.exportTitle,
           style: textTheme.titleLarge?.copyWith(
