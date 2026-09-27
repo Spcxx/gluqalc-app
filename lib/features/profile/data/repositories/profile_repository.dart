@@ -30,4 +30,8 @@ class ProfileRepository {
   ) async {
     return _remoteApi.updateBiometrics(request);
   }
+
+  Future<ProfileTargets> calculateTargets(ProfileRequest request) async {
+    return _remoteApi.calculateTargets(request);
+  }
 }

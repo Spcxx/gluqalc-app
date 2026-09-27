@@ -70,6 +70,7 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
             onChanged: (val) {
               if (val != null) {
                 setState(() => widget.parent.selectedBmrMethod = val);
+                widget.parent.recalculateDraftTargets();
               }
             },
             child: ListView.separated(
@@ -89,9 +90,12 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
                   child: InkWell(
                     onTap: isDisabled
                         ? null
-                        : () => setState(
-                            () => widget.parent.selectedBmrMethod = bmrEnum,
-                          ),
+                        : () {
+                            setState(
+                              () => widget.parent.selectedBmrMethod = bmrEnum,
+                            );
+                            widget.parent.recalculateDraftTargets();
+                          },
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       decoration: BoxDecoration(
@@ -180,7 +184,7 @@ class _Step2BmrWidgetState extends State<Step2BmrWidget> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        widget.parent.buildDraftTargetBanner(l10n, colorScheme, textTheme),
         Row(
           children: [
             OutlinedButton(

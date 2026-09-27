@@ -19,6 +19,16 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
     final l10n = AppLocalizations.of(context)!;
     final stringError = widget.parent.validateHourlyIcr(l10n);
 
+    final errorColor = theme.brightness == Brightness.light
+        ? Colors.red.shade700
+        : Colors.red.shade300;
+    final errorContainerColor = theme.brightness == Brightness.light
+        ? Colors.red.shade50
+        : errorColor.withValues(alpha: 0.1);
+    final onErrorContainerColor = theme.brightness == Brightness.light
+        ? Colors.red.shade900
+        : Colors.red.shade100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -84,21 +94,19 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
           decoration: BoxDecoration(
             color: stringError == null
                 ? colorScheme.tertiaryContainer.withValues(alpha: 0.3)
-                : colorScheme.errorContainer.withValues(alpha: 0.5),
+                : errorContainerColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: stringError == null
                   ? colorScheme.tertiary.withValues(alpha: 0.5)
-                  : colorScheme.error.withValues(alpha: 0.5),
+                  : errorColor.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
             children: [
               Icon(
                 stringError == null ? Icons.check_circle : Icons.error_outline,
-                color: stringError == null
-                    ? colorScheme.tertiary
-                    : colorScheme.error,
+                color: stringError == null ? colorScheme.tertiary : errorColor,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -108,7 +116,7 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
                     fontWeight: FontWeight.bold,
                     color: stringError == null
                         ? colorScheme.onTertiaryContainer
-                        : colorScheme.onErrorContainer,
+                        : onErrorContainerColor,
                   ),
                 ),
               ),
@@ -281,6 +289,9 @@ class _Step8IcrWidgetState extends State<Step8IcrWidget> {
                 onChanged: (val) {
                   item.icrValue =
                       double.tryParse(val.replaceAll(',', '.')) ?? 0;
+                  setState(
+                    () {},
+                  );
                 },
               ),
             ),

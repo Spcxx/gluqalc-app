@@ -41,6 +41,16 @@ class _Step5WeeklyWidgetState extends State<Step5WeeklyWidget> {
     final isSumValid =
         !widget.parent.enableWeeklyDistribution || weeklySum == 0;
 
+    final errorColor = theme.brightness == Brightness.light
+        ? Colors.red.shade700
+        : Colors.red.shade300;
+    final errorContainerColor = theme.brightness == Brightness.light
+        ? Colors.red.shade50
+        : errorColor.withValues(alpha: 0.1);
+    final onErrorContainerColor = theme.brightness == Brightness.light
+        ? Colors.red.shade900
+        : Colors.red.shade100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -162,14 +172,12 @@ class _Step5WeeklyWidgetState extends State<Step5WeeklyWidget> {
                               ? colorScheme.tertiaryContainer.withValues(
                                   alpha: 0.3,
                                 )
-                              : colorScheme.errorContainer.withValues(
-                                  alpha: 0.5,
-                                ),
+                              : errorContainerColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSumValid
                                 ? colorScheme.tertiary.withValues(alpha: 0.5)
-                                : colorScheme.error.withValues(alpha: 0.5),
+                                : errorColor.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -180,7 +188,7 @@ class _Step5WeeklyWidgetState extends State<Step5WeeklyWidget> {
                                   : Icons.error_outline,
                               color: isSumValid
                                   ? colorScheme.tertiary
-                                  : colorScheme.error,
+                                  : errorColor,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -192,7 +200,7 @@ class _Step5WeeklyWidgetState extends State<Step5WeeklyWidget> {
                                   fontWeight: FontWeight.bold,
                                   color: isSumValid
                                       ? colorScheme.onTertiaryContainer
-                                      : colorScheme.onErrorContainer,
+                                      : onErrorContainerColor,
                                 ),
                               ),
                             ),

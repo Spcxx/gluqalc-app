@@ -60,4 +60,12 @@ class ProfileRemoteApi {
 
     return ProfileResponse.fromJson(response.data!);
   }
+
+  Future<ProfileTargets> calculateTargets(ProfileRequest request) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/api/v1/profile/calculate',
+      data: request.toJson(),
+    );
+    return ProfileTargets.fromJson(response.data!);
+  }
 }

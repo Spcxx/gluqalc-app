@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:gluqalc_app/features/profile/data/models/profile_models.dart';
+import 'package:gluqalc_app/features/profile/data/repositories/profile_repository.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/steps/step_10_summary_widget.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/steps/step_1_basics_widget.dart';
@@ -56,6 +57,10 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   int currentStep = 0;
   static const int totalSteps = 10;
+
+  ProfileTargets? draftTargets;
+  bool isCalculatingTargets = false;
+  Timer? _debounceTargets;
 
   // data
   GenderEnum? selectedGender;
@@ -215,10 +220,13 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         hourIcrItems.sort((a, b) => a.hour.compareTo(b.hour));
       }
     });
+
+    recalculateDraftTargets();
   }
 
   @override
   void dispose() {
+    _debounceTargets?.cancel();
     _pageController.dispose();
     heightController.dispose();
     weightController.dispose();
@@ -233,6 +241,158 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         ..dispose();
     }
     super.dispose();
+  }
+
+  ProfileRequest get currentDraftRequest {
+    Map<String, int>? weeklyDistribution;
+    if (enableWeeklyDistribution) {
+      weeklyDistribution = {};
+      dayControllers.forEach((dayEnum, controller) {
+        final val = int.tryParse(controller.text) ?? 0;
+        if (val != 0) {
+          weeklyDistribution![_weekDayToString(dayEnum)] = val;
+        }
+      });
+    }
+
+    final hourlyCarbRatioMap = <String, double>{
+      for (final item in hourIcrItems) item.hour.toString(): item.icrValue,
+    };
+
+    return ProfileRequest(
+      gender: _genderToString(selectedGender),
+      weightInKg: double.tryParse(weightController.text.replaceAll(',', '.')),
+      heightInCm: double.tryParse(heightController.text.replaceAll(',', '.')),
+      birthDate: selectedBirthDate != null
+          ? DateFormat('yyyy-MM-dd').format(selectedBirthDate!)
+          : null,
+      physicalActivityLevel: double.parse(palValue.toStringAsFixed(2)),
+      kcalGoalDifference: kcalGoalDifference,
+      weeklyKcalDistribution: weeklyDistribution,
+      bodyFatPercentage: knowsBodyFat
+          ? double.tryParse(bodyFatController.text.replaceAll(',', '.'))
+          : null,
+      bmrCalculationMethod: selectedBmrMethod != null
+          ? _bmrMethodToString(selectedBmrMethod!)
+          : null,
+      macroStrategy: {
+        'PROTEIN': proteinPercent / 100.0,
+        'FAT': fatPercent / 100.0,
+        'CARBOHYDRATE': carbPercent / 100.0,
+      },
+      insulinSensitivityFactor: double.tryParse(
+        isfController.text.replaceAll(',', '.'),
+      ),
+      insulinFatProteinRatio: double.tryParse(
+        ifpController.text.replaceAll(',', '.'),
+      ),
+      tddMultiplier: double.tryParse(tddController.text.replaceAll(',', '.')),
+      dailyBasalInsulin: double.tryParse(
+        basalController.text.replaceAll(',', '.'),
+      ),
+      insulinDeliveryMethod: insulinDeliveryMethod.name.toUpperCase(),
+      combinedInsulinCalculationMethod: combinedInsulinMethod.name
+          .toUpperCase(),
+      hourlyCarbRatio: hourlyCarbRatioMap,
+    );
+  }
+
+  void recalculateDraftTargets() {
+    if (_debounceTargets?.isActive ?? false) _debounceTargets!.cancel();
+    _debounceTargets = Timer(const Duration(milliseconds: 500), () async {
+      setState(() => isCalculatingTargets = true);
+      try {
+        final req = currentDraftRequest;
+
+        if (req.gender == null ||
+            req.weightInKg == null ||
+            req.heightInCm == null ||
+            req.birthDate == null ||
+            req.bmrCalculationMethod == null) {
+          if (mounted) setState(() => isCalculatingTargets = false);
+          return;
+        }
+
+        final targets = await ref
+            .read(profileRepositoryProvider)
+            .calculateTargets(req);
+        if (mounted) {
+          setState(() {
+            draftTargets = targets;
+            isCalculatingTargets = false;
+          });
+        }
+      } on Object catch (_) {
+        if (mounted) setState(() => isCalculatingTargets = false);
+      }
+    });
+  }
+
+  Widget buildDraftTargetBanner(
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    TextTheme textTheme, {
+    String? subtitle,
+  }) {
+    if (draftTargets == null && !isCalculatingTargets) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16, top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_fire_department, color: colorScheme.primary),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.caloricTargetLabel,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (subtitle != null && subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+          if (isCalculatingTargets)
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colorScheme.primary,
+              ),
+            )
+          else
+            Text(
+              '${draftTargets?.dailyKcalGoal.toStringAsFixed(0) ?? '-'} kcal',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   void _onWeeklyDistributionChanged() => setState(() {});
@@ -272,6 +432,10 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     setState(() {
       if (currentStep < totalSteps - 1) currentStep++;
     });
+
+    if (currentStep == 1) {
+      recalculateDraftTargets();
+    }
   }
 
   void prevStep() {
@@ -373,57 +537,7 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    Map<String, int>? weeklyDistribution;
-    if (enableWeeklyDistribution) {
-      weeklyDistribution = {};
-      dayControllers.forEach((dayEnum, controller) {
-        final val = int.tryParse(controller.text) ?? 0;
-        if (val != 0) {
-          weeklyDistribution![_weekDayToString(dayEnum)] = val;
-        }
-      });
-    }
-
-    final hourlyCarbRatioMap = <String, double>{
-      for (final item in hourIcrItems) item.hour.toString(): item.icrValue,
-    };
-
-    final request = ProfileRequest(
-      gender: _genderToString(selectedGender),
-      weightInKg: double.tryParse(weightController.text.replaceAll(',', '.')),
-      heightInCm: double.tryParse(heightController.text.replaceAll(',', '.')),
-      birthDate: selectedBirthDate != null
-          ? DateFormat('yyyy-MM-dd').format(selectedBirthDate!)
-          : null,
-      physicalActivityLevel: double.parse(palValue.toStringAsFixed(2)),
-      kcalGoalDifference: kcalGoalDifference,
-      weeklyKcalDistribution: weeklyDistribution,
-      bodyFatPercentage: knowsBodyFat
-          ? double.tryParse(bodyFatController.text.replaceAll(',', '.'))
-          : null,
-      bmrCalculationMethod: selectedBmrMethod != null
-          ? _bmrMethodToString(selectedBmrMethod!)
-          : null,
-      macroStrategy: {
-        'PROTEIN': proteinPercent / 100.0,
-        'FAT': fatPercent / 100.0,
-        'CARBOHYDRATE': carbPercent / 100.0,
-      },
-      insulinSensitivityFactor: double.tryParse(
-        isfController.text.replaceAll(',', '.'),
-      ),
-      insulinFatProteinRatio: double.tryParse(
-        ifpController.text.replaceAll(',', '.'),
-      ),
-      tddMultiplier: double.tryParse(tddController.text.replaceAll(',', '.')),
-      dailyBasalInsulin: double.tryParse(
-        basalController.text.replaceAll(',', '.'),
-      ),
-      insulinDeliveryMethod: insulinDeliveryMethod.name.toUpperCase(),
-      combinedInsulinCalculationMethod: combinedInsulinMethod.name
-          .toUpperCase(),
-      hourlyCarbRatio: hourlyCarbRatioMap,
-    );
+    final request = currentDraftRequest;
 
     try {
       await ref.read(profileControllerProvider.notifier).submitProfile(request);

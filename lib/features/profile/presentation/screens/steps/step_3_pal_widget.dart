@@ -62,6 +62,7 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
     setState(
       () => widget.parent.palValue = total.clamp(1.1, 2.4),
     );
+    widget.parent.recalculateDraftTargets();
   }
 
   @override
@@ -169,7 +170,7 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 12),
+          widget.parent.buildDraftTargetBanner(l10n, colorScheme, textTheme),
           Row(
             children: [
               OutlinedButton(
@@ -506,7 +507,10 @@ class _Step3PalWidgetState extends State<Step3PalWidget> {
           max: 2.50,
           divisions: 140,
           label: widget.parent.palValue.toStringAsFixed(2),
-          onChanged: (val) => setState(() => widget.parent.palValue = val),
+          onChanged: (val) {
+            setState(() => widget.parent.palValue = val);
+            widget.parent.recalculateDraftTargets();
+          },
         ),
       ],
     );
