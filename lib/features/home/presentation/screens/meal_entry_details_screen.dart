@@ -731,55 +731,61 @@ class _MealEntryDetailsScreenState
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Divider(height: 24),
-                            _buildDataRow(
+                            const SizedBox(height: 16),
+                            _buildNutritionRow(
                               context,
-                              l10n.macroEnergy,
-                              '${nutrition.energyKcal.toStringAsFixed(1)} kcal',
+                              label: l10n.macroEnergy,
+                              value:
+                                  '${nutrition.energyKcal.toStringAsFixed(1)} kcal',
+                              isHighlight: true,
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroCarbohydratesFull,
-                              '${nutrition.carbohydrates.toStringAsFixed(1)} g',
+                              label: l10n.macroFatFull,
+                              value: '${nutrition.fat.toStringAsFixed(1)} g',
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroSugars,
-                              '${nutrition.sugars.toStringAsFixed(1)} g',
+                              label: l10n.macroSaturatedFat,
+                              value:
+                                  '${nutrition.saturatedFat.toStringAsFixed(1)} g',
+                              isSubItem: true,
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroFatFull,
-                              '${nutrition.fat.toStringAsFixed(1)} g',
+                              label: l10n.macroCarbohydratesFull,
+                              value:
+                                  '${nutrition.carbohydrates.toStringAsFixed(1)} g',
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroSaturatedFat,
-                              '${nutrition.saturatedFat.toStringAsFixed(1)} g',
+                              label: l10n.macroSugars,
+                              value: '${nutrition.sugars.toStringAsFixed(1)} g',
+                              isSubItem: true,
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroProteinFull,
-                              '${nutrition.protein.toStringAsFixed(1)} g',
+                              label: l10n.macroFiber,
+                              value: '${nutrition.fiber.toStringAsFixed(1)} g',
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroFiber,
-                              '${nutrition.fiber.toStringAsFixed(1)} g',
+                              label: l10n.macroProteinFull,
+                              value:
+                                  '${nutrition.protein.toStringAsFixed(1)} g',
                             ),
-                            _buildDataRow(
+                            _buildNutritionRow(
                               context,
-                              l10n.macroSalt,
-                              '${nutrition.salt.toStringAsFixed(2)} g',
+                              label: l10n.macroSalt,
+                              value: '${nutrition.salt.toStringAsFixed(2)} g',
                             ),
-                            _buildDataRow(
-                              context,
-                              l10n.macroGlycemicIndex,
-                              (product.nutrition.glycemicIndex > 0)
-                                  ? product.nutrition.glycemicIndex
-                                        .toStringAsFixed(0)
-                                  : '-',
-                            ),
+                            if (product.nutrition.glycemicIndex > 0)
+                              _buildNutritionRow(
+                                context,
+                                label: l10n.macroGlycemicIndex,
+                                value: product.nutrition.glycemicIndex
+                                    .toStringAsFixed(0),
+                              ),
                           ],
                         ),
                       ),
@@ -794,31 +800,50 @@ class _MealEntryDetailsScreenState
     );
   }
 
-  Widget _buildDataRow(BuildContext context, String label, String value) {
+  Widget _buildNutritionRow(
+    BuildContext context, {
+    required String label,
+    required String value,
+    bool isSubItem = false,
+    bool isHighlight = false,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+          Row(
+            children: [
+              if (isSubItem) ...[
+                const SizedBox(width: 16),
+                Icon(
+                  Icons.subdirectory_arrow_right_rounded,
+                  size: 16,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                label,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: isHighlight
+                      ? FontWeight.w700
+                      : (isSubItem ? FontWeight.w400 : FontWeight.w600),
+                ),
               ),
+            ],
+          ),
+          Text(
+            value,
+            textAlign: TextAlign.end,
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
+              color: colorScheme.onSurface,
             ),
           ),
         ],
