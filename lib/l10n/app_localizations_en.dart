@@ -1205,7 +1205,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mealDetailsCalculationsInfo =>
-      'Calculations below apply to the saved portion:';
+      'Calculations below apply to the portion:';
 
   @override
   String get insulinDoseTitle => 'Insulin dose';
@@ -1458,4 +1458,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get unsupportedPlatformDesc =>
       'Barcode scanning is available only on Android and Web browser.';
+
+  @override
+  String get errorCouldntSaveEntry => 'Could not save entry';
 }

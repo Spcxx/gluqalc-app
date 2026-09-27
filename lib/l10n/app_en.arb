@@ -465,7 +465,7 @@
   "editPortionTitle": "Edit portion",
   "nutritionDetailsTitle": "Nutritional values",
   "saveButton": "Save changes",
-  "mealDetailsCalculationsInfo": "Calculations below apply to the saved portion:",
+  "mealDetailsCalculationsInfo": "Calculations below apply to the portion:",
   "insulinDoseTitle": "Insulin dose",
   "insulinCarbs": "Carbs",
   "insulinFatProtein": "Fat & protein",
@@ -571,5 +571,6 @@
     }
   },
   "unsupportedPlatform": "Platform not supported",
-  "unsupportedPlatformDesc": "Barcode scanning is available only on Android and Web browser."
+  "unsupportedPlatformDesc": "Barcode scanning is available only on Android and Web browser.",
+  "errorCouldntSaveEntry": "Could not save entry"
 }

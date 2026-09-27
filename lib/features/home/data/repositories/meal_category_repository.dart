@@ -218,4 +218,33 @@ class MealCategoryRepository {
   Future<void> deletePortion(String portionId) async {
     await _dio.delete<void>('/api/v1/products/portions/$portionId');
   }
+
+  Future<MealEntryResponse> calculateMealEntry({
+    required String categoryId,
+    required String productId,
+    required double quantity,
+    required DateTime date,
+    String? portionId,
+  }) async {
+    final dateStr = DateFormat('yyyy-MM-dd').format(date);
+    final timeStr = DateFormat('HH:mm:ss').format(date);
+
+    final body = <String, dynamic>{
+      'productId': productId,
+      'mealCategoryId': categoryId,
+      'date': dateStr,
+      'time': timeStr,
+      'quantity': quantity,
+    };
+
+    if (portionId != null) {
+      body['portionId'] = portionId;
+    }
+
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/api/v1/log/calculate',
+      data: body,
+    );
+    return MealEntryResponse.fromJson(response.data!);
+  }
 }

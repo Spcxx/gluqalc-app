@@ -2287,7 +2287,7 @@ abstract class AppLocalizations {
   /// No description provided for @mealDetailsCalculationsInfo.
   ///
   /// In en, this message translates to:
-  /// **'Calculations below apply to the saved portion:'**
+  /// **'Calculations below apply to the portion:'**
   String get mealDetailsCalculationsInfo;
 
   /// No description provided for @insulinDoseTitle.
@@ -2763,6 +2763,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode scanning is available only on Android and Web browser.'**
   String get unsupportedPlatformDesc;
+
+  /// No description provided for @errorCouldntSaveEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save entry'**
+  String get errorCouldntSaveEntry;
 }
 
 class _AppLocalizationsDelegate

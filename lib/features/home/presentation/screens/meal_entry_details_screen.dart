@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
@@ -31,6 +30,57 @@ class MealEntryDetailsScreen extends ConsumerStatefulWidget {
 
 class _MealEntryDetailsScreenState
     extends ConsumerState<MealEntryDetailsScreen> {
+  bool _isSaving = false;
+
+  Future<void> _handleSave() async {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    setState(() => _isSaving = true);
+
+    final success = await ref
+        .read(
+          mealEntryDetailControllerProvider(
+            widget.entryId,
+            isCreation: widget.isCreation,
+            categoryId: widget.categoryId,
+          ).notifier,
+        )
+        .commitEntry();
+
+    if (mounted) {
+      setState(() => _isSaving = false);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.isCreation
+                  ? l10n.mealAddedSuccessfully
+                  : l10n.portionUpdatedSuccess,
+            ),
+            backgroundColor: colorScheme.tertiary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+        context.go('/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorCouldntSaveEntry),
+            backgroundColor: colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -51,6 +101,32 @@ class _MealEntryDetailsScreenState
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        actions: [
+          if (_isSaving)
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: IconButton(
+                icon: const Icon(Icons.check),
+                color: colorScheme.primary,
+                onPressed: _handleSave,
+              ),
+            ),
+        ],
         title: stateAsync.when(
           loading: () => const SizedBox.shrink(),
           error: (_, _) => Text(l10n.mealDetailsTitle),
@@ -98,23 +174,30 @@ class _MealEntryDetailsScreenState
         ),
         data: (state) {
           final product = state.product;
-          final entry = state.entry;
 
+          final entry = state.calculatedEntry;
           final nutrition = entry?.nutrition ?? product.nutrition;
+          final currentInsulin = entry?.insulinDose;
 
           final dailyTarget = summaryAsync.value?.target;
           final targetCarbs = dailyTarget?.carbohydrates ?? 250.0;
           final targetProtein = dailyTarget?.protein ?? 120.0;
           final targetFat = dailyTarget?.fat ?? 70.0;
 
-          final defaultPortion = product.portions.isNotEmpty
-              ? product.portions.first
-              : null;
+          final draftPortionId = state.draftPortionId;
+
+          final isCurrent100g =
+              entry != null &&
+              entry.portion.name.trim().toLowerCase() == '100g';
+
+          final currentPortionLabel = entry != null
+              ? (isCurrent100g
+                    ? '${entry.portion.totalWeight.toInt()} g'
+                    : '${entry.portion.quantity.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)')
+              : '';
 
           final sortedPortions =
-              List<ProductPortionResponse>.from(
-                product.portions,
-              )..sort((a, b) {
+              List<ProductPortionResponse>.from(product.portions)..sort((a, b) {
                 final isA100g = a.name.trim().toLowerCase() == '100g';
                 final isB100g = b.name.trim().toLowerCase() == '100g';
                 if (isA100g && !isB100g) return 1;
@@ -122,14 +205,15 @@ class _MealEntryDetailsScreenState
                 return 0;
               });
 
-          final durationText = entry?.insulinDose != null
-              ? getInsulinDurationText(entry!.insulinDose!, profile)
+          final durationText = currentInsulin != null
+              ? getInsulinDurationText(currentInsulin, profile)
               : '';
           final isPen = profile?.insulinDeliveryMethod == 'PEN';
           final showDurationRow =
-              entry?.insulinDose != null &&
-              (entry!.insulinDose!.bolusDurationMinutes > 0 ||
-                  (isPen && entry.insulinDose!.fatProteinDose > 0));
+              currentInsulin != null &&
+              (currentInsulin.bolusDurationMinutes > 0 ||
+                  (isPen && currentInsulin.fatProteinDose > 0));
+
           final currentDateTime = state.selectedDateTime;
 
           return SingleChildScrollView(
@@ -364,12 +448,25 @@ class _MealEntryDetailsScreenState
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    Text(
-                      l10n.editPortionTitle,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.editPortionTitle,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (state.isCalculating)
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colorScheme.primary.withValues(alpha: 0.5),
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Card(
@@ -385,9 +482,7 @@ class _MealEntryDetailsScreenState
                           final index = mapEntry.key;
                           final portion = mapEntry.value;
                           final isLast = index == sortedPortions.length - 1;
-                          final isSelected = entry != null
-                              ? portion.id == entry.portion.id
-                              : portion.id == defaultPortion?.id;
+                          final isSelected = portion.id == draftPortionId;
 
                           return Column(
                             key: ValueKey('col_${portion.id}'),
@@ -396,11 +491,11 @@ class _MealEntryDetailsScreenState
                                 key: ValueKey(portion.id),
                                 portion: portion,
                                 product: product,
-                                currentEntry: entry,
                                 isSelected: isSelected,
                                 categoryId: widget.categoryId,
                                 entryId: widget.entryId,
                                 isCreation: widget.isCreation,
+                                currentDraftQty: state.draftQuantity,
                               ),
                               if (!isLast) const Divider(height: 1),
                             ],
@@ -409,7 +504,39 @@ class _MealEntryDetailsScreenState
                       ),
                     ),
                     const SizedBox(height: 24),
-                    if (entry != null && entry.insulinDose != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              '${l10n.mealDetailsCalculationsInfo}\n$currentPortionLabel',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSecondaryContainer,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (currentInsulin != null && currentInsulin.totalDose > 0)
                       Card(
                         elevation: 0,
                         margin: const EdgeInsets.only(bottom: 16),
@@ -426,7 +553,7 @@ class _MealEntryDetailsScreenState
                           borderRadius: BorderRadius.circular(16),
                           onTap: () => showInsulinDetailsModal(
                             context,
-                            entry.insulinDose!,
+                            currentInsulin,
                             profile,
                             l10n,
                           ),
@@ -479,7 +606,7 @@ class _MealEntryDetailsScreenState
                                       ),
                                     ),
                                     Text(
-                                      '${entry.insulinDose!.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
+                                      '${currentInsulin.totalDose.toStringAsFixed(2)} ${l10n.unitInsulin}',
                                       style: textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: colorScheme.primary,
@@ -504,8 +631,8 @@ class _MealEntryDetailsScreenState
                                         child: _buildInsulinColumn(
                                           context: context,
                                           title: l10n.insulinCarbDose,
-                                          doseVal: entry.insulinDose!.carbDose,
-                                          unit: entry.insulinDose!.carbUnit,
+                                          doseVal: currentInsulin.carbDose,
+                                          unit: currentInsulin.carbUnit,
                                           unitLabel: l10n.unitCarbExchange,
                                           l10n: l10n,
                                         ),
@@ -521,9 +648,8 @@ class _MealEntryDetailsScreenState
                                           context: context,
                                           title: l10n.insulinFatProteinDose,
                                           doseVal:
-                                              entry.insulinDose!.fatProteinDose,
-                                          unit:
-                                              entry.insulinDose!.fatProteinUnit,
+                                              currentInsulin.fatProteinDose,
+                                          unit: currentInsulin.fatProteinUnit,
                                           unitLabel:
                                               l10n.unitFatProteinExchange,
                                           durationText: showDurationRow
@@ -649,7 +775,10 @@ class _MealEntryDetailsScreenState
                             _buildDataRow(
                               context,
                               l10n.macroGlycemicIndex,
-                              nutrition.glycemicIndex.toStringAsFixed(0),
+                              (product.nutrition.glycemicIndex > 0)
+                                  ? product.nutrition.glycemicIndex
+                                        .toStringAsFixed(0)
+                                  : '-',
                             ),
                           ],
                         ),
@@ -833,21 +962,21 @@ class _PortionRow extends ConsumerStatefulWidget {
   const _PortionRow({
     required this.portion,
     required this.product,
-    required this.currentEntry,
     required this.isSelected,
     required this.categoryId,
     required this.entryId,
     required this.isCreation,
+    required this.currentDraftQty,
     super.key,
   });
 
   final ProductPortionResponse portion;
   final ProductResponse product;
-  final MealEntryResponse? currentEntry;
   final bool isSelected;
   final String categoryId;
   final String entryId;
   final bool isCreation;
+  final double currentDraftQty;
 
   @override
   ConsumerState<_PortionRow> createState() => _PortionRowState();
@@ -864,14 +993,11 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
     _is100g = widget.portion.name.trim().toLowerCase() == '100g';
 
     var initialValue = 1.0;
-    if (widget.currentEntry != null &&
-        widget.currentEntry!.portion.id == widget.portion.id) {
+    if (widget.isSelected) {
       if (_is100g) {
-        initialValue =
-            widget.currentEntry!.portion.quantity *
-            widget.portion.weightInGrams;
+        initialValue = widget.currentDraftQty * widget.portion.weightInGrams;
       } else {
-        initialValue = widget.currentEntry!.portion.quantity;
+        initialValue = widget.currentDraftQty;
       }
     } else if (_is100g) {
       initialValue = 100.0;
@@ -889,16 +1015,18 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
     super.dispose();
   }
 
-  Future<void> _triggerSave(double quantity) async {
-    await ref
-        .read(
-          mealEntryDetailControllerProvider(
-            widget.entryId,
-            isCreation: widget.isCreation,
-            categoryId: widget.categoryId,
-          ).notifier,
-        )
-        .saveEntry(quantity, widget.portion.id);
+  void _triggerDraftUpdate(double quantity) {
+    unawaited(
+      ref
+          .read(
+            mealEntryDetailControllerProvider(
+              widget.entryId,
+              isCreation: widget.isCreation,
+              categoryId: widget.categoryId,
+            ).notifier,
+          )
+          .updateDraft(quantity, widget.portion.id),
+    );
   }
 
   @override
@@ -912,8 +1040,8 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
     final displayQty = _is100g ? (parsedInput / 100.0) : parsedInput;
     final totalWeight = widget.portion.weightInGrams * displayQty;
 
-    final kcalPer100 = widget.product.nutrition.energyKcal;
-    final totalKcal = (kcalPer100 / 100.0) * totalWeight;
+    final totalKcal =
+        (widget.product.nutrition.energyKcal / 100.0) * totalWeight;
 
     return Container(
       decoration: widget.isSelected
@@ -966,8 +1094,6 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                 ),
               ),
               onChanged: (val) {
-                setState(() {});
-
                 final currentParsed =
                     double.tryParse(val.replaceAll(',', '.')) ?? 0.0;
                 final currentQty = _is100g
@@ -975,9 +1101,9 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                     : currentParsed;
 
                 if (_debounce?.isActive ?? false) _debounce!.cancel();
-                _debounce = Timer(const Duration(milliseconds: 600), () {
+                _debounce = Timer(const Duration(milliseconds: 400), () {
                   if (currentQty > 0) {
-                    unawaited(_triggerSave(currentQty));
+                    _triggerDraftUpdate(currentQty);
                   }
                 });
               },
@@ -999,14 +1125,6 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                         color: widget.isSelected ? colorScheme.primary : null,
                       ),
                     ),
-                    if (widget.isSelected) ...[
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.check_circle,
-                        size: 14,
-                        color: colorScheme.primary,
-                      ),
-                    ],
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -1022,19 +1140,39 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
               ],
             ),
           ),
-          IconButton.filled(
-            icon: const Icon(Icons.arrow_forward, size: 18),
-            style: IconButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          if (widget.isSelected)
+            IconButton.filled(
+              icon: const Icon(Icons.check, size: 18),
+              style: IconButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              onPressed: () {
+                if (displayQty > 0) {
+                  _triggerDraftUpdate(displayQty);
+                }
+              },
+            )
+          else
+            IconButton.outlined(
+              icon: const Icon(Icons.check, size: 18),
+              color: colorScheme.primary,
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color: colorScheme.primary.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                if (displayQty > 0) {
+                  _triggerDraftUpdate(displayQty);
+                }
+              },
             ),
-            onPressed: () {
-              if (displayQty > 0) {
-                unawaited(_triggerSave(displayQty));
-              }
-            },
-          ),
         ],
       ),
     );
