@@ -17,6 +17,7 @@ import 'package:gluqalc_app/features/profile/presentation/screens/steps/step_8_i
 import 'package:gluqalc_app/features/profile/presentation/screens/steps/step_9_fpu_widget.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 enum GenderEnum { female, male, other }
 
@@ -391,7 +392,9 @@ class ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       gender: _genderToString(selectedGender),
       weightInKg: double.tryParse(weightController.text.replaceAll(',', '.')),
       heightInCm: double.tryParse(heightController.text.replaceAll(',', '.')),
-      birthDate: selectedBirthDate?.toIso8601String().split('T')[0],
+      birthDate: selectedBirthDate != null
+          ? DateFormat('yyyy-MM-dd').format(selectedBirthDate!)
+          : null,
       physicalActivityLevel: double.parse(palValue.toStringAsFixed(2)),
       kcalGoalDifference: kcalGoalDifference,
       weeklyKcalDistribution: weeklyDistribution,

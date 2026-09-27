@@ -2,6 +2,7 @@ import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/data/repositories/meal_category_repository.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/home_selected_date_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_category_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,34 +13,68 @@ class MealEntryDetailState {
     required this.entry,
     required this.product,
     required this.categoryName,
+    required this.selectedDateTime,
   });
   final MealEntryResponse? entry;
   final ProductResponse product;
   final String categoryName;
+  final DateTime selectedDateTime;
+
+  MealEntryDetailState copyWith({
+    MealEntryResponse? entry,
+    ProductResponse? product,
+    String? categoryName,
+    DateTime? selectedDateTime,
+  }) {
+    return MealEntryDetailState(
+      entry: entry ?? this.entry,
+      product: product ?? this.product,
+      categoryName: categoryName ?? this.categoryName,
+      selectedDateTime: selectedDateTime ?? this.selectedDateTime,
+    );
+  }
 }
 
 @riverpod
 class MealEntryDetailController extends _$MealEntryDetailController {
+  late String _categoryId;
+
   @override
   Future<MealEntryDetailState> build(
     String entryId, {
     bool isCreation = false,
     String? categoryId,
   }) async {
+    _categoryId = categoryId ?? '';
+
     final repository = ref.watch(mealCategoryRepositoryProvider);
 
     ProductResponse product;
     MealEntryResponse? entry;
     var categoryName = '';
+    DateTime currentDateTime;
 
     if (isCreation) {
-      product = await repository.getProductDetails(entryId);
+      final selectedDateFromState = ref.read(homeSelectedDateProvider);
+      final now = DateTime.now();
+      currentDateTime = DateTime(
+        selectedDateFromState.year,
+        selectedDateFromState.month,
+        selectedDateFromState.day,
+        now.hour,
+        now.minute,
+      );
 
-      if (categoryId != null) {
+      product = await repository.getProductDetails(
+        entryId,
+        time: currentDateTime,
+      );
+
+      if (_categoryId.isNotEmpty) {
         final categoriesAsync = ref.read(mealCategoryControllerProvider);
         if (categoriesAsync.hasValue) {
           for (final cat in categoriesAsync.value!) {
-            if (cat.id == categoryId) {
+            if (cat.id == _categoryId) {
               categoryName = cat.name;
               break;
             }
@@ -48,13 +83,22 @@ class MealEntryDetailController extends _$MealEntryDetailController {
       }
     } else {
       entry = await repository.getMealEntryDetails(entryId);
-      product = await repository.getProductDetails(entry.productId);
+      currentDateTime =
+          DateTime.tryParse(
+            '${entry.consumptionDate}T${entry.consumptionTime}',
+          ) ??
+          DateTime.now();
+      product = await repository.getProductDetails(
+        entry.productId,
+        time: currentDateTime,
+      );
 
       final categoriesAsync = ref.read(mealCategoryControllerProvider);
       if (categoriesAsync.hasValue) {
         for (final cat in categoriesAsync.value!) {
           if (cat.entries.any((e) => e.id == entryId)) {
             categoryName = cat.name;
+            _categoryId = cat.id;
             break;
           }
         }
@@ -65,41 +109,46 @@ class MealEntryDetailController extends _$MealEntryDetailController {
       entry: entry,
       product: product,
       categoryName: categoryName,
+      selectedDateTime: currentDateTime,
     );
   }
 
-  Future<bool> saveOrUpdateEntry({
-    required String id,
-    required String categoryId,
-    required double quantity,
-    required DateTime date,
-    required bool isCreation,
-    String? portionId,
-    String? oldEntryId,
-  }) async {
-    final repository = ref.read(mealCategoryRepositoryProvider);
+  Future<void> updateDateTime(DateTime newDateTime) async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    state = AsyncValue.data(
+      currentState.copyWith(selectedDateTime: newDateTime),
+    );
+
+    if (currentState.entry != null) {
+      await saveEntry(
+        currentState.entry!.portion.quantity,
+        currentState.entry!.portion.id,
+      );
+    }
+  }
+
+  Future<bool> saveEntry(double quantity, String portionId) async {
+    final currentState = state.value;
+    if (currentState == null) return false;
 
     try {
-      if (isCreation) {
-        await repository.addMealEntry(
-          categoryId: categoryId,
-          productId: id,
-          quantity: quantity,
-          date: date,
-          portionId: portionId,
-        );
-      } else {
-        if (oldEntryId != null) {
-          await repository.deleteMealEntry(oldEntryId);
-        }
-        await repository.addMealEntry(
-          categoryId: categoryId,
-          productId: id,
-          quantity: quantity,
-          date: date,
-          portionId: portionId,
-        );
+      final repo = ref.read(mealCategoryRepositoryProvider);
+
+      if (currentState.entry != null) {
+        await repo.deleteMealEntry(currentState.entry!.id);
       }
+
+      final newEntry = await repo.addMealEntry(
+        categoryId: _categoryId,
+        productId: currentState.product.id,
+        quantity: quantity,
+        date: currentState.selectedDateTime,
+        portionId: portionId,
+      );
+
+      state = AsyncValue.data(currentState.copyWith(entry: newEntry));
 
       ref
         ..invalidate(mealCategoryControllerProvider)

@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/meal_category_model.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
-import 'package:gluqalc_app/features/home/presentation/controllers/home_selected_date_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/widgets/insulin_details_dialog.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
@@ -54,26 +55,11 @@ class _MealEntryDetailsScreenState
           loading: () => const SizedBox.shrink(),
           error: (_, _) => Text(l10n.mealDetailsTitle),
           data: (state) {
-            var formattedDateTime = '';
-            if (!widget.isCreation && state.entry != null) {
-              final dateParsed =
-                  DateTime.tryParse(state.entry!.consumptionDate) ??
-                  DateTime.now();
-              final formattedDate = DateFormat.yMMMMd(l10n.localeName)
-                  .format(dateParsed);
-
-              final timeParts = state.entry!.consumptionTime.split(':');
-              final formattedTime = timeParts.length >= 2
-                  ? '${timeParts[0]}:${timeParts[1]}'
-                  : state.entry!.consumptionTime;
-              formattedDateTime = '$formattedDate, $formattedTime';
-            } else {
-              final selectedDate = ref.read(homeSelectedDateProvider);
-              final formattedDate = DateFormat.yMMMMd(l10n.localeName)
-                  .format(selectedDate);
-              final formattedTime = DateFormat.Hm().format(DateTime.now());
-              formattedDateTime = '$formattedDate, $formattedTime';
-            }
+            final currentDateTime = state.selectedDateTime;
+            final formattedDate = DateFormat.yMMMMd(l10n.localeName)
+                .format(currentDateTime);
+            final formattedTime = DateFormat.Hm().format(currentDateTime);
+            final formattedDateTime = '$formattedDate, $formattedTime';
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -125,18 +111,6 @@ class _MealEntryDetailsScreenState
               ? product.portions.first
               : null;
 
-          final isCurrent100g = entry != null
-              ? entry.portion.name.trim().toLowerCase() == '100g'
-              : (defaultPortion?.name.trim().toLowerCase() == '100g');
-
-          final currentPortionLabel = entry != null
-              ? (isCurrent100g
-                    ? '${entry.portion.totalWeight.toInt()} g'
-                    : '${entry.portion.quantity.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} x ${entry.portion.name} (${entry.portion.totalWeight.toInt()} g)')
-              : (defaultPortion != null
-                    ? '1 x ${defaultPortion.name} (${defaultPortion.weightInGrams.toInt()} g)'
-                    : '');
-
           final sortedPortions =
               List<ProductPortionResponse>.from(
                 product.portions,
@@ -156,6 +130,7 @@ class _MealEntryDetailsScreenState
               entry?.insulinDose != null &&
               (entry!.insulinDose!.bolusDurationMinutes > 0 ||
                   (isPen && entry.insulinDose!.fatProteinDose > 0));
+          final currentDateTime = state.selectedDateTime;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
@@ -248,6 +223,148 @@ class _MealEntryDetailsScreenState
                       ),
                     ],
                     const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: currentDateTime,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365),
+                                ),
+                              );
+                              if (date != null) {
+                                final newDateTime = DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  currentDateTime.hour,
+                                  currentDateTime.minute,
+                                );
+                                await ref
+                                    .read(
+                                      mealEntryDetailControllerProvider(
+                                        widget.entryId,
+                                        isCreation: widget.isCreation,
+                                        categoryId: widget.categoryId,
+                                      ).notifier,
+                                    )
+                                    .updateDateTime(newDateTime);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 18,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      DateFormat.yMMMd(l10n.localeName)
+                                          .format(currentDateTime),
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () async {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.fromDateTime(
+                                  currentDateTime,
+                                ),
+                              );
+                              if (time != null) {
+                                final newDateTime = DateTime(
+                                  currentDateTime.year,
+                                  currentDateTime.month,
+                                  currentDateTime.day,
+                                  time.hour,
+                                  time.minute,
+                                );
+                                await ref
+                                    .read(
+                                      mealEntryDetailControllerProvider(
+                                        widget.entryId,
+                                        isCreation: widget.isCreation,
+                                        categoryId: widget.categoryId,
+                                      ).notifier,
+                                    )
+                                    .updateDateTime(newDateTime);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time,
+                                    size: 18,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      DateFormat.Hm().format(currentDateTime),
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
                     Text(
                       l10n.editPortionTitle,
                       style: textTheme.titleMedium?.copyWith(
@@ -292,42 +409,10 @@ class _MealEntryDetailsScreenState
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondaryContainer.withValues(
-                          alpha: 0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: colorScheme.onSecondaryContainer,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              '${l10n.mealDetailsCalculationsInfo}\n$currentPortionLabel',
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSecondaryContainer,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (entry?.insulinDose != null &&
-                        entry!.insulinDose!.totalDose > 0)
+                    if (entry != null && entry.insulinDose != null)
                       Card(
                         elevation: 0,
+                        margin: const EdgeInsets.only(bottom: 16),
                         color: colorScheme.primaryContainer.withValues(
                           alpha: 0.3,
                         ),
@@ -455,7 +540,6 @@ class _MealEntryDetailsScreenState
                           ),
                         ),
                       ),
-                    const SizedBox(height: 16),
                     Card(
                       elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -772,6 +856,7 @@ class _PortionRow extends ConsumerStatefulWidget {
 class _PortionRowState extends ConsumerState<_PortionRow> {
   late final TextEditingController _controller;
   bool _is100g = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -799,22 +884,13 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _submitUpdate(double quantity) async {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    final actualProductId = widget.isCreation
-        ? widget.entryId
-        : widget.currentEntry!.productId;
-
-    final selectedDate = ref.read(homeSelectedDateProvider);
-
-    final success = await ref
+  Future<void> _triggerSave(double quantity) async {
+    await ref
         .read(
           mealEntryDetailControllerProvider(
             widget.entryId,
@@ -822,35 +898,7 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
             categoryId: widget.categoryId,
           ).notifier,
         )
-        .saveOrUpdateEntry(
-          id: actualProductId,
-          categoryId: widget.categoryId,
-          quantity: quantity,
-          date: widget.currentEntry != null
-              ? DateTime.parse(widget.currentEntry!.consumptionDate)
-              : selectedDate,
-          portionId: widget.portion.id,
-          isCreation: widget.isCreation,
-          oldEntryId: widget.currentEntry?.id,
-        );
-
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.isCreation
-                ? l10n.mealAddedSuccessfully
-                : l10n.portionUpdatedSuccess,
-          ),
-          backgroundColor: colorScheme.tertiary,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      context.pop();
-    }
+        .saveEntry(quantity, widget.portion.id);
   }
 
   @override
@@ -917,7 +965,22 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                   alpha: 0.2,
                 ),
               ),
-              onChanged: (_) => setState(() {}),
+              onChanged: (val) {
+                setState(() {});
+
+                final currentParsed =
+                    double.tryParse(val.replaceAll(',', '.')) ?? 0.0;
+                final currentQty = _is100g
+                    ? (currentParsed / 100.0)
+                    : currentParsed;
+
+                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                _debounce = Timer(const Duration(milliseconds: 600), () {
+                  if (currentQty > 0) {
+                    unawaited(_triggerSave(currentQty));
+                  }
+                });
+              },
             ),
           ),
           const SizedBox(width: 12),
@@ -966,9 +1029,9 @@ class _PortionRowState extends ConsumerState<_PortionRow> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: () async {
+            onPressed: () {
               if (displayQty > 0) {
-                await _submitUpdate(displayQty);
+                unawaited(_triggerSave(displayQty));
               }
             },
           ),

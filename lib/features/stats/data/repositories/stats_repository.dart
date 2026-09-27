@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:gluqalc_app/core/networking/dio_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stats_repository.g.dart';
@@ -15,8 +16,8 @@ class StatsRepository {
   final Dio _dio;
 
   Future<List<int>> exportCsv(DateTime from, DateTime to) async {
-    final fromStr = from.toIso8601String().split('T')[0];
-    final toStr = to.toIso8601String().split('T')[0];
+    final fromStr = DateFormat('yyyy-MM-dd').format(from);
+    final toStr = DateFormat('yyyy-MM-dd').format(to);
 
     final response = await _dio.get<List<int>>(
       '/api/v1/stats/export',

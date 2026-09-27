@@ -20,9 +20,10 @@ class MealCategoryRepository {
     DateTime date,
   ) async {
     final dateStr = DateFormat('yyyy-MM-dd').format(date);
+    final timeStr = DateFormat('HH:mm:ss').format(DateTime.now());
     final response = await _dio.get<List<dynamic>>(
       '/api/v1/log',
-      queryParameters: {'date': dateStr},
+      queryParameters: {'date': dateStr, 'time': timeStr},
     );
 
     return (response.data ?? [])
@@ -48,7 +49,7 @@ class MealCategoryRepository {
     );
   }
 
-  Future<void> addMealEntry({
+  Future<MealEntryResponse> addMealEntry({
     required String categoryId,
     required String productId,
     required double quantity,
@@ -56,11 +57,13 @@ class MealCategoryRepository {
     String? portionId,
   }) async {
     final dateStr = DateFormat('yyyy-MM-dd').format(date);
+    final timeStr = DateFormat('HH:mm:ss').format(date);
 
     final body = <String, dynamic>{
       'productId': productId,
       'mealCategoryId': categoryId,
       'date': dateStr,
+      'time': timeStr,
       'quantity': quantity,
     };
 
@@ -68,7 +71,11 @@ class MealCategoryRepository {
       body['portionId'] = portionId;
     }
 
-    await _dio.post<dynamic>('/api/v1/log', data: body);
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/api/v1/log',
+      data: body,
+    );
+    return MealEntryResponse.fromJson(response.data!);
   }
 
   Future<void> deleteMealEntry(String entryId) async {
@@ -82,9 +89,14 @@ class MealCategoryRepository {
     return MealEntryResponse.fromJson(response.data!);
   }
 
-  Future<ProductResponse> getProductDetails(String productId) async {
+  Future<ProductResponse> getProductDetails(
+    String productId, {
+    DateTime? time,
+  }) async {
+    final timeStr = DateFormat('HH:mm:ss').format(time ?? DateTime.now());
     final response = await _dio.get<Map<String, dynamic>>(
       '/api/v1/products/$productId',
+      queryParameters: {'time': timeStr},
     );
     return ProductResponse.fromJson(response.data!);
   }

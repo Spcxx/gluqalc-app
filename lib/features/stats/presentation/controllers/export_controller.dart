@@ -1,6 +1,7 @@
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gluqalc_app/features/stats/data/repositories/stats_repository.dart';
+import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'export_controller.g.dart';
@@ -16,8 +17,8 @@ class ExportController extends _$ExportController {
       final repo = ref.read(statsRepositoryProvider);
       final bytes = await repo.exportCsv(from, to);
 
-      final fromStr = from.toIso8601String().split('T')[0];
-      final toStr = to.toIso8601String().split('T')[0];
+      final fromStr = DateFormat('yyyy-MM-dd').format(from);
+      final toStr = DateFormat('yyyy-MM-dd').format(to);
       final filename = 'gluqalc_export_${fromStr}_$toStr';
 
       final isMobile =

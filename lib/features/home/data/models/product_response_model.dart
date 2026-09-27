@@ -34,6 +34,7 @@ abstract class ProductResponse with _$ProductResponse {
     String? barcode,
     String? provider,
     ProductMetadataResponse? metadata,
+    InsulinDoseInfo? insulinDose,
     @Default([]) List<ProductPortionResponse> portions,
   }) = _ProductResponse;
 

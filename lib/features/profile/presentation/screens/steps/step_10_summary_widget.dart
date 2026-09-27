@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gluqalc_app/features/profile/presentation/screens/profile_setup_screen.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 class Step10SummaryWidget extends StatelessWidget {
   const Step10SummaryWidget({required this.parent, super.key});
@@ -146,8 +147,10 @@ class Step10SummaryWidget extends StatelessWidget {
                   _buildSummaryItem(
                     context,
                     l10n.summaryBirthDate,
-                    parent.selectedBirthDate?.toIso8601String().split('T')[0] ??
-                        l10n.notSet,
+                    parent.selectedBirthDate != null
+                        ? DateFormat('yyyy-MM-dd')
+                              .format(parent.selectedBirthDate!)
+                        : l10n.notSet,
                   ),
                   _buildSummaryItem(
                     context,

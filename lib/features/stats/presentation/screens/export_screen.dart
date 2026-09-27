@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/core/presentation/widgets/app_drawer.dart';
 import 'package:gluqalc_app/features/stats/presentation/controllers/export_controller.dart';
 import 'package:gluqalc_app/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 class ExportScreen extends ConsumerStatefulWidget {
   const ExportScreen({super.key});
@@ -117,7 +118,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
 
     final isExporting = exportState is AsyncLoading;
 
-    String formatDate(DateTime d) => d.toIso8601String().split('T')[0];
+    String formatDate(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
 
     final contentWidget = SingleChildScrollView(
       padding: const EdgeInsets.all(24),
