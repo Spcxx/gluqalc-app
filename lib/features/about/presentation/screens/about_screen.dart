@@ -131,24 +131,15 @@ class AboutScreen extends ConsumerWidget {
                 error: (_, _) => const SizedBox(height: 17),
               ),
               const SizedBox(height: 24),
-              Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+              Text(
+                l10n.aboutDescription,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.8),
+                  height: 1.4,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    l10n.aboutDescription,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.8),
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               Card(
                 elevation: 1,
                 shape: RoundedRectangleBorder(
