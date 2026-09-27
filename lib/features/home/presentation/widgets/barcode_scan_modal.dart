@@ -63,6 +63,29 @@ class _BarcodeScanDialogState extends State<BarcodeScanDialog> {
             ),
             Positioned(
               top: 16,
+              left: 16,
+              child: ValueListenableBuilder<MobileScannerState>(
+                valueListenable: _controller,
+                builder: (context, state, child) {
+                  final isTorchOn = state.torchState == TorchState.on;
+
+                  return CircleAvatar(
+                    backgroundColor: isTorchOn
+                        ? Colors.amber.withValues(alpha: 0.7)
+                        : Colors.black54,
+                    child: IconButton(
+                      icon: Icon(
+                        isTorchOn ? Icons.flash_on : Icons.flash_off,
+                        color: Colors.white,
+                      ),
+                      onPressed: _controller.toggleTorch,
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              top: 16,
               right: 16,
               child: CircleAvatar(
                 backgroundColor: Colors.black54,
