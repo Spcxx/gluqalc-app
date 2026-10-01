@@ -1109,6 +1109,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addCategory => 'Add category';
 
   @override
+  String get selectCategory => 'Select meal category';
+
+  @override
   String get categoryNameLabel => 'Category name';
 
   @override

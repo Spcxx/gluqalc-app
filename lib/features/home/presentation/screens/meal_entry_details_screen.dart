@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gluqalc_app/features/home/data/models/product_response_model.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/day_summary_controller.dart';
+import 'package:gluqalc_app/features/home/presentation/controllers/meal_category_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/controllers/meal_entry_detail_controller.dart';
 import 'package:gluqalc_app/features/home/presentation/widgets/insulin_details_dialog.dart';
 import 'package:gluqalc_app/features/profile/presentation/controllers/profile_controller.dart';
@@ -137,18 +138,92 @@ class _MealEntryDetailsScreenState
             final formattedTime = DateFormat.Hm().format(currentDateTime);
             final formattedDateTime = '$formattedDate, $formattedTime';
 
+            final categories =
+                ref.watch(mealCategoryControllerProvider).value ?? [];
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  state.categoryName,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                PopupMenuButton<String>(
+                  tooltip: l10n.selectCategory,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  color: colorScheme.surfaceContainerHighest,
+                  elevation: 3,
+                  position: PopupMenuPosition.under,
+                  onSelected: (selectedCatId) {
+                    final category = categories.firstWhere(
+                      (c) => c.id == selectedCatId,
+                    );
+                    ref
+                        .read(
+                          mealEntryDetailControllerProvider(
+                            widget.entryId,
+                            isCreation: widget.isCreation,
+                            categoryId: widget.categoryId,
+                          ).notifier,
+                        )
+                        .updateCategory(category.id, category.name);
+                  },
+                  itemBuilder: (context) {
+                    return categories.map((cat) {
+                      final isSelected = cat.name == state.categoryName;
+                      return PopupMenuItem<String>(
+                        value: cat.id,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              cat.name,
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                Icons.check,
+                                color: colorScheme.primary,
+                                size: 20,
+                              ),
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            state.categoryName,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          size: 20,
+                          color: colorScheme.onSurface,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   formattedDateTime,
                   style: textTheme.bodySmall?.copyWith(

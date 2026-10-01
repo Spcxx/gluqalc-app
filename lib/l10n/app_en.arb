@@ -434,6 +434,7 @@
   "shortSun": "SUN",
   "backToToday": "Back to today",
   "addCategory": "Add category",
+  "selectCategory": "Select meal category",
   "categoryNameLabel": "Category name",
   "categoryNameHint": "e.g. Breakfast, Lunch",
   "cancel": "Cancel",

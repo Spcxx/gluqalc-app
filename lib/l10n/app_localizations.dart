@@ -2098,6 +2098,12 @@ abstract class AppLocalizations {
   /// **'Add category'**
   String get addCategory;
 
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select meal category'**
+  String get selectCategory;
+
   /// No description provided for @categoryNameLabel.
   ///
   /// In en, this message translates to:

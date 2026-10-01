@@ -231,4 +231,14 @@ class MealEntryDetailController extends _$MealEntryDetailController {
       return false;
     }
   }
+
+  void updateCategory(String newCategoryId, String newCategoryName) {
+    _categoryId = newCategoryId;
+    final currentState = state.value;
+    if (currentState != null) {
+      state = AsyncValue.data(
+        currentState.copyWith(categoryName: newCategoryName),
+      );
+    }
+  }
 }
